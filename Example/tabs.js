@@ -23,7 +23,6 @@ class BasicTabs extends React.Component {
           <Tabs>
             <NavScreen
               navigator={(navigation) => {
-                console.log({ navigation })
                 return {
                   navigateToNextScreen: navigation.push,
                 }

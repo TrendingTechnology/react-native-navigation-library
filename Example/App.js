@@ -59,12 +59,13 @@ function TabsExamples() {
         <Screen
           navigator={(navigation) => {
             return {
-              navigateToTabs: () => navigation.push(1),
+              navigateToTabs: () => navigation.push(1, { test: 'value' }),
               navigateToNestedTabs: () => navigation.push(2),
               navigateToTabsWithHeaders: () => navigation.push(3),
               navigateToEverything: () => navigation.push(4),
-              displayModal: () => navigation.modal.push(),
-              displaySecondModal: () => navigation.modal.push(1),
+              displayModal: () => navigation.modal.push(0, { test: 'value' }),
+              displaySecondModal: () =>
+                navigation.modal.push(1, { test: 'second value' }),
             }
           }}>
           <TabsExampleIndexPage />
@@ -76,8 +77,12 @@ function TabsExamples() {
       </Tabs>
 
       <Modal>
-        <ModalView name="1" />
-        <ModalView name="2" />
+        <Screen>
+          <ModalView name="1" />
+        </Screen>
+        <Screen>
+          <ModalView name="2" />
+        </Screen>
       </Modal>
     </Navigator>
   )
@@ -87,6 +92,7 @@ function ModalView(props) {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <Text>{props.name}</Text>
+      <Text>{props.data.test}</Text>
       <Button title="Dismiss" onPress={() => props.navigation.modal.pop()} />
     </View>
   )
