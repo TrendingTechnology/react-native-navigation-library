@@ -2,7 +2,7 @@
   "name": "react-native-navigation-library",
   "version": "0.1.0",
   "description": "declarative navigation library for react native",
-  "main": "./src/navigation-library.js",
+  "main": "./react-native-navigation-library.js",
   "scripts": {
     "test": "jest",
     "lint": "eslint ."
