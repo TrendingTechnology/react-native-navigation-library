@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import Transition from './transition'
 
 const { Provider, Consumer } = React.createContext()
@@ -22,18 +22,35 @@ class Navigator extends React.Component {
     })
   }
 
+  updateModal = (navigation) => {
+    this.setState((state) => {
+      return {
+        navigation: {
+          ...state.navigation,
+          modal: navigation,
+        },
+      }
+    })
+  }
+
   state = {
     activeIndex: 0,
     updateActiveIndex: this.updateActiveIndex,
     navigation: {},
     updateNavigation: this.updateNavigation,
+    updateModal: this.updateModal,
   }
 
   render() {
-    return <Provider value={this.state}>{this.props.children}</Provider>
+    return (
+      <Provider value={this.state}>
+        <View style={[{ flex: 1 }, this.props.style]}>
+          {this.props.children}
+        </View>
+      </Provider>
+    )
   }
 }
-
 class Stack extends React.Component {
   constructor(props) {
     super(props)
@@ -148,6 +165,7 @@ class Tabs extends React.Component {
 
     this.state = {
       rendered: [this.props.activeIndex],
+      transitioning: false,
     }
 
     props.updateNavigation &&
@@ -155,6 +173,7 @@ class Tabs extends React.Component {
         pop: this.pop,
         push: this.push,
         reset: this.reset,
+        select: this.select,
       })
   }
 
@@ -166,6 +185,7 @@ class Tabs extends React.Component {
         )
         return {
           rendered: [...previous, this.props.activeIndex],
+          transitioning: true,
         }
       })
     }
@@ -188,6 +208,16 @@ class Tabs extends React.Component {
     this.props.updateActiveIndex(0)
   }
 
+  select = (index = 0) => {
+    if (this.props.children[index]) {
+      this.props.updateActiveIndex(index)
+    }
+  }
+
+  handleTransitionEnd = () => {
+    this.setState({ transitioning: false })
+  }
+
   render() {
     const children = React.Children.toArray(this.props.children)
 
@@ -196,7 +226,21 @@ class Tabs extends React.Component {
         navigation: this.props.navigation,
       })
 
-      return <Transition key={childIndex}>{child}</Transition>
+      const transitionIn =
+        this.state.transitioning && childIndex === this.props.activeIndex
+
+      const transitionOut =
+        this.state.transitioning && childIndex !== this.props.activeIndex
+
+      return (
+        <Transition
+          key={childIndex}
+          transitionIn={transitionIn}
+          transitionOut={transitionOut}
+          onTransitionEnd={this.handleTransitionEnd}>
+          {child}
+        </Transition>
+      )
     })
 
     return <View style={{ flex: 1 }}>{childrenToRender}</View>
@@ -217,14 +261,18 @@ class TabsContainer extends React.Component {
 
 class TabBar extends React.Component {
   render() {
-    return React.Children.map(this.props.children, (child, index) => {
-      return React.cloneElement(child, {
-        active: index === this.props.activeIndex,
-        navigation: {
-          onSelect: () => this.props.updateActiveIndex(index),
-        },
-      })
-    })
+    return (
+      <View style={[{ flexDirection: 'row' }, this.props.style]}>
+        {React.Children.map(this.props.children, (child, index) => {
+          return React.cloneElement(child, {
+            active: index === this.props.activeIndex,
+            navigation: {
+              onSelect: () => this.props.updateActiveIndex(index),
+            },
+          })
+        })}
+      </View>
+    )
   }
 }
 
@@ -240,21 +288,35 @@ class TabBarContainer extends React.Component {
   }
 }
 
+class Tab extends React.Component {
+  render() {
+    return (
+      <TouchableOpacity
+        style={[
+          { flex: 1, height: 60, backgroundColor: 'white' },
+          this.props.style,
+        ]}
+        onPress={this.props.navigation.onSelect}>
+        {React.cloneElement(this.props.children, {
+          active: this.props.active,
+        })}
+      </TouchableOpacity>
+    )
+  }
+}
+
 class Switch extends React.Component {
   constructor(props) {
     super(props)
 
+    this.state = {
+      popIndex: -1,
+    }
+
     props.updateNavigation &&
       props.updateNavigation({
         push: this.push,
-        pop: this.pop,
       })
-  }
-
-  pop = (index = 1) => {
-    if (this.props.children[this.props.activeIndex - index]) {
-      this.props.updateActiveIndex(this.props.activeIndex - index)
-    }
   }
 
   push = (index = 1) => {
@@ -263,11 +325,34 @@ class Switch extends React.Component {
     }
   }
 
+  pop = (index = 1) => {
+    if (this.props.children[this.props.activeIndex - index]) {
+      this.setState({
+        popIndex: this.props.activeIndex,
+      })
+
+      this.props.updateActiveIndex(this.props.activeIndex + index)
+    }
+  }
+
+  handleTransitionEnd = () => {
+    this.setState({
+      popIndex: -1,
+    })
+  }
+
   render() {
     const child = React.Children.toArray(this.props.children)[
-      this.props.activeIndex
+      this.state.popIndex >= 0 ? this.state.popIndex : this.props.activeIndex
     ]
-    return React.cloneElement(child, { navigation: this.props.navigation })
+
+    return (
+      <Transition
+        transitionOut={this.state.popIndex !== -1}
+        onTransitionEnd={this.handleTransitionEnd}>
+        {React.cloneElement(child, { navigation: this.props.navigation })}
+      </Transition>
+    )
   }
 }
 
@@ -283,12 +368,128 @@ class SwitchContainer extends React.Component {
   }
 }
 
+class Screen extends React.Component {
+  render() {
+    const api = this.props.navigator(this.props.navigation)
+
+    return (
+      <View style={[{ flex: 1 }, this.props.style]}>
+        {React.cloneElement(this.props.children, { ...api })}
+      </View>
+    )
+  }
+}
+
+/*
+  <Navigator>
+    <Stack>
+      <Screen 1 />
+      <Screen 2 />
+      <Screen 3 />
+    </Stack>
+
+    <Modal>
+      <Modal 1 />
+      <Modal 2 />
+      <Modal 3 />
+    </Modal>
+  </Navigator>
+*/
+
+class Modal extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      popIndex: -1,
+      activeModal: -1,
+    }
+
+    props.updateModal &&
+      props.updateModal({
+        push: this.push,
+        pop: this.pop,
+      })
+  }
+
+  push = (index = 0) => {
+    const children = React.Children.toArray(this.props.children)
+
+    if (children[index]) {
+      this.setState({
+        activeModal: index,
+      })
+    }
+  }
+
+  pop = () => {
+    this.setState((state) => {
+      return {
+        activeModal: -1,
+        popIndex: state.activeModal,
+      }
+    })
+  }
+
+  handleTransitionEnd = () => {
+    this.setState({
+      popIndex: -1,
+    })
+  }
+
+  render() {
+    const children = React.Children.toArray(this.props.children)
+    const child =
+      children[
+        this.state.popIndex >= 0 ? this.state.popIndex : this.state.activeModal
+      ]
+
+    if (!child) {
+      return null
+    }
+
+    return (
+      <Transition
+        animationTransform={(anim) => {
+          return [
+            {
+              translateY: anim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1000, 0],
+              }),
+            },
+          ]
+        }}
+        transitionOut={this.state.popIndex !== -1}
+        transitionIn={this.state.activeModal >= 0}
+        onTransitionEnd={this.handleTransitionEnd}>
+        {React.cloneElement(child, { navigation: this.props.navigation })}
+      </Transition>
+    )
+  }
+}
+
+class ModalContainer extends React.Component {
+  render() {
+    return (
+      <Consumer>
+        {(context) => {
+          return <Modal {...context} {...this.props} />
+        }}
+      </Consumer>
+    )
+  }
+}
+
 export {
   StackContainer as Stack,
   HeaderContainer as Header,
   TabsContainer as Tabs,
   TabBarContainer as TabBar,
+  Tab,
   SwitchContainer as Switch,
   Navigator,
   Transition,
+  Screen,
+  ModalContainer as Modal,
 }

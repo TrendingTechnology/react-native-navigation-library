@@ -17,7 +17,80 @@ import {
   TabBar,
   Tabs,
   Switch,
+  Screen,
+  Modal,
 } from 'react-native-navigation-library'
+
+import {
+  BasicTabs,
+  NestedTabs,
+  TabsWithHeaders,
+  TabsWithHeadersAndTabBar,
+} from './tabs'
+
+function TabsExampleIndexPage(props) {
+  return (
+    <View style={styles.container}>
+      <Button title="Tabs" onPress={props.navigateToTabs} />
+      <Button title="Nested Tabs" onPress={props.navigateToNestedTabs} />
+      <Button
+        title="Tabs with Headers"
+        onPress={props.navigateToTabsWithHeaders}
+      />
+      <Button title="Everything Tab Bar" onPress={props.navigateToEverything} />
+
+      <Button title="Modal test" onPress={props.displayModal} />
+      <Button title="Modal test 2" onPress={props.displaySecondModal} />
+    </View>
+  )
+}
+
+function TabsExamples() {
+  return (
+    <Navigator>
+      <Header>
+        <HeaderView title="Index Page" />
+        <HeaderView title="Basic Tabs Page" />
+        <HeaderView title="Nested Tabs Page" />
+        <HeaderView title="Tabs with Headers Page" />
+        <HeaderView title="Everything Page" />
+      </Header>
+      <Tabs>
+        <Screen
+          navigator={(navigation) => {
+            return {
+              navigateToTabs: () => navigation.push(1),
+              navigateToNestedTabs: () => navigation.push(2),
+              navigateToTabsWithHeaders: () => navigation.push(3),
+              navigateToEverything: () => navigation.push(4),
+              displayModal: () => navigation.modal.push(),
+              displaySecondModal: () => navigation.modal.push(1),
+            }
+          }}>
+          <TabsExampleIndexPage />
+        </Screen>
+        <BasicTabs />
+        <NestedTabs />
+        <TabsWithHeaders />
+        <TabsWithHeadersAndTabBar />
+      </Tabs>
+
+      <Modal>
+        <ModalView name="1" />
+        <ModalView name="2" />
+      </Modal>
+    </Navigator>
+  )
+}
+
+function ModalView(props) {
+  return (
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <Text>{props.name}</Text>
+      <Button title="Dismiss" onPress={() => props.navigation.modal.pop()} />
+    </View>
+  )
+}
 
 export default class App extends Component {
   render() {
@@ -25,8 +98,7 @@ export default class App extends Component {
       <SafeAreaView style={{ flex: 1 }}>
         <Navigator>
           <Switch>
-            <Entry />
-            <Main />
+            <TabsExamples />
           </Switch>
         </Navigator>
       </SafeAreaView>
@@ -287,7 +359,6 @@ function HeaderView(props) {
     <View
       style={{
         height: 60,
-        borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-around',
