@@ -20,7 +20,7 @@ export default class App extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <ModalExample />
+        <RouterExample />
       </SafeAreaView>
     )
   }
@@ -29,17 +29,11 @@ export default class App extends Component {
 function RouterExample() {
   return (
     <Navigator>
-      <Router>
-        <Route name="Test-1">
-          <MyRoute nextRoute="Test-3" />
-        </Route>
-        <Route name="Test-2">
-          <MyRoute nextRoute="Test-1" />
-        </Route>
-        <Route name="Test-3">
-          <MyRoute nextRoute="Test-2" />
-        </Route>
-      </Router>
+      <Stack>
+        <MyRoute name="Test-1" nextRoute="Test-3" />
+        <MyRoute name="Test-2" nextRoute="Test-1" />
+        <MyRoute name="Test-3" nextRoute="Test-2" />
+      </Stack>
     </Navigator>
   )
 }

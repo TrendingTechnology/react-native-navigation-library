@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native'
 import { cloneWithNavigation } from './lib'
 import Transitioner from './transitioner'
 
-const { Provider, Consumer } = React.createContext()
+const { Provider, Consumer } = React.createContext({})
 
 class Navigator extends React.Component {
   selectActiveIndex = (index, data = {}) => {
@@ -37,6 +37,10 @@ class Navigator extends React.Component {
     })
   }
 
+  setScreens = screens => {
+    this.setState({ screens: screens.map(s => s.props.name) })
+  }
+
   push = data => {
     this.selectActiveIndex(this.state.activeIndex + 1, data)
   }
@@ -54,6 +58,13 @@ class Navigator extends React.Component {
   select = (index = 0, data) => {
     if (index >= 0) {
       this.selectActiveIndex(index, data)
+    }
+  }
+
+  navigate = (routeName, data) => {
+    const route = this.state.screens.indexOf(routeName)
+    if (route !== -1) {
+      this.selectActiveIndex(route, data)
     }
   }
 
@@ -80,14 +91,17 @@ class Navigator extends React.Component {
     reset: this.reset,
     select: this.select,
     modal: this.modal,
+    navigate: this.navigate,
     parent: this.props.navigation,
   }
 
   initialState = {
     data: {},
+    screens: [],
     activeIndex: 0,
     activeModalIndex: -1,
     navigation: this.navigation,
+    setScreens: this.setScreens,
   }
 
   state = this.initialState
@@ -100,6 +114,60 @@ class Navigator extends React.Component {
         </View>
       </Provider>
     )
+  }
+}
+class NavigationScreens extends React.Component {
+  constructor(props) {
+    super(props)
+    props.setScreens && props.setScreens(props.screens)
+  }
+
+  render() {
+    return this.props.children
+  }
+}
+
+function createNavigationContainer(Component) {
+  return class NavigationContainer extends React.Component {
+    render() {
+      return (
+        <Consumer>
+          {context => {
+            return (
+              <NavigationScreens {...context} screens={this.props.children}>
+                <Transitioner activeIndex={context.activeIndex}>
+                  <Component {...context} {...this.props} />
+                </Transitioner>
+              </NavigationScreens>
+            )
+          }}
+        </Consumer>
+      )
+    }
+  }
+}
+
+function createModalNavigationContainer(Component) {
+  return class ModalNavigationContainer extends React.Component {
+    render() {
+      return (
+        <Consumer>
+          {context => {
+            const { activeIndex, activeModalIndex, ...rest } = context // eslint-disable-line
+
+            return (
+              <Transitioner activeIndex={context.activeModalIndex}>
+                <Component
+                  {...rest}
+                  {...this.props}
+                  activeIndex={activeModalIndex}
+                />
+              </Transitioner>
+            )
+          }}
+        </Consumer>
+      )
+    }
   }
 }
 
@@ -132,7 +200,9 @@ class Screen extends React.Component {
             })
           })
 
-          return <View style={[styles.card, this.props.style]}>{children}</View>
+          return (
+            <View style={[styles.screen, this.props.style]}>{children}</View>
+          )
         }}
       </Consumer>
     )
@@ -140,52 +210,10 @@ class Screen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  card: {
+  screen: {
     flex: 1,
   },
 })
-
-function createNavigationContainer(Component) {
-  return class NavigationContainer extends React.Component {
-    render() {
-      return (
-        <Consumer>
-          {context => {
-            return (
-              <Transitioner activeIndex={context.activeIndex}>
-                <Component {...context} {...this.props} />
-              </Transitioner>
-            )
-          }}
-        </Consumer>
-      )
-    }
-  }
-}
-
-function createModalNavigationContainer(Component) {
-  return class ModalNavigationContainer extends React.Component {
-    render() {
-      return (
-        <Consumer>
-          {context => {
-            const { activeIndex, activeModalIndex, ...rest } = context // eslint-disable-line
-
-            return (
-              <Transitioner activeIndex={context.activeModalIndex}>
-                <Component
-                  {...rest}
-                  {...this.props}
-                  activeIndex={activeModalIndex}
-                />
-              </Transitioner>
-            )
-          }}
-        </Consumer>
-      )
-    }
-  }
-}
 
 export { createNavigationContainer, createModalNavigationContainer, Screen }
 export default Navigator
