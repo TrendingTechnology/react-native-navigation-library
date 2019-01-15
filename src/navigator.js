@@ -1,6 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import { cloneWithNavigation } from './lib'
+import Transitioner from './transitioner'
 
 const { Provider, Consumer } = React.createContext()
 
@@ -115,14 +116,14 @@ class Screen extends React.Component {
       <Consumer>
         {(context) => {
           const api = this.props.navigator(context.navigation)
-          const child = React.Children.only(
-            cloneWithNavigation(this.props.children, this.props, {
+          const children = React.Children.map(this.props.children, (child) => {
+            return cloneWithNavigation(child, this.props, {
               ...api,
               data: context.data,
-            }),
-          )
+            })
+          })
 
-          return <View style={[{ flex: 1 }, this.props.style]}>{child}</View>
+          return <View style={[{ flex: 1 }, this.props.style]}>{children}</View>
         }}
       </Consumer>
     )
@@ -135,7 +136,11 @@ function createNavigationContainer(Component) {
       return (
         <Consumer>
           {(context) => {
-            return <Component {...context} {...this.props} />
+            return (
+              <Transitioner activeIndex={context.activeIndex}>
+                <Component {...context} {...this.props} />
+              </Transitioner>
+            )
           }}
         </Consumer>
       )
@@ -152,11 +157,13 @@ function createModalNavigationContainer(Component) {
             const { activeIndex, activeModalIndex, ...rest } = context // eslint-disable-line
 
             return (
-              <Component
-                {...rest}
-                {...this.props}
-                activeIndex={activeModalIndex}
-              />
+              <Transitioner activeIndex={context.activeModalIndex}>
+                <Component
+                  {...rest}
+                  {...this.props}
+                  activeIndex={activeModalIndex}
+                />
+              </Transitioner>
             )
           }}
         </Consumer>

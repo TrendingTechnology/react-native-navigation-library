@@ -5,48 +5,29 @@ import { cloneWithNavigation } from './lib'
 import Transition from './transition'
 
 class Stack extends React.Component {
-  state = {
-    popIndex: -1,
-    activeIndex: this.props.activeIndex,
-  }
-
-  static getDerivedStateFromProps = (nextProps, prevState) => {
-    if (nextProps.activeIndex !== prevState.activeIndex) {
-      if (nextProps.activeIndex > prevState.activeIndex) {
-        return {
-          popIndex: prevState.activeIndex,
-          activeIndx: nextProps.activeIndex,
-        }
-      }
-    }
-
-    return null
-  }
-
-  handleTransitionEnd = () => {
-    this.setState({ popIndex: -1 })
-  }
-
   render() {
-    const popping = this.state.popIndex !== -1
-
-    const cutoffIndex = popping
-      ? this.state.popIndex + 1
-      : this.props.activeIndex + 1
-
     const children = React.Children.toArray(this.props.children).slice(
       0,
-      cutoffIndex,
+      Math.max(this.props.transitionIndex + 1, this.props.activeIndex + 1),
     )
 
     return (
       <View style={[{ flex: 1 }, this.props.style]}>
         {React.Children.map(children, (child, index) => {
+          const _child = cloneWithNavigation(child, this.props)
+
+          if (!_child) {
+            return null
+          }
+
           return (
             <Transition
-              transitionOut={popping && index > this.props.activeIndex}
-              onTransitionEnd={this.handleTransitionEnd}>
-              {cloneWithNavigation(child, this.props)}
+              transitionOut={
+                index > this.props.activeIndex &&
+                this.props.transitionIndex > this.props.activeIndex
+              }
+              onTransitionEnd={this.props.onTransitionEnd}>
+              {_child}
             </Transition>
           )
         })}

@@ -21,22 +21,6 @@ Example:
 */
 
 class Modal extends React.Component {
-  state = {
-    popIndex: -1,
-    activeIndex: this.props.activeIndex,
-  }
-
-  static getDerivedStateFromProps = (nextProps, prevState) => {
-    if (nextProps.activeIndex !== prevState.activeIndex) {
-      return {
-        popIndex: prevState.activeIndex,
-        activeIndex: nextProps.activeIndex,
-      }
-    }
-
-    return null
-  }
-
   animation = (anim) => {
     return [
       {
@@ -48,17 +32,14 @@ class Modal extends React.Component {
     ]
   }
 
-  handleTransitionEnd = () => {
-    this.setState({
-      popIndex: -1,
-    })
-  }
-
   render() {
     const children = React.Children.toArray(this.props.children)
+
     const child =
       children[
-        this.state.popIndex >= 0 ? this.state.popIndex : this.props.activeIndex
+        this.props.transitionIndex >= 0
+          ? this.props.transitionIndex
+          : this.props.activeIndex
       ]
 
     if (!child) {
@@ -68,9 +49,9 @@ class Modal extends React.Component {
     return (
       <Transition
         animationTransform={this.animation}
-        transitionOut={this.state.popIndex !== -1}
+        transitionOut={this.props.transitionIndex >= 0}
         transitionIn={this.props.activeIndex >= 0}
-        onTransitionEnd={this.handleTransitionEnd}>
+        onTransitionEnd={this.props.onTransitionEnd}>
         {cloneWithNavigation(child, this.props)}
       </Transition>
     )
