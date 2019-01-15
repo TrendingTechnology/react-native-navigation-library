@@ -108,18 +108,30 @@ class Navigator extends React.Component {
 
 class Screen extends React.Component {
   static defaultProps = {
-    navigator: (navigation) => ({ navigation }),
+    navigator: (navigation) => {
+      return {
+        navigation,
+      }
+    },
   }
 
   render() {
     return (
       <Consumer>
         {(context) => {
-          const api = this.props.navigator(context.navigation)
+          // provide the ability to override context navigation -- in case we want custom
+          // navigation functions i.e Router.navigate()
+          const api = this.props.navigator(
+            this.props.navigation ? this.props.navigation : context.navigation,
+          )
+
           const children = React.Children.map(this.props.children, (child) => {
+            const { children, navigation, data, ...rest } = this.props // eslint-disable-line
+
             return cloneWithNavigation(child, this.props, {
-              ...api,
               data: context.data,
+              ...api,
+              ...rest,
             })
           })
 

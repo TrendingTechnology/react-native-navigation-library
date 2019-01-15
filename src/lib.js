@@ -5,9 +5,11 @@ function cloneWithNavigation(child, props, extra = {}) {
     return null
   }
 
-  return React.cloneElement(child, { navigation: props.navigation, ...extra })
+  return React.cloneElement(child, {
+    navigation: props.navigation,
+    data: props.data,
+    ...extra,
+  })
 }
 
-export {
-  cloneWithNavigation
-}
+export { cloneWithNavigation }

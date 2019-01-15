@@ -20,6 +20,8 @@ import {
   Switch,
   Screen,
   Modal,
+  Router,
+  Route,
 } from 'react-native-navigation-library'
 
 export default class App extends Component {
@@ -30,6 +32,39 @@ export default class App extends Component {
       </SafeAreaView>
     )
   }
+}
+
+function RouterExample() {
+  return (
+    <Navigator>
+      <Router>
+        <Route name="Test-1">
+          <MyRoute nextRoute="Test-3" />
+        </Route>
+        <Route name="Test-2">
+          <MyRoute nextRoute="Test-1" />
+        </Route>
+        <Route name="Test-3">
+          <MyRoute nextRoute="Test-2" />
+        </Route>
+      </Router>
+    </Navigator>
+  )
+}
+
+function MyRoute(props) {
+  return (
+    <View style={[styles.container, { backgroundColor: 'white' }]}>
+      <Text style={styles.title}>{props.name}</Text>
+      {/* <Text style={styles.subtitle}>{props.data.test}</Text> */}
+      <Button
+        title={`Go to ${props.nextRoute}`}
+        onPress={() =>
+          props.navigation.navigate(props.nextRoute, { test: props.nextRoute })
+        }
+      />
+    </View>
+  )
 }
 
 function TabsExample() {
