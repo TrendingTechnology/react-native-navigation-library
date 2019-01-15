@@ -42,11 +42,13 @@ class Navigator extends React.Component {
   }
 
   push = data => {
-    this.selectActiveIndex(this.state.activeIndex + 1, data)
+    if (this.state.screens.length > this.state.activeIndex + 1) {
+      this.selectActiveIndex(this.state.activeIndex + 1, data)
+    }
   }
 
   pop = data => {
-    if (this.state.activeIndex >= 0) {
+    if (this.state.activeIndex - 1 >= 0) {
       this.selectActiveIndex(this.state.activeIndex - 1, data)
     }
   }
@@ -97,14 +99,16 @@ class Navigator extends React.Component {
 
   initialState = {
     data: {},
-    screens: [],
     activeIndex: 0,
     activeModalIndex: -1,
     navigation: this.navigation,
     setScreens: this.setScreens,
   }
 
-  state = this.initialState
+  state = {
+    ...this.initialState,
+    screens: [],
+  }
 
   render() {
     return (
@@ -133,10 +137,14 @@ function createNavigationContainer(Component) {
       return (
         <Consumer>
           {context => {
+            const { setScreens, ...rest } = context
             return (
-              <NavigationScreens {...context} screens={this.props.children}>
+              <NavigationScreens
+                screens={this.props.children}
+                setScreens={setScreens}
+              >
                 <Transitioner activeIndex={context.activeIndex}>
-                  <Component {...context} {...this.props} />
+                  <Component {...rest} {...this.props} />
                 </Transitioner>
               </NavigationScreens>
             )
@@ -153,7 +161,7 @@ function createModalNavigationContainer(Component) {
       return (
         <Consumer>
           {context => {
-            const { activeIndex, activeModalIndex, ...rest } = context // eslint-disable-line
+            const { activeModalIndex, ...rest } = context
 
             return (
               <Transitioner activeIndex={context.activeModalIndex}>

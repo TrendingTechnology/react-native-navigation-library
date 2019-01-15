@@ -20,20 +20,20 @@ export default class App extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <RouterExample />
+        <ModalExample />
       </SafeAreaView>
     )
   }
 }
 
-function RouterExample() {
+function NavigateExample() {
   return (
     <Navigator>
-      <Stack>
+      <Tabs>
         <MyRoute name="Test-1" nextRoute="Test-3" />
         <MyRoute name="Test-2" nextRoute="Test-1" />
         <MyRoute name="Test-3" nextRoute="Test-2" />
-      </Stack>
+      </Tabs>
     </Navigator>
   )
 }
@@ -46,7 +46,9 @@ function MyRoute(props) {
       <Button
         title={`Go to ${props.nextRoute}`}
         onPress={() =>
-          props.navigation.navigate(props.nextRoute, { test: props.nextRoute })
+          props.navigation.navigate(props.nextRoute, {
+            test: `data passed from: ${props.name}`,
+          })
         }
       />
     </View>
@@ -57,21 +59,15 @@ function TabsExample() {
   return (
     <Navigator>
       <Header>
-        <MyHeader text="Header 1" />
-        <MyHeader text="Header 2" />
-        <MyHeader text="Header 3" />
+        <MyHeader title="Header 1" />
+        <MyHeader title="Header 2" />
+        <MyHeader title="Header 3" />
       </Header>
 
       <Tabs>
-        <Screen>
-          <Panel title="Panel 1" subtitle="Panel 1" />
-        </Screen>
-        <Screen>
-          <Panel title="Panel 2" subtitle="Panel 2" />
-        </Screen>
-        <Screen>
-          <Panel title="Panel 3" subtitle="Panel 3" />
-        </Screen>
+        <Panel title="Panel 1" subtitle="Panel 1" />
+        <Panel title="Panel 2" subtitle="Panel 2" />
+        <Panel title="Panel 3" subtitle="Panel 3" />
       </Tabs>
 
       <TabBar>
@@ -92,20 +88,18 @@ function TabsExample() {
 function StackExample() {
   return (
     <Navigator>
-      <Stack>
-        <Screen>
-          <StackScreen title="Stack 1" />
-        </Screen>
-        <Screen>
-          <StackScreen title="Stack 2" />
-        </Screen>
-        <Screen>
-          <StackScreen title="Stack 3" />
-        </Screen>
+      <Header>
+        <StackHeader title="Header 1" />
+        <StackHeader title="Header 2" />
+        <StackHeader title="Header 3" />
+        <StackHeader title="Header 4" />
+      </Header>
 
-        <Screen>
-          <Reset title="Stack 4" />
-        </Screen>
+      <Stack>
+        <StackScreen title="Stack 1" />
+        <StackScreen title="Stack 2" />
+        <StackScreen title="Stack 3" />
+        <Reset title="Stack 4" />
       </Stack>
     </Navigator>
   )
@@ -196,6 +190,24 @@ function ModalPanel(props) {
   )
 }
 
+function StackHeader(props) {
+  return (
+    <View style={{ flex: 1, flexDirection: 'row' }}>
+      <View style={{ flex: 1 }}>
+        {props.activeIndex !== 0 && (
+          <Button title="Go back" onPress={() => props.navigation.pop()} />
+        )}
+      </View>
+
+      <View style={{ flex: 1 }}>
+        <MyHeader {...props} />
+      </View>
+
+      <View style={{ flex: 1 }} />
+    </View>
+  )
+}
+
 function StackScreen(props) {
   return (
     <View style={styles.container}>
@@ -241,7 +253,7 @@ function MyHeader(props) {
         borderWidth: props.active ? 1 : 0,
       }}
     >
-      <Text>{props.text}</Text>
+      <Text>{props.title}</Text>
     </View>
   )
 }
