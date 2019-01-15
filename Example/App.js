@@ -1,14 +1,5 @@
 import React, { Component } from 'react'
-
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  SafeAreaView,
-  TextInput,
-  FlatList,
-} from 'react-native'
+import { StyleSheet, Text, View, Button, SafeAreaView } from 'react-native'
 
 import {
   Navigator,
@@ -28,7 +19,7 @@ export default class App extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <TabsExample />
+        <ModalExample />
       </SafeAreaView>
     )
   }
@@ -56,7 +47,7 @@ function MyRoute(props) {
   return (
     <View style={[styles.container, { backgroundColor: 'white' }]}>
       <Text style={styles.title}>{props.name}</Text>
-      {/* <Text style={styles.subtitle}>{props.data.test}</Text> */}
+      <Text style={styles.subtitle}>{props.data.test}</Text>
       <Button
         title={`Go to ${props.nextRoute}`}
         onPress={() =>
@@ -116,8 +107,21 @@ function StackExample() {
         <Screen>
           <StackScreen title="Stack 3" />
         </Screen>
+
+        <Screen>
+          <Reset title="Stack 4" />
+        </Screen>
       </Stack>
     </Navigator>
+  )
+}
+
+function Reset(props) {
+  return (
+    <View style={styles.container}>
+      <StackScreen {...props} />
+      <Button title="Reset" onPress={() => props.navigation.reset()} />
+    </View>
   )
 }
 
@@ -126,12 +130,28 @@ function ModalExample() {
     <Navigator>
       <Switch>
         <Screen>
-          <ModalPanel />
+          <ModalPanel title="Modal Panel 1" />
+        </Screen>
+
+        <Screen>
+          <ModalPanel title="Modal Panel 2" />
+        </Screen>
+
+        <Screen>
+          <ModalPanel title="Modal Panel 3" />
         </Screen>
       </Switch>
       <Modal>
         <Screen>
-          <ModalScreen />
+          <ModalScreen title="1" />
+        </Screen>
+
+        <Screen>
+          <ModalScreen title="2" />
+        </Screen>
+
+        <Screen>
+          <ModalScreen title="3" />
         </Screen>
       </Modal>
     </Navigator>
@@ -141,8 +161,8 @@ function ModalExample() {
 function ModalScreen(props) {
   return (
     <View style={[styles.container, { backgroundColor: 'white' }]}>
-      <Text style={styles.title}>I'm a modal</Text>
-      <Text style={styles.subtitle}>{props.subtitle}</Text>
+      <Text style={styles.title}>{props.title}</Text>
+      <Text style={styles.subtitle}>{props.data.title}</Text>
       <Button
         title="Dismiss modal"
         onPress={() => props.navigation.modal.dismiss()}
@@ -156,9 +176,10 @@ function ModalPanel(props) {
     <View style={styles.container}>
       <Text style={styles.title}>{props.title}</Text>
       <Text style={styles.subtitle}>{props.subtitle}</Text>
+      <Button title="Next" onPress={() => props.navigation.push()} />
       <Button
         title="Display modal"
-        onPress={() => props.navigation.modal.push()}
+        onPress={() => props.navigation.modal.show({ title: props.title })}
       />
     </View>
   )

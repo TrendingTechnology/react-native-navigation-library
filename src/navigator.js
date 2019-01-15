@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, StyleSheet, Animated } from 'react-native'
 import { cloneWithNavigation } from './lib'
 import Transitioner from './transitioner'
 
@@ -58,14 +58,8 @@ class Navigator extends React.Component {
   }
 
   modal = {
-    push: (data) => {
-      this.selectModalIndex(this.state.activeModalIndex + 1, data)
-    },
-
-    pop: (data) => {
-      if (this.state.activeModalIndex >= 0) {
-        this.selectModalIndex(this.state.activeModalIndex - 1, data)
-      }
+    show: (data) => {
+      this.selectModalIndex(this.state.activeModalIndex + this.state.activeIndex + 1, data)
     },
 
     dismiss: (data) => {
@@ -135,12 +129,18 @@ class Screen extends React.Component {
             })
           })
 
-          return <View style={[{ flex: 1 }, this.props.style]}>{children}</View>
+          return <View style={[styles.card, this.props.style]}>{children}</View>
         }}
       </Consumer>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  card: {
+    flex: 1,
+  },
+})
 
 function createNavigationContainer(Component) {
   return class NavigationContainer extends React.Component {

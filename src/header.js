@@ -1,7 +1,10 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Platform, StyleSheet } from 'react-native'
 import { createNavigationContainer } from './navigator'
 import { cloneWithNavigation } from './lib'
+
+const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 0
 
 class Header extends React.Component {
   render() {
@@ -13,8 +16,7 @@ class Header extends React.Component {
     }
 
     return (
-      <View
-        style={[{ height: 60, backgroundColor: 'white' }, this.props.style]}>
+      <View style={[styles.header, this.props.style]}>
         {cloneWithNavigation(child, this.props, {
           activeIndex: this.props.activeIndex,
         })}
@@ -22,5 +24,21 @@ class Header extends React.Component {
     )
   }
 }
+
+const styles = StyleSheet.create({
+  header: {
+    paddingTop: STATUSBAR_HEIGHT,
+    height: APPBAR_HEIGHT + STATUSBAR_HEIGHT,
+    ...Platform.select({
+      ios: {
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: '#A7A7AA',
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+})
 
 export default createNavigationContainer(Header)

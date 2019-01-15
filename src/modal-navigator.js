@@ -4,6 +4,10 @@ import { cloneWithNavigation } from './lib'
 import Transition from './transition'
 
 /*
+
+Modals are mapped to an individual screen (e.g <Screen 1 /> and <Modal 1 /> in markup below) and are displayed via props.navigation.modal.push
+They can also be selected/pushed from any screen via props.navigation.modal.select(indexOfModal)
+
 Example: 
   <Navigator>
     <Stack>
@@ -18,6 +22,11 @@ Example:
       <Modal 3 />
     </Modal>
   </Navigator>
+
+
+  For Screen 1 to display Modal 1 : props.navigation.modal.show() 
+  For Screen 2 to display Modal 2 : props.navigation.modal.show()
+  For Screen 1 to display Modal 3 : props.navigation.modal.select(2)
 */
 
 class Modal extends React.Component {

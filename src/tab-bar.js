@@ -1,11 +1,13 @@
 import React from 'react'
-import { View, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity, StyleSheet } from 'react-native'
 import { createNavigationContainer } from './navigator'
+
+const DEFAULT_HEIGHT = 49;
 
 class TabBar extends React.Component {
   render() {
     return (
-      <View style={[{ flexDirection: 'row' }, this.props.style]}>
+      <View style={[styles.tabbar, this.props.style]}>
         {React.Children.map(this.props.children, (child, index) => {
           return React.cloneElement(child, {
             active: index === this.props.activeIndex,
@@ -24,7 +26,7 @@ class Tab extends React.Component {
     return (
       <TouchableOpacity
         style={[
-          { flex: 1, height: 60, backgroundColor: 'white' },
+          { flex: 1, backgroundColor: 'white' },
           this.props.style,
         ]}
         onPress={this.props.navigation.onSelect}>
@@ -35,6 +37,16 @@ class Tab extends React.Component {
     )
   }
 }
+
+const styles = StyleSheet.create({
+  tabbar: {
+    height: DEFAULT_HEIGHT,
+    backgroundColor: '#fff',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0, 0, 0, .3)',
+    flexDirection: 'row',
+  }
+})
 
 export { Tab }
 export default createNavigationContainer(TabBar)
