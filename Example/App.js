@@ -138,7 +138,15 @@ function ModalExample() {
       </Switch>
       <Modal>
         <Screen>
-          <ModalScreen title="1" />
+          {({ navigation, data }) => {
+            return (
+              <DismissModal
+                title="Modal Panel 1"
+                data={data}
+                dismiss={navigation.modal.dismiss}
+              />
+            )
+          }}
         </Screen>
 
         <Screen>
@@ -160,6 +168,16 @@ function MyHeader2(props) {
       title="Go back"
       onPress={() => props.navigation.pop()}
     />
+  )
+}
+
+function DismissModal(props) {
+  return (
+    <View style={[styles.container, { backgroundColor: 'white' }]}>
+      <Text style={styles.title}>{props.title}</Text>
+      <Text style={styles.subtitle}>{props.data.title}</Text>
+      <Button title="Dismiss modal" onPress={() => props.dismiss()} />
+    </View>
   )
 }
 

@@ -192,19 +192,17 @@ class Screen extends React.Component {
     return (
       <Consumer>
         {context => {
-          // provide the ability to override context navigation -- in case we want custom
-          // navigation functions i.e Router.navigate()
-          const api = this.props.navigator(
-            this.props.navigation ? this.props.navigation : context.navigation,
-          )
+          // provide the ability to define an api for children with the navigation prop
+          const api = this.props.navigator(context.navigation)
+
+          if (typeof this.props.children === 'function') {
+            return this.props.children({ ...context, ...api })
+          }
 
           const children = React.Children.map(this.props.children, child => {
-            const { children, navigation, data, ...rest } = this.props // eslint-disable-line
-
             return cloneWithNavigation(child, this.props, {
               data: context.data,
               ...api,
-              ...rest,
             })
           })
 

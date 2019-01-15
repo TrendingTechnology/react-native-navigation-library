@@ -16,17 +16,14 @@ class Stack extends React.Component {
         {React.Children.map(children, (child, index) => {
           const _child = cloneWithNavigation(child, this.props)
 
-          if (!_child) {
-            return null
-          }
-
           return (
             <Transition
               transitionOut={
                 index > this.props.activeIndex &&
                 this.props.transitionIndex > this.props.activeIndex
               }
-              onTransitionEnd={this.props.onTransitionEnd}>
+              onTransitionEnd={this.props.onTransitionEnd}
+            >
               {_child}
             </Transition>
           )
