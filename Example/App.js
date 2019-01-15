@@ -20,7 +20,7 @@ export default class App extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <ModalExample />
+        <NavigateExample />
       </SafeAreaView>
     )
   }
@@ -42,7 +42,7 @@ function MyRoute(props) {
   return (
     <View style={[styles.container, { backgroundColor: 'white' }]}>
       <Text style={styles.title}>{props.name}</Text>
-      <Text style={styles.subtitle}>{props.data.test}</Text>
+      <Text style={styles.subtitle}>{props.navigation.state.test}</Text>
       <Button
         title={`Go to ${props.nextRoute}`}
         onPress={() =>
@@ -175,7 +175,7 @@ function DismissModal(props) {
   return (
     <View style={[styles.container, { backgroundColor: 'white' }]}>
       <Text style={styles.title}>{props.title}</Text>
-      <Text style={styles.subtitle}>{props.data.title}</Text>
+      <Text style={styles.subtitle}>{props.navigation.state.title}</Text>
       <Button title="Dismiss modal" onPress={() => props.dismiss()} />
     </View>
   )
@@ -185,7 +185,7 @@ function ModalScreen(props) {
   return (
     <View style={[styles.container, { backgroundColor: 'white' }]}>
       <Text style={styles.title}>{props.title}</Text>
-      <Text style={styles.subtitle}>{props.data.title}</Text>
+      <Text style={styles.subtitle}>{props.navigation.state.title}</Text>
       <Button
         title="Dismiss modal"
         onPress={() => props.navigation.modal.dismiss()}

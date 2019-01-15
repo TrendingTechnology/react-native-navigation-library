@@ -7,7 +7,6 @@ function cloneWithNavigation(child, props, extra = {}) {
 
   return React.cloneElement(child, {
     navigation: props.navigation,
-    data: props.data,
     ...extra,
   })
 }

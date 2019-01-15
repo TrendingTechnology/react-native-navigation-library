@@ -11,9 +11,12 @@ class Navigator extends React.Component {
       state => {
         return {
           activeIndex: index,
-          data: {
-            ...state.data,
-            ...data,
+          navigation: {
+            ...state.navigation,
+            state: {
+              ...state.navigation.state,
+              ...data,
+            },
           },
         }
       },
@@ -29,9 +32,12 @@ class Navigator extends React.Component {
     this.setState(state => {
       return {
         activeModalIndex: index,
-        data: {
-          ...state.data,
-          ...data,
+        navigation: {
+          ...state.navigation,
+          data: {
+            ...state.navigation.state,
+            ...data,
+          },
         },
       }
     })
@@ -95,10 +101,10 @@ class Navigator extends React.Component {
     modal: this.modal,
     navigate: this.navigate,
     parent: this.props.navigation,
+    state: {},
   }
 
   initialState = {
-    data: {},
     activeIndex: 0,
     activeModalIndex: -1,
     navigation: this.navigation,
@@ -201,7 +207,6 @@ class Screen extends React.Component {
 
           const children = React.Children.map(this.props.children, child => {
             return cloneWithNavigation(child, this.props, {
-              data: context.data,
               ...api,
             })
           })
