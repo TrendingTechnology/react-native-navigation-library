@@ -1,23 +1,29 @@
 import React from 'react'
-import { StyleSheet, Animated, Easing } from 'react-native'
+import { StyleSheet, Animated } from 'react-native'
+import { screenWidth } from './lib'
 
 class Transition extends React.Component {
   static defaultProps = {
     animationConfig: {
-      duration: 500,
-      easing: Easing.bezier(0.2833, 0.99, 0.31833, 0.99),
-      timing: Animated.timing,
+      timing: Animated.spring,
+      stiffness: 1000,
+      damping: 500,
+      mass: 3,
+      overshootClamping: true,
+      restDisplacementThreshold: 0.01,
+      restSpeedThreshold: 0.01,
       useNativeDriver: true,
     },
     animationConfigIn: {},
     animationConfigOut: {},
 
-    animationTransform: (anim) => {
+    animationTransform: anim => {
       return [
         {
           translateX: anim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [500, 0],
+            inputRange: [0, 0.4, 1],
+            outputRange: [screenWidth, screenWidth * 0.4, 0],
+            extrapolate: 'clamp',
           }),
         },
       ]
@@ -62,7 +68,8 @@ class Transition extends React.Component {
         style={{
           ...StyleSheet.absoluteFillObject,
           transform: transform,
-        }}>
+        }}
+      >
         {this.props.children}
       </Animated.View>
     )

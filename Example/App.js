@@ -20,7 +20,7 @@ export default class App extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <NavigateExample />
+        <TabsExample />
       </SafeAreaView>
     )
   }
@@ -138,11 +138,11 @@ function ModalExample() {
       </Switch>
       <Modal>
         <Screen>
-          {({ navigation, data }) => {
+          {({ navigation }) => {
             return (
               <DismissModal
                 title="Modal Panel 1"
-                data={data}
+                navigation={navigation}
                 dismiss={navigation.modal.dismiss}
               />
             )

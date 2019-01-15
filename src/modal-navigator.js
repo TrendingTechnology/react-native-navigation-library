@@ -1,6 +1,6 @@
 import React from 'react'
 import { createModalNavigationContainer } from './navigator'
-import { cloneWithNavigation } from './lib'
+import { cloneWithNavigation, screenHeight } from './lib'
 import Transition from './transition'
 
 /*
@@ -30,12 +30,12 @@ Example:
 */
 
 class Modal extends React.Component {
-  animation = (anim) => {
+  animation = anim => {
     return [
       {
         translateY: anim.interpolate({
           inputRange: [0, 1],
-          outputRange: [1000, 0],
+          outputRange: [screenHeight, 0],
         }),
       },
     ]
@@ -60,7 +60,8 @@ class Modal extends React.Component {
         animationTransform={this.animation}
         transitionOut={this.props.transitionIndex >= 0}
         transitionIn={this.props.activeIndex >= 0}
-        onTransitionEnd={this.props.onTransitionEnd}>
+        onTransitionEnd={this.props.onTransitionEnd}
+      >
         {cloneWithNavigation(child, this.props)}
       </Transition>
     )

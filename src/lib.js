@@ -1,4 +1,7 @@
 import React from 'react'
+import { Dimensions } from 'react-native'
+
+const { width, height } = Dimensions.get('window')
 
 function cloneWithNavigation(child, props, extra = {}) {
   if (!child) {
@@ -11,4 +14,4 @@ function cloneWithNavigation(child, props, extra = {}) {
   })
 }
 
-export { cloneWithNavigation }
+export { cloneWithNavigation, width as screenWidth, height as screenHeight }
