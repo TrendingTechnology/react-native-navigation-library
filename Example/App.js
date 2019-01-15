@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Button, SafeAreaView } from 'react-native'
 
@@ -128,6 +129,12 @@ function Reset(props) {
 function ModalExample() {
   return (
     <Navigator>
+      <Header>
+        <MyHeader2 />
+        <MyHeader2 />
+        <MyHeader2 />
+      </Header>
+
       <Switch>
         <Screen>
           <ModalPanel title="Modal Panel 1" />
@@ -155,6 +162,16 @@ function ModalExample() {
         </Screen>
       </Modal>
     </Navigator>
+  )
+}
+
+function MyHeader2(props) {
+  return (
+    <Button
+      style={{ flex: 1 }}
+      title="Go back"
+      onPress={() => props.navigation.pop()}
+    />
   )
 }
 
@@ -213,7 +230,8 @@ function MyTab(props) {
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: props.active ? 1 : 0,
-      }}>
+      }}
+    >
       <Text>{props.text}</Text>
     </View>
   )
@@ -227,7 +245,8 @@ function MyHeader(props) {
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: props.active ? 1 : 0,
-      }}>
+      }}
+    >
       <Text>{props.text}</Text>
     </View>
   )

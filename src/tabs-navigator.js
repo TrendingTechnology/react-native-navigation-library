@@ -16,9 +16,9 @@ class Tabs extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.activeIndex !== this.props.activeIndex) {
-      this.setState((state) => {
+      this.setState(state => {
         const previous = state.rendered.filter(
-          (i) => i !== this.props.activeIndex,
+          i => i !== this.props.activeIndex,
         )
         return {
           rendered: [...previous, this.props.activeIndex],
@@ -35,12 +35,8 @@ class Tabs extends React.Component {
   render() {
     const children = React.Children.toArray(this.props.children)
 
-    const childrenToRender = this.state.rendered.map((childIndex) => {
+    const childrenToRender = this.state.rendered.map(childIndex => {
       const child = cloneWithNavigation(children[childIndex], this.props)
-
-      if (!child) {
-        return null
-      }
 
       const transitionIn =
         this.state.transitioning && childIndex === this.props.activeIndex
@@ -53,7 +49,8 @@ class Tabs extends React.Component {
           key={childIndex}
           transitionIn={transitionIn}
           transitionOut={transitionOut}
-          onTransitionEnd={this.handleTransitionEnd}>
+          onTransitionEnd={this.handleTransitionEnd}
+        >
           {child}
         </Transition>
       )

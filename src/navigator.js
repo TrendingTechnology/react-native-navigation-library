@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Animated } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { cloneWithNavigation } from './lib'
 import Transitioner from './transitioner'
 
@@ -8,7 +8,7 @@ const { Provider, Consumer } = React.createContext()
 class Navigator extends React.Component {
   selectActiveIndex = (index, data = {}) => {
     this.setState(
-      (state) => {
+      state => {
         return {
           activeIndex: index,
           data: {
@@ -26,7 +26,7 @@ class Navigator extends React.Component {
   }
 
   selectModalIndex = (index, data = {}) => {
-    this.setState((state) => {
+    this.setState(state => {
       return {
         activeModalIndex: index,
         data: {
@@ -37,11 +37,11 @@ class Navigator extends React.Component {
     })
   }
 
-  push = (data) => {
+  push = data => {
     this.selectActiveIndex(this.state.activeIndex + 1, data)
   }
 
-  pop = (data) => {
+  pop = data => {
     if (this.state.activeIndex >= 0) {
       this.selectActiveIndex(this.state.activeIndex - 1, data)
     }
@@ -58,11 +58,14 @@ class Navigator extends React.Component {
   }
 
   modal = {
-    show: (data) => {
-      this.selectModalIndex(this.state.activeModalIndex + this.state.activeIndex + 1, data)
+    show: data => {
+      this.selectModalIndex(
+        this.state.activeModalIndex + this.state.activeIndex + 1,
+        data,
+      )
     },
 
-    dismiss: (data) => {
+    dismiss: data => {
       this.selectModalIndex(-1, data)
     },
 
@@ -102,7 +105,7 @@ class Navigator extends React.Component {
 
 class Screen extends React.Component {
   static defaultProps = {
-    navigator: (navigation) => {
+    navigator: navigation => {
       return {
         navigation,
       }
@@ -112,14 +115,14 @@ class Screen extends React.Component {
   render() {
     return (
       <Consumer>
-        {(context) => {
+        {context => {
           // provide the ability to override context navigation -- in case we want custom
           // navigation functions i.e Router.navigate()
           const api = this.props.navigator(
             this.props.navigation ? this.props.navigation : context.navigation,
           )
 
-          const children = React.Children.map(this.props.children, (child) => {
+          const children = React.Children.map(this.props.children, child => {
             const { children, navigation, data, ...rest } = this.props // eslint-disable-line
 
             return cloneWithNavigation(child, this.props, {
@@ -147,7 +150,7 @@ function createNavigationContainer(Component) {
     render() {
       return (
         <Consumer>
-          {(context) => {
+          {context => {
             return (
               <Transitioner activeIndex={context.activeIndex}>
                 <Component {...context} {...this.props} />
@@ -165,7 +168,7 @@ function createModalNavigationContainer(Component) {
     render() {
       return (
         <Consumer>
-          {(context) => {
+          {context => {
             const { activeIndex, activeModalIndex, ...rest } = context // eslint-disable-line
 
             return (
