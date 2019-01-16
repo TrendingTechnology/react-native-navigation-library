@@ -6,6 +6,7 @@ import {
   Stack,
   Modal,
   Header,
+  Screen,
 } from 'react-native-navigation-library'
 
 function ModalExample() {
@@ -18,15 +19,28 @@ function ModalExample() {
       </Header>
 
       <Stack>
-        <MyScreen title="Modal Panel 1" />
-        <MyScreen title="Modal Panel 2" />
-        <MyScreen title="Modal Panel 3" />
+        <Screen>
+          <MyScreen title="Modal Panel 1" />
+        </Screen>
+        <Screen>
+          <MyScreen title="Modal Panel 2" />
+        </Screen>
+        <Screen>
+          <MyScreen title="Modal Panel 3" />
+        </Screen>
       </Stack>
 
       <Modal>
-        <MyModal title="Modal for Panel 1" />
-        <MyModal title="Modal for Panel 2" />
-        <MyModal title="Modal for Panel 3" />
+        <Screen>
+          <MyModal title="Modal for Panel 1" />
+        </Screen>
+        <Screen>
+          <MyModal title="Modal for Panel 2" />
+        </Screen>
+
+        <Screen>
+          <MyModal title="Modal for Panel 3" />
+        </Screen>
       </Modal>
     </Navigator>
   )

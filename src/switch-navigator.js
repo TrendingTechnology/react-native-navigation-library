@@ -1,6 +1,8 @@
 import React from 'react'
+import { View } from 'react-native'
 import { createNavigationContainer } from './navigator'
 import { cloneWithNavigation } from './lib'
+import { TransitionContainer } from './transitioner'
 
 class Switch extends React.Component {
   state = {
@@ -14,7 +16,7 @@ class Switch extends React.Component {
           i => i !== this.props.activeIndex,
         )
         return {
-          rendered: [...previous, this.props.activeIndex],
+          rendered: [this.props.activeIndex, ...previous],
         }
       })
     }
@@ -22,9 +24,36 @@ class Switch extends React.Component {
 
   render() {
     const children = React.Children.toArray(this.props.children)
-    const child = children[this.state.rendered[this.state.rendered.length - 1]]
-    return cloneWithNavigation(child, this.props)
+
+    return [
+      this.props.transitioning && this.props.previousIndex,
+      this.props.activeIndex,
+    ]
+      .filter(i => i === 0 || Boolean(i))
+      .map(childIndex => {
+        const child = children[childIndex]
+
+        return (
+          <TransitionContainer
+            key={childIndex}
+            in={this.props.activeIndex === childIndex}
+          >
+            {cloneWithNavigation(child, this.props, { index: childIndex })}
+          </TransitionContainer>
+        )
+      })
   }
 }
 
-export default createNavigationContainer(Switch)
+class SwitchNavigator extends React.Component {
+  render() {
+    const { style, ...rest } = this.props
+    return (
+      <View style={[{ flex: 1 }, style]}>
+        <Switch {...rest} />
+      </View>
+    )
+  }
+}
+
+export default createNavigationContainer(SwitchNavigator)

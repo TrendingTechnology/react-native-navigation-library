@@ -1,14 +1,26 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import { Navigator, Tabs, TabBar, Tab } from 'react-native-navigation-library'
+import {
+  Navigator,
+  Tabs,
+  TabBar,
+  Tab,
+  Screen,
+} from 'react-native-navigation-library'
 
 function TabsExample() {
   return (
     <Navigator>
       <Tabs>
-        <MyScreen title="Screen 1" />
-        <MyScreen title="Screen 2" />
-        <MyScreen title="Screen 3" />
+        <Screen>
+          <MyScreen title="Screen 1" />
+        </Screen>
+        <Screen>
+          <MyScreen title="Screen 2" />
+        </Screen>
+        <Screen>
+          <MyScreen title="Screen 3" />
+        </Screen>
       </Tabs>
 
       <TabBar>

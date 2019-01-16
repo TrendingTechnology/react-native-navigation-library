@@ -15,11 +15,18 @@ class Header extends React.Component {
       return null
     }
 
+    return cloneWithNavigation(child, this.props, {
+      activeIndex: this.props.activeIndex,
+    })
+  }
+}
+
+class HeaderContainer extends React.Component {
+  render() {
+    const { style, ...rest } = this.props
     return (
-      <View style={[styles.header, this.props.style]}>
-        {cloneWithNavigation(child, this.props, {
-          activeIndex: this.props.activeIndex,
-        })}
+      <View style={[styles.header, style]}>
+        <Header {...rest} />
       </View>
     )
   }
@@ -41,4 +48,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default createNavigationContainer(Header)
+export default createNavigationContainer(HeaderContainer)

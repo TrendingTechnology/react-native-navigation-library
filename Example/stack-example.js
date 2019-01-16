@@ -1,6 +1,11 @@
 import React from 'react'
 import { View, Text, Button } from 'react-native'
-import { Navigator, Stack, Header } from 'react-native-navigation-library'
+import {
+  Navigator,
+  Stack,
+  Header,
+  Screen,
+} from 'react-native-navigation-library'
 
 function StackExample() {
   return (
@@ -13,10 +18,18 @@ function StackExample() {
       </Header>
 
       <Stack>
-        <MyScreen title="Stack 1" />
-        <MyScreen title="Stack 2" />
-        <MyScreen title="Stack 3" />
-        <MyResetScreen title="Stack 4" />
+        <Screen>
+          <MyScreen title="Stack 1" />
+        </Screen>
+        <Screen>
+          <MyScreen title="Stack 2" />
+        </Screen>
+        <Screen>
+          <MyScreen title="Stack 3" />
+        </Screen>
+        <Screen>
+          <MyResetScreen title="Stack 4" />
+        </Screen>
       </Stack>
     </Navigator>
   )

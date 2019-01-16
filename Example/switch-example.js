@@ -2,17 +2,28 @@ import React from 'react'
 import { View, Text, Button } from 'react-native'
 import { Navigator, Switch } from 'react-native-navigation-library'
 
-function SwitchExample() {
-  return (
-    <Navigator>
-      <Switch>
-        <MyScreen title="Stack 1" />
-        <MyScreen title="Stack 2" />
-        <MyScreen title="Stack 3" />
-        <MyResetScreen title="Stack 4" />
-      </Switch>
-    </Navigator>
-  )
+class SwitchExample extends React.Component {
+  state = {
+    activeIndex: 0,
+    navigation: {},
+  }
+
+  handleNavigationChange = updates => {
+    this.setState(updates)
+  }
+
+  render() {
+    return (
+      <Navigator onNavigationChange={this.handleNavigationChange}>
+        <Switch>
+          <MyScreen title="Switch 1" />
+          <MyScreen title="Switch 2" />
+          <MyScreen title="Switch 3" />
+          <MyResetScreen title="Switch 4" />
+        </Switch>
+      </Navigator>
+    )
+  }
 }
 
 function MyScreen(props) {

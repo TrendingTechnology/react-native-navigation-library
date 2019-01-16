@@ -2,35 +2,38 @@ import React from 'react'
 import { View } from 'react-native'
 import { createNavigationContainer } from './navigator'
 import { cloneWithNavigation } from './lib'
-import Transition from './transition'
+import { TransitionContainer } from './transitioner'
 
 class Stack extends React.Component {
   render() {
     const children = React.Children.toArray(this.props.children).slice(
       0,
-      Math.max(this.props.transitionIndex + 1, this.props.activeIndex + 1),
+      this.props.transitioning
+        ? Math.max(this.props.previousIndex + 1, this.props.activeIndex + 1)
+        : this.props.activeIndex + 1,
     )
 
-    return (
-      <View style={[{ flex: 1 }, this.props.style]}>
-        {React.Children.map(children, (child, index) => {
-          const _child = cloneWithNavigation(child, this.props, { index })
+    return React.Children.map(children, (child, index) => {
+      return (
+        <TransitionContainer in={index <= this.props.activeIndex} index={index}>
+          {cloneWithNavigation(child, this.props, {
+            index,
+          })}
+        </TransitionContainer>
+      )
+    })
+  }
+}
 
-          return (
-            <Transition
-              transitionOut={
-                index > this.props.activeIndex &&
-                this.props.transitionIndex > this.props.activeIndex
-              }
-              onTransitionEnd={this.props.onTransitionEnd}
-            >
-              {_child}
-            </Transition>
-          )
-        })}
+class StackNavigator extends React.Component {
+  render() {
+    const { style, ...rest } = this.props
+    return (
+      <View style={[{ flex: 1 }, style]}>
+        <Stack {...rest} />
       </View>
     )
   }
 }
 
-export default createNavigationContainer(Stack)
+export default createNavigationContainer(StackNavigator)

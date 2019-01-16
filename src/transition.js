@@ -35,28 +35,30 @@ class Transition extends React.Component {
   }
 
   componentDidMount() {
-    Animated.timing(this.state.anim, {
-      ...this.props.animationConfig,
-      ...this.props.animationConfigIn,
-      toValue: 1,
-    }).start()
+    if (this.props.in) {
+      Animated.timing(this.state.anim, {
+        ...this.props.animationConfig,
+        ...this.props.animationConfigIn,
+        toValue: 1,
+      }).start(this.props.onTransitionEnd)
+    }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.transitionOut && !prevProps.transitionOut) {
-      Animated.timing(this.state.anim, {
-        ...this.props.animationConfig,
-        ...this.props.animationConfigOut,
-        toValue: 0,
-      }).start(this.props.onTransitionEnd)
-    }
-
-    if (this.props.transitionIn && !prevProps.transitionIn) {
-      Animated.timing(this.state.anim, {
-        ...this.props.animationConfig,
-        ...this.props.animationConfigOut,
-        toValue: 1,
-      }).start(this.props.onTransitionEnd)
+    if (prevProps.in !== this.props.in) {
+      if (this.props.in) {
+        Animated.timing(this.state.anim, {
+          ...this.props.animationConfig,
+          ...this.props.animationConfigOut,
+          toValue: 1,
+        }).start(this.props.onTransitionEnd)
+      } else {
+        Animated.timing(this.state.anim, {
+          ...this.props.animationConfig,
+          ...this.props.animationConfigOut,
+          toValue: 0,
+        }).start(this.props.onTransitionEnd)
+      }
     }
   }
 

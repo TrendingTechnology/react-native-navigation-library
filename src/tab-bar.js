@@ -2,20 +2,27 @@ import React from 'react'
 import { View, TouchableOpacity, StyleSheet } from 'react-native'
 import { createNavigationContainer } from './navigator'
 
-const DEFAULT_HEIGHT = 49;
+const DEFAULT_HEIGHT = 49
 
 class TabBar extends React.Component {
   render() {
+    return React.Children.map(this.props.children, (child, index) => {
+      return React.cloneElement(child, {
+        active: index === this.props.activeIndex,
+        navigation: {
+          onSelect: () => this.props.navigation.select(index),
+        },
+      })
+    })
+  }
+}
+
+class TabBarContainer extends React.Component {
+  render() {
+    const { style, ...rest } = this.props
     return (
-      <View style={[styles.tabbar, this.props.style]}>
-        {React.Children.map(this.props.children, (child, index) => {
-          return React.cloneElement(child, {
-            active: index === this.props.activeIndex,
-            navigation: {
-              onSelect: () => this.props.navigation.select(index),
-            },
-          })
-        })}
+      <View style={[styles.tabbar, style]}>
+        <TabBar {...rest} />
       </View>
     )
   }
@@ -25,11 +32,9 @@ class Tab extends React.Component {
   render() {
     return (
       <TouchableOpacity
-        style={[
-          { flex: 1, backgroundColor: 'white' },
-          this.props.style,
-        ]}
-        onPress={this.props.navigation.onSelect}>
+        style={[{ flex: 1, backgroundColor: 'white' }, this.props.style]}
+        onPress={this.props.navigation.onSelect}
+      >
         {React.cloneElement(this.props.children, {
           active: this.props.active,
         })}
@@ -45,8 +50,8 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(0, 0, 0, .3)',
     flexDirection: 'row',
-  }
+  },
 })
 
 export { Tab }
-export default createNavigationContainer(TabBar)
+export default createNavigationContainer(TabBarContainer)

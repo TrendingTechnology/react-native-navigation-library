@@ -2,7 +2,7 @@ import React from 'react'
 import { View } from 'react-native'
 import { createNavigationContainer } from './navigator'
 import { cloneWithNavigation } from './lib'
-import Transition from './transition'
+import { TransitionContainer } from './transitioner'
 
 class Tabs extends React.Component {
   constructor(props) {
@@ -10,7 +10,6 @@ class Tabs extends React.Component {
 
     this.state = {
       rendered: [this.props.activeIndex],
-      transitioning: false,
     }
   }
 
@@ -22,42 +21,41 @@ class Tabs extends React.Component {
         )
         return {
           rendered: [...previous, this.props.activeIndex],
-          transitioning: true,
         }
       })
     }
   }
 
-  handleTransitionEnd = () => {
-    this.setState({ transitioning: false })
-  }
-
   render() {
     const children = React.Children.toArray(this.props.children)
 
-    const childrenToRender = this.state.rendered.map(childIndex => {
-      const child = cloneWithNavigation(children[childIndex], this.props)
-
-      const transitionIn =
-        this.state.transitioning && childIndex === this.props.activeIndex
-
-      const transitionOut =
-        this.state.transitioning && childIndex !== this.props.activeIndex
+    return this.state.rendered.map(childIndex => {
+      const child = cloneWithNavigation(children[childIndex], this.props, {
+        index: childIndex,
+      })
 
       return (
-        <Transition
+        <TransitionContainer
           key={childIndex}
-          transitionIn={transitionIn}
-          transitionOut={transitionOut}
-          onTransitionEnd={this.handleTransitionEnd}
+          index={childIndex}
+          in={childIndex === this.props.activeIndex}
         >
           {child}
-        </Transition>
+        </TransitionContainer>
       )
     })
-
-    return <View style={{ flex: 1 }}>{childrenToRender}</View>
   }
 }
 
-export default createNavigationContainer(Tabs)
+class TabsNavigator extends React.Component {
+  render() {
+    const { style, ...rest } = this.props
+    return (
+      <View style={[{ flex: 1 }, style]}>
+        <Tabs {...rest} />
+      </View>
+    )
+  }
+}
+
+export default createNavigationContainer(TabsNavigator)

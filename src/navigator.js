@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View } from 'react-native'
 import { cloneWithNavigation } from './lib'
 import Transitioner from './transitioner'
 
@@ -119,16 +119,31 @@ class Navigator extends React.Component {
     screens: [],
   }
 
+  componentDidMount() {
+    if (this.props.onNavigationChange) {
+      this.props.onNavigationChange({
+        activeIndex: this.state.activeIndex,
+        navigation: this.state.navigation,
+      })
+    }
+  }
+
   render() {
+    return <Provider value={this.state}>{this.props.children}</Provider>
+  }
+}
+
+class NavigatorContainer extends React.Component {
+  render() {
+    const { style, ...rest } = this.props
     return (
-      <Provider value={this.state}>
-        <View style={[{ flex: 1 }, this.props.style]}>
-          {this.props.children}
-        </View>
-      </Provider>
+      <View style={[{ flex: 1 }, style]}>
+        <Navigator {...rest} />
+      </View>
     )
   }
 }
+
 class NavigationScreens extends React.Component {
   constructor(props) {
     super(props)
@@ -140,20 +155,18 @@ class NavigationScreens extends React.Component {
   }
 }
 
-function createNavigationContainer(Component) {
+function createNavigationContainer(NavigationComponent) {
   return class NavigationContainer extends React.Component {
     render() {
       return (
         <Consumer>
           {context => {
             const { setScreens, ...rest } = context
+            const children = React.Children.toArray(this.props.children)
             return (
-              <NavigationScreens
-                screens={this.props.children}
-                setScreens={setScreens}
-              >
+              <NavigationScreens screens={children} setScreens={setScreens}>
                 <Transitioner activeIndex={context.activeIndex}>
-                  <Component {...rest} {...this.props} />
+                  <NavigationComponent {...rest} {...this.props} />
                 </Transitioner>
               </NavigationScreens>
             )
@@ -188,35 +201,41 @@ function createModalNavigationContainer(Component) {
   }
 }
 
-class Screen extends React.Component {
-  render() {
-    return (
-      <Consumer>
-        {context => {
-          if (typeof this.props.children === 'function') {
-            return this.props.children({
-              navigation: context.navigation,
-            })
-          }
+function createNavigationScreen(ScreenComponent) {
+  return class NavigationScreen extends React.Component {
+    render() {
+      return (
+        <Consumer>
+          {context => {
+            const { children, ...rest } = this.props
 
-          const children = React.Children.map(this.props.children, child => {
-            return cloneWithNavigation(child, this.props, {})
-          })
+            if (typeof this.props.children === 'function') {
+              return (
+                <ScreenComponent {...rest}>
+                  {this.props.children({
+                    navigation: context.navigation,
+                  })}
+                </ScreenComponent>
+              )
+            }
 
-          return (
-            <View style={[styles.screen, this.props.style]}>{children}</View>
-          )
-        }}
-      </Consumer>
-    )
+            return (
+              <ScreenComponent {...rest}>
+                {React.Children.map(children, child => {
+                  return cloneWithNavigation(child, context, {})
+                })}
+              </ScreenComponent>
+            )
+          }}
+        </Consumer>
+      )
+    }
   }
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-})
-
-export { createNavigationContainer, createModalNavigationContainer, Screen }
-export default Navigator
+export {
+  createNavigationContainer,
+  createModalNavigationContainer,
+  createNavigationScreen,
+}
+export default NavigatorContainer
