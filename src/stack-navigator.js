@@ -14,7 +14,7 @@ class Stack extends React.Component {
     return (
       <View style={[{ flex: 1 }, this.props.style]}>
         {React.Children.map(children, (child, index) => {
-          const _child = cloneWithNavigation(child, this.props)
+          const _child = cloneWithNavigation(child, this.props, { index })
 
           return (
             <Transition

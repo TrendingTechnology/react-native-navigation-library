@@ -22,7 +22,10 @@ class Navigator extends React.Component {
       },
       () => {
         if (this.props.onNavigationChange) {
-          this.props.onNavigationChange(this.state.activeIndex)
+          this.props.onNavigationChange({
+            activeIndex: this.state.activeIndex,
+            navigation: this.state.navigation,
+          })
         }
       },
     )
@@ -186,29 +189,18 @@ function createModalNavigationContainer(Component) {
 }
 
 class Screen extends React.Component {
-  static defaultProps = {
-    navigator: navigation => {
-      return {
-        navigation,
-      }
-    },
-  }
-
   render() {
     return (
       <Consumer>
         {context => {
-          // provide the ability to define an api for children with the navigation prop
-          const api = this.props.navigator(context.navigation)
-
           if (typeof this.props.children === 'function') {
-            return this.props.children({ ...context, ...api })
+            return this.props.children({
+              navigation: context.navigation,
+            })
           }
 
           const children = React.Children.map(this.props.children, child => {
-            return cloneWithNavigation(child, this.props, {
-              ...api,
-            })
+            return cloneWithNavigation(child, this.props, {})
           })
 
           return (

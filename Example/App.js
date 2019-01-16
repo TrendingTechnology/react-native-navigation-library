@@ -16,11 +16,16 @@ import {
   Route,
 } from 'react-native-navigation-library'
 
+import TabsExample from './tabs-example'
+import StackExample from './stack-example'
+import SwitchExample from './switch-example'
+import ModalExample from './modal-example'
+import ScreenExample from './screen-example'
 export default class App extends Component {
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <TabsExample />
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#F5FCFF' }}>
+        <SwitchExample />
       </SafeAreaView>
     )
   }
@@ -55,55 +60,25 @@ function MyRoute(props) {
   )
 }
 
-function TabsExample() {
-  return (
-    <Navigator>
-      <Header>
-        <MyHeader title="Header 1" />
-        <MyHeader title="Header 2" />
-        <MyHeader title="Header 3" />
-      </Header>
+// function StackExample() {
+//   return (
+//     <Navigator>
+//       <Header>
+//         <StackHeader title="Header 1" />
+//         <StackHeader title="Header 2" />
+//         <StackHeader title="Header 3" />
+//         <StackHeader title="Header 4" />
+//       </Header>
 
-      <Tabs>
-        <Panel title="Panel 1" subtitle="Panel 1" />
-        <Panel title="Panel 2" subtitle="Panel 2" />
-        <Panel title="Panel 3" subtitle="Panel 3" />
-      </Tabs>
-
-      <TabBar>
-        <Tab>
-          <MyTab text="Tab 1" />
-        </Tab>
-        <Tab>
-          <MyTab text="Tab 2" />
-        </Tab>
-        <Tab>
-          <MyTab text="Tab 3" />
-        </Tab>
-      </TabBar>
-    </Navigator>
-  )
-}
-
-function StackExample() {
-  return (
-    <Navigator>
-      <Header>
-        <StackHeader title="Header 1" />
-        <StackHeader title="Header 2" />
-        <StackHeader title="Header 3" />
-        <StackHeader title="Header 4" />
-      </Header>
-
-      <Stack>
-        <StackScreen title="Stack 1" />
-        <StackScreen title="Stack 2" />
-        <StackScreen title="Stack 3" />
-        <Reset title="Stack 4" />
-      </Stack>
-    </Navigator>
-  )
-}
+//       <Stack>
+//         <StackScreen title="Stack 1" />
+//         <StackScreen title="Stack 2" />
+//         <StackScreen title="Stack 3" />
+//         <Reset title="Stack 4" />
+//       </Stack>
+//     </Navigator>
+//   )
+// }
 
 function Reset(props) {
   return (
@@ -114,52 +89,52 @@ function Reset(props) {
   )
 }
 
-function ModalExample() {
-  return (
-    <Navigator>
-      <Header>
-        <MyHeader2 />
-        <MyHeader2 />
-        <MyHeader2 />
-      </Header>
+// function ModalExample() {
+//   return (
+//     <Navigator>
+//       <Header>
+//         <MyHeader2 />
+//         <MyHeader2 />
+//         <MyHeader2 />
+//       </Header>
 
-      <Switch>
-        <Screen>
-          <ModalPanel title="Modal Panel 1" />
-        </Screen>
+//       <Switch>
+//         <Screen>
+//           <ModalPanel title="Modal Panel 1" />
+//         </Screen>
 
-        <Screen>
-          <ModalPanel title="Modal Panel 2" />
-        </Screen>
+//         <Screen>
+//           <ModalPanel title="Modal Panel 2" />
+//         </Screen>
 
-        <Screen>
-          <ModalPanel title="Modal Panel 3" />
-        </Screen>
-      </Switch>
-      <Modal>
-        <Screen>
-          {({ navigation }) => {
-            return (
-              <DismissModal
-                title="Modal Panel 1"
-                navigation={navigation}
-                dismiss={navigation.modal.dismiss}
-              />
-            )
-          }}
-        </Screen>
+//         <Screen>
+//           <ModalPanel title="Modal Panel 3" />
+//         </Screen>
+//       </Switch>
+//       <Modal>
+//         <Screen>
+//           {({ navigation }) => {
+//             return (
+//               <DismissModal
+//                 title="Modal Panel 1"
+//                 navigation={navigation}
+//                 dismiss={navigation.modal.dismiss}
+//               />
+//             )
+//           }}
+//         </Screen>
 
-        <Screen>
-          <ModalScreen title="2" />
-        </Screen>
+//         <Screen>
+//           <ModalScreen title="2" />
+//         </Screen>
 
-        <Screen>
-          <ModalScreen title="3" />
-        </Screen>
-      </Modal>
-    </Navigator>
-  )
-}
+//         <Screen>
+//           <ModalScreen title="3" />
+//         </Screen>
+//       </Modal>
+//     </Navigator>
+//   )
+// }
 
 function MyHeader2(props) {
   return (

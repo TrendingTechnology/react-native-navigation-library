@@ -10,6 +10,7 @@ function cloneWithNavigation(child, props, extra = {}) {
 
   return React.cloneElement(child, {
     navigation: props.navigation,
+    activeIndex: props.activeIndex,
     ...extra,
   })
 }
