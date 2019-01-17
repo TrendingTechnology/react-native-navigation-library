@@ -11,6 +11,7 @@ class Navigator extends React.Component {
       state => {
         return {
           activeIndex: index,
+          activeModalIndex: -1,
           navigation: {
             ...state.navigation,
             state: {
