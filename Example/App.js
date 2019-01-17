@@ -7,11 +7,12 @@ import StackExample from './stack-example'
 import SwitchExample from './switch-example'
 import ModalExample from './modal-example'
 import ScreenExample from './screen-example'
+import LoginSignupExample from './login-signup-example'
 export default class App extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#F5FCFF' }}>
-        <ScreenExample />
+        <LoginSignupExample />
       </SafeAreaView>
     )
   }

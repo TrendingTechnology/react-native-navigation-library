@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { createNavigationContainer } from './navigator'
+import { createNavigationScreenContainer } from './navigator'
 import { cloneWithNavigation } from './lib'
 import { TransitionContainer } from './transitioner'
 
@@ -36,4 +36,4 @@ class StackNavigator extends React.Component {
   }
 }
 
-export default createNavigationContainer(StackNavigator)
+export default createNavigationScreenContainer(StackNavigator)

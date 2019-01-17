@@ -161,8 +161,28 @@ function createNavigationContainer(NavigationComponent) {
       return (
         <Consumer>
           {context => {
+            const { setScreens, ...rest } = context // eslint-disable-line
+            return (
+              <Transitioner activeIndex={context.activeIndex}>
+                <NavigationComponent {...rest} {...this.props} />
+              </Transitioner>
+            )
+          }}
+        </Consumer>
+      )
+    }
+  }
+}
+
+function createNavigationScreenContainer(NavigationComponent) {
+  return class NavigationScreenContainer extends React.Component {
+    render() {
+      return (
+        <Consumer>
+          {context => {
             const { setScreens, ...rest } = context
             const children = React.Children.toArray(this.props.children)
+
             return (
               <NavigationScreens screens={children} setScreens={setScreens}>
                 <Transitioner activeIndex={context.activeIndex}>
@@ -237,5 +257,6 @@ export {
   createNavigationContainer,
   createModalNavigationContainer,
   createNavigationScreen,
+  createNavigationScreenContainer,
 }
 export default NavigatorContainer

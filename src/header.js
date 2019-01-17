@@ -11,26 +11,30 @@ class Header extends React.Component {
     const children = React.Children.toArray(this.props.children)
     const child = children[this.props.activeIndex]
 
-    if (!child) {
+    if (!child || child.props.hidden) {
       return null
     }
 
-    return cloneWithNavigation(child, this.props, {
-      activeIndex: this.props.activeIndex,
-    })
-  }
-}
-
-class HeaderContainer extends React.Component {
-  render() {
-    const { style, ...rest } = this.props
     return (
-      <View style={[styles.header, style]}>
-        <Header {...rest} />
+      <View style={[styles.header, this.props.style]}>
+        {cloneWithNavigation(child, this.props, {
+          activeIndex: this.props.activeIndex,
+        })}
       </View>
     )
   }
 }
+
+// class HeaderContainer extends React.Component {
+//   render() {
+//     const { style, ...rest } = this.props
+//     return (
+//       <View style={[styles.header, style]}>
+//         <Header {...rest} />
+//       </View>
+//     )
+//   }
+// }
 
 const styles = StyleSheet.create({
   header: {
@@ -48,4 +52,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default createNavigationContainer(HeaderContainer)
+export default createNavigationContainer(Header)
