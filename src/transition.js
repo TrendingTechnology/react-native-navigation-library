@@ -52,14 +52,30 @@ class Transition extends React.Component {
 
   animationTransform = anim => {
     if (this.props.animationTransform) {
-      return this.props.animationTranform(anim)
+      return this.props.animationTransform(anim)
+    }
+
+    let outputRange = []
+
+    if (this.props.index === this.props.activeIndex) {
+      if (this.props.previousIndex > this.props.index) {
+        outputRange = [-screenWidth, 0]
+      } else {
+        outputRange = [screenWidth, 0]
+      }
+    } else {
+      if (this.props.index < this.props.activeIndex) {
+        outputRange = [-screenWidth, 0]
+      } else {
+        outputRange = [screenWidth, 0]
+      }
     }
 
     return [
       {
         translateX: anim.interpolate({
           inputRange: [0, 1],
-          outputRange: [screenWidth, 0],
+          outputRange: outputRange,
           extrapolate: 'clamp',
         }),
       },

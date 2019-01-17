@@ -1,5 +1,4 @@
 import React from 'react'
-import Transition from './transition'
 
 const { Consumer, Provider } = React.createContext({})
 
@@ -28,9 +27,11 @@ class Transitioner extends React.Component {
   }
 
   render() {
+    const children = React.Children.toArray(this.props.children)
+
     return (
       <Provider value={this.state}>
-        {React.Children.map(this.props.children, child => {
+        {React.Children.map(children, child => {
           return React.cloneElement(child, {
             transitioning: this.state.transitioning,
             previousIndex: this.state.previousIndex,
@@ -50,6 +51,7 @@ function createTransitionContainer(TransitionComponent) {
             return (
               <TransitionComponent
                 {...this.props}
+                previousIndex={context.previousIndex}
                 onTransitionEnd={context.onTransitionEnd}
               >
                 {this.props.children}
