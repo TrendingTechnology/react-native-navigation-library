@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Animated } from 'react-native'
 import { screenWidth } from './lib'
+import { createTransitionContainer } from './transitioner'
 
 class Transition extends React.Component {
   static defaultProps = {
@@ -48,6 +49,17 @@ class Transition extends React.Component {
         }).start(this.props.onTransitionEnd)
       }
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (this.props.optimized) {
+      return (
+        nextProps.activeIndex === this.props.index ||
+        nextProps.previousIndex === this.props.index
+      )
+    }
+
+    return true
   }
 
   animationTransform = anim => {
@@ -98,4 +110,4 @@ class Transition extends React.Component {
   }
 }
 
-export default Transition
+export default createTransitionContainer(Transition)
