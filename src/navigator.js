@@ -11,7 +11,6 @@ class Navigator extends React.Component {
       state => {
         return {
           activeIndex: index,
-          activeModalIndex: -1,
           navigation: {
             ...state.navigation,
             state: {
@@ -32,12 +31,15 @@ class Navigator extends React.Component {
     )
   }
 
-  selectModalIndex = (index, data = {}) => {
+  toggleModal = (active, data = {}) => {
     this.setState(state => {
       return {
-        activeModalIndex: index,
         navigation: {
           ...state.navigation,
+          modal: {
+            ...state.navigation.modal,
+            active: active,
+          },
           data: {
             ...state.navigation.state,
             ...data,
@@ -48,7 +50,9 @@ class Navigator extends React.Component {
   }
 
   setScreens = screens => {
-    this.setState({ screens: screens.map(s => s.props.name) })
+    this.setState({
+      screens: screens.map((s, index) => s.props.name || index.toString()),
+    })
   }
 
   push = data => {
@@ -82,18 +86,11 @@ class Navigator extends React.Component {
 
   modal = {
     show: data => {
-      this.selectModalIndex(
-        this.state.activeModalIndex + this.state.activeIndex + 1,
-        data,
-      )
+      this.toggleModal(true, data)
     },
 
     dismiss: data => {
-      this.selectModalIndex(-1, data)
-    },
-
-    select: (index, data) => {
-      this.selectModalIndex(index, data)
+      this.toggleModal(false, data)
     },
   }
 
@@ -110,7 +107,6 @@ class Navigator extends React.Component {
 
   initialState = {
     activeIndex: 0,
-    activeModalIndex: -1,
     navigation: this.navigation,
     setScreens: this.setScreens,
   }
@@ -130,7 +126,13 @@ class Navigator extends React.Component {
   }
 
   render() {
-    return <Provider value={this.state}>{this.props.children}</Provider>
+    return (
+      <Provider value={this.state}>
+        <Transitioner activeIndex={this.state.activeIndex}>
+          {this.props.children}
+        </Transitioner>
+      </Provider>
+    )
   }
 }
 
@@ -163,11 +165,7 @@ function createNavigationContainer(NavigationComponent) {
         <Consumer>
           {context => {
             const { setScreens, ...rest } = context // eslint-disable-line
-            return (
-              <Transitioner activeIndex={context.activeIndex}>
-                <NavigationComponent {...rest} {...this.props} />
-              </Transitioner>
-            )
+            return <NavigationComponent {...rest} {...this.props} />
           }}
         </Consumer>
       )
@@ -186,9 +184,7 @@ function createNavigationScreenContainer(NavigationComponent) {
 
             return (
               <NavigationScreens screens={children} setScreens={setScreens}>
-                <Transitioner activeIndex={context.activeIndex}>
-                  <NavigationComponent {...rest} {...this.props} />
-                </Transitioner>
+                <NavigationComponent {...rest} {...this.props} />
               </NavigationScreens>
             )
           }}
@@ -204,16 +200,13 @@ function createModalNavigationContainer(Component) {
       return (
         <Consumer>
           {context => {
-            const { activeModalIndex, ...rest } = context
-
+            const { activeIndex, navigation } = context
             return (
-              <Transitioner activeIndex={context.activeModalIndex}>
-                <Component
-                  {...rest}
-                  {...this.props}
-                  activeIndex={activeModalIndex}
-                />
-              </Transitioner>
+              <Component
+                navigation={navigation}
+                activeIndex={activeIndex}
+                {...this.props}
+              />
             )
           }}
         </Consumer>

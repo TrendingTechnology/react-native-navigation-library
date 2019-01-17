@@ -2,7 +2,6 @@ import React from 'react'
 import { View } from 'react-native'
 import { createNavigationScreenContainer } from './navigator'
 import { cloneWithNavigation } from './lib'
-import { TransitionContainer } from './transitioner'
 
 class Switch extends React.Component {
   state = {
@@ -33,14 +32,10 @@ class Switch extends React.Component {
       .map(childIndex => {
         const child = children[childIndex]
 
-        return (
-          <TransitionContainer
-            key={childIndex}
-            in={this.props.activeIndex === childIndex}
-          >
-            {cloneWithNavigation(child, this.props, { index: childIndex })}
-          </TransitionContainer>
-        )
+        return cloneWithNavigation(child, this.props, {
+          index: childIndex,
+          in: this.props.activeIndex === childIndex,
+        })
       })
   }
 }

@@ -41,19 +41,19 @@ class Transitioner extends React.Component {
   }
 }
 
-function createTransitionContainer(Component) {
+function createTransitionContainer(TransitionComponent) {
   return class TransitionContainer extends React.Component {
     render() {
       return (
         <Consumer>
           {context => {
             return (
-              <Component
+              <TransitionComponent
                 {...this.props}
                 onTransitionEnd={context.onTransitionEnd}
               >
                 {this.props.children}
-              </Component>
+              </TransitionComponent>
             )
           }}
         </Consumer>
@@ -62,24 +62,5 @@ function createTransitionContainer(Component) {
   }
 }
 
-class TransitionContainer extends React.Component {
-  render() {
-    return (
-      <Consumer>
-        {context => {
-          return (
-            <Transition
-              {...this.props}
-              onTransitionEnd={context.onTransitionEnd}
-            >
-              {this.props.children}
-            </Transition>
-          )
-        }}
-      </Consumer>
-    )
-  }
-}
-
-export { TransitionContainer, createTransitionContainer }
+export { createTransitionContainer }
 export default Transitioner

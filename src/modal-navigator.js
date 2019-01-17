@@ -1,7 +1,6 @@
 import React from 'react'
 import { createModalNavigationContainer } from './navigator'
 import { cloneWithNavigation, screenHeight } from './lib'
-import { TransitionContainer } from './transitioner'
 
 /*
 
@@ -44,25 +43,16 @@ class Modal extends React.Component {
   render() {
     const children = React.Children.toArray(this.props.children)
 
-    const child =
-      children[
-        this.props.previousIndex >= 0
-          ? this.props.previousIndex
-          : this.props.activeIndex
-      ]
+    const child = children[this.props.activeIndex]
 
-    if (!child) {
+    if (!child || child.props.hidden) {
       return null
     }
 
-    return (
-      <TransitionContainer
-        animationTransform={this.animation}
-        in={this.props.activeIndex >= 0}
-      >
-        {cloneWithNavigation(child, this.props)}
-      </TransitionContainer>
-    )
+    return cloneWithNavigation(child, this.props, {
+      animationTransform: this.animation,
+      in: this.props.navigation.modal.active,
+    })
   }
 }
 

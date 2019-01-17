@@ -2,7 +2,6 @@ import React from 'react'
 import { View } from 'react-native'
 import { createNavigationScreenContainer } from './navigator'
 import { cloneWithNavigation } from './lib'
-import { TransitionContainer } from './transitioner'
 
 class Tabs extends React.Component {
   constructor(props) {
@@ -30,19 +29,11 @@ class Tabs extends React.Component {
     const children = React.Children.toArray(this.props.children)
 
     return this.state.rendered.map(childIndex => {
-      const child = cloneWithNavigation(children[childIndex], this.props, {
+      return cloneWithNavigation(children[childIndex], this.props, {
         index: childIndex,
+        in: childIndex === this.props.activeIndex,
+        key: childIndex
       })
-
-      return (
-        <TransitionContainer
-          key={childIndex}
-          index={childIndex}
-          in={childIndex === this.props.activeIndex}
-        >
-          {child}
-        </TransitionContainer>
-      )
     })
   }
 }

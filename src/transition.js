@@ -16,18 +16,6 @@ class Transition extends React.Component {
     },
     animationConfigIn: {},
     animationConfigOut: {},
-
-    animationTransform: anim => {
-      return [
-        {
-          translateX: anim.interpolate({
-            inputRange: [0, 0.4, 1],
-            outputRange: [screenWidth, screenWidth * 0.4, 0],
-            extrapolate: 'clamp',
-          }),
-        },
-      ]
-    },
   }
 
   state = {
@@ -62,8 +50,24 @@ class Transition extends React.Component {
     }
   }
 
+  animationTransform = anim => {
+    if (this.props.animationTransform) {
+      return this.props.animationTranform(anim)
+    }
+
+    return [
+      {
+        translateX: anim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [screenWidth, 0],
+          extrapolate: 'clamp',
+        }),
+      },
+    ]
+  }
+
   render() {
-    const transform = this.props.animationTransform(this.state.anim)
+    const transform = this.animationTransform(this.state.anim)
 
     return (
       <Animated.View
