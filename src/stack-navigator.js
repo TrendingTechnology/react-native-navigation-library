@@ -6,6 +6,7 @@ import Screen from './screen'
 
 class Stack extends React.Component {
   render() {
+    // console.log(this.props)
     const children = React.Children.toArray(this.props.children).slice(
       0,
       this.props.transitioning
