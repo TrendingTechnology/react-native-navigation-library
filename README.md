@@ -21,7 +21,7 @@ Sound good? Let's look at some examples:
 
 ### Tabs
 
-*Note -- the api here was inspired by one of Ryan Florence's lectures -- thanks!*
+*Note -- the API here was inspired (taken) from one of Ryan Florence's lectures -- thanks!*
 
 Here's what a basic tab navigator might look like:
 
