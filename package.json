@@ -1,6 +1,6 @@
 {
   "name": "react-native-navigation-library",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "declarative navigation library for react native",
   "main": "./react-native-navigation-library.js",
   "scripts": {
@@ -15,6 +15,10 @@
     "navigation"
   ],
   "author": "andrew smith",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andyboythekid/react-native-navigation-library"
+  },
   "license": "ISC",
   "peerDependencies": {
     "react": "^16.6.3",
