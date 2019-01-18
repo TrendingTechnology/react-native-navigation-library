@@ -1,3 +1,14 @@
+# react-native-navigation-library
+
+<p align="center">
+  <img src="examples/signup-example.gif">
+  <img src="examples/nested-feeds.gif">
+</p>
+
+<p align="center">
+  <em>These aren't going to win any design awards, but hopefully you get the idea.</em>
+</p>
+
 # Why should I use this?
 
 You want a composable, flexible, and declarative API for your app's navigation.
@@ -36,7 +47,9 @@ import { Navigator, Tabs, TabBar, Tab } from 'react-native-navigation-library'
 </Navigator>
 ```
 
-![](Example/examples/tabs-example.gif)
+<p align="center">
+  <img src="examples/tabs-example.gif">
+</p>
 
 ### Stack
 
@@ -50,19 +63,19 @@ import { Navigator, Header, Stack } from 'react-native-navigation-library'
     <MyHeader title="Header 1" />
     <MyHeader title="Header 2" />
     <MyHeader title="Header 3" />
-    <MyHeader title="Header 4" />
   </Header>
 
   <Stack>
     <MyScreen title="Stack 1" />
     <MyScreen title="Stack 2" />
-    <MyScreen title="Stack 3" />
-    <MyResetScreen title="Stack 4" />
+    <MyResetScreen title="Stack 3" />
   </Stack>
 </Navigator>
 ```
 
-![](Example/examples/stack-example.gif)
+<p align="center">
+  <img src="examples/stack-example.gif" >
+</p>
 
 ### Switch
 
@@ -70,21 +83,22 @@ A switch will only render one screen at a time:
 
 ```
 import { Navigator, Switch } from 'react-native-navigation-library'
+
 <Navigator>
   <Switch>
-    <MyScreen title="Stack 1" />
-    <MyScreen title="Stack 2" />
-    <MyScreen title="Stack 3" />
-    <MyResetScreen title="Stack 4" />
+    <MyScreen title="Switch 1" />
+    <MyScreen title="Switch 2" />
+    <MyScreen title="Switch 3" />
+    <MyResetScreen title="Switch 4" />
   </Switch>
 </Navigator>
 ```
 
-![](Example/examples/switch-example.gif)
+<p align="center">
+  <img src="examples/switch-example.gif" >
+</p>
 
 ### Modal
-
-Modals will appear over top of everything else -- so ordering doesn't matter
 
 ```
 import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library'
@@ -110,7 +124,9 @@ import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library
 </Navigator>
 ```
 
-![](Example/examples/modal-example.gif)
+<p align="center">
+  <img src="examples/modal-example.gif" >
+</p>
 
 Thats about it! There's a few more components that we'll get into later on, but hopefully you get the gist. Mix, match, and compose away. Nest navigators, put the tab bar where ever you want. You want a header for each of your tabs, or maybe just one or two of those tabs? No problem - you get to define the components that are rendered and where. But how to do the navigating?
 
@@ -144,9 +160,9 @@ navigation: Navigation {
   reset: () => void,
   state: {}: any,
   modal: {
+    visible: boolean,
     show: (data: any) => void,
     dismiss: (data: any) => void,
-    select: (index: number, data: any) => void,
   }
   parent?: (navigation: Navigation) // NOTE: this is only when your navigator is nested inside another navigator
 }
@@ -173,24 +189,19 @@ import { Navigator, Header, Switch } from 'react-native-navigation-library'
 
 # Other Stuff
 
-NOTE: All of the following components can receive the standard `style` prop you're already familiar with.
+### Positioning screens
 
-### Screen
-
-If you like render props or want to specify a layout for a given screen, you can safely wrap your component in a `<Screen />` and everything will still work
+You can specify a layout for a given screen with the style prop:
 
 ```
 import { Screen, Navigator, Stack } from 'react-native-navigation-library'
 
 <Navigator>
   <Stack>
-    <Screen>
-      {({ navigation }) => {
-        return <MyScreen title="Screen 1" navigation={navigation} />
-      }}
-    </Screen>
+    <MyScreen title="Screen 1" />
 
-    <Screen
+    <MiniScreen
+      title="A mini screen"
       style={{
         position: 'absolute',
         left: 30,
@@ -199,18 +210,16 @@ import { Screen, Navigator, Stack } from 'react-native-navigation-library'
         bottom: 100,
         borderWidth: 1,
       }}
-    >
-      <MiniScreen title="A mini screen" />
-    </Screen>
+    />
   </Stack>
 </Navigator>
 ```
 
-![](Example/examples/screen-example.gif)
+<p align="center">
+  <img src="examples/screen-example.gif" >
+</p>
 
 ### Header
-
-The `<Header />` will pass down the navigation prop, as well as the current `activeIndex` of the navigator. A lot of times you'll want to render a back button if you're on not on the first screen, or display a button to navigate to another screen in your navigation, or maybe render nothing at all.
 
 ```
 import { Header, Navigator, Stack } from 'react-native-navigation-library'
@@ -265,7 +274,7 @@ import { Navigator, Header, Tabs, TabBar, Tab } from 'react-native-navigation-li
 
 It's worth noting that any nested `<Navigator />` will expose it's parent navigation inside the navigation prop
 
-`<Navigator />` has one prop:
+For now, `<Navigator />` has one prop:
 
 ```
 class App extends React.Component {
@@ -297,7 +306,7 @@ This can be useful if you'd like to peer inside of a nested navigator, maybe to 
 
 # WIP
 
-I've copied a lot of the animations but they still need some tweaking. These will be configurable via animation and interpolation props.
+I've copied a lot of the animations but they still need some tweaking. These are configurable via animation and interpolation props.
 
 # Pros and Cons
 

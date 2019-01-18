@@ -8,6 +8,10 @@ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 0
 
 class Header extends React.Component {
   render() {
+    if (this.props.hidden) {
+      return null
+    }
+
     const children = React.Children.toArray(this.props.children)
     const child = children[this.props.activeIndex]
 
@@ -24,17 +28,6 @@ class Header extends React.Component {
     )
   }
 }
-
-// class HeaderContainer extends React.Component {
-//   render() {
-//     const { style, ...rest } = this.props
-//     return (
-//       <View style={[styles.header, style]}>
-//         <Header {...rest} />
-//       </View>
-//     )
-//   }
-// }
 
 const styles = StyleSheet.create({
   header: {

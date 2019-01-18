@@ -6,23 +6,20 @@ const DEFAULT_HEIGHT = 49
 
 class TabBar extends React.Component {
   render() {
-    return React.Children.map(this.props.children, (child, index) => {
-      return React.cloneElement(child, {
-        active: index === this.props.activeIndex,
-        navigation: {
-          onSelect: () => this.props.navigation.select(index),
-        },
-      })
-    })
-  }
-}
+    if (this.props.hidden) {
+      return null
+    }
 
-class TabBarContainer extends React.Component {
-  render() {
-    const { style, ...rest } = this.props
     return (
-      <View style={[styles.tabbar, style]}>
-        <TabBar {...rest} />
+      <View style={[styles.tabbar, this.props.style]}>
+        {React.Children.map(this.props.children, (child, index) => {
+          return React.cloneElement(child, {
+            active: index === this.props.activeIndex,
+            navigation: {
+              onSelect: () => this.props.navigation.select(index),
+            },
+          })
+        })}
       </View>
     )
   }
@@ -54,4 +51,4 @@ const styles = StyleSheet.create({
 })
 
 export { Tab }
-export default createNavigationContainer(TabBarContainer)
+export default createNavigationContainer(TabBar)
