@@ -5,7 +5,6 @@ import Transition from './transition'
 
 class Screen extends React.Component {
   render() {
-    // console.log(this.props)
     return (
       <Transition {...this.props}>
         <View style={[this.props.style || styles.screen]}>

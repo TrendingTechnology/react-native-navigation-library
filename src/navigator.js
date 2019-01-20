@@ -72,7 +72,7 @@ class Navigator extends React.Component {
   }
 
   select = (index = 0, data) => {
-    if (index >= 0) {
+    if (this.state.screens[index]) {
       this.selectActiveIndex(index, data)
     }
   }
@@ -222,16 +222,6 @@ function createNavigationScreen(ScreenComponent) {
         <Consumer>
           {context => {
             const { children, ...rest } = this.props
-
-            if (typeof this.props.children === 'function') {
-              return (
-                <ScreenComponent {...rest}>
-                  {this.props.children({
-                    navigation: context.navigation,
-                  })}
-                </ScreenComponent>
-              )
-            }
 
             return (
               <ScreenComponent {...rest}>
