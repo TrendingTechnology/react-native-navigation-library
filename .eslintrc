@@ -6,7 +6,8 @@
   },
   "plugins": ["react"],
   "rules": {
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "react/no-children-prop": 0
   },
   "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
   "settings": {

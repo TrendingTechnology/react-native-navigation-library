@@ -1,102 +1,70 @@
 import React from 'react'
-import { render, fireEvent } from 'react-native-testing-library'
-import { Navigator, Stack } from 'react-native-navigation-library'
-import { NavigateComponent } from 'test-utils'
+import { render } from 'react-native-testing-library'
+import { Navigator } from 'react-native-navigation-library'
 
 describe('<Navigator />', () => {
-  test('onNavigationChange() fires on mount', () => {
+  test('empty render', () => {
+    expect(() => render(<Navigator />)).not.toThrow()
+  })
+
+  test('passes navigation in render prop', () => {
+    const spy = jest.fn(() => null)
+
+    render(<Navigator children={spy} />)
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledWith({
+      navigation: expect.any(Object),
+    })
+
+    expect(spy.mock.calls[0][0]).toMatchInlineSnapshot(`
+Object {
+  "navigation": Object {
+    "modal": Object {
+      "active": false,
+      "dismiss": [Function],
+      "show": [Function],
+    },
+    "navigate": [Function],
+    "parent": undefined,
+    "pop": [Function],
+    "push": [Function],
+    "reset": [Function],
+    "select": [Function],
+    "state": Object {},
+  },
+}
+`)
+  })
+
+  test('onNavigationChange fires when navigation is updated', () => {
     const spy = jest.fn()
     render(<Navigator onNavigationChange={spy} />)
+
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith({
       activeIndex: 0,
       navigation: expect.any(Object),
     })
-  })
 
-  test('onNavigationChange() fires when navigation changes', () => {
-    const { getByText, spy } = renderNavigator([
-      { title: 'update', onPress: n => n.push() },
-      { title: 'hello', onPress: n => n.pop() },
-    ])
-
-    fireEvent.press(getByText('update'))
-    expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).toHaveBeenCalledWith({
-      activeIndex: 1,
-      navigation: expect.any(Object),
-    })
-  })
-
-  test('push() does not fire if there is no child to push to', () => {
-    const { spy, getByText } = renderNavigator([
-      { title: 'update', onPress: n => n.push() },
-      { title: 'hello', onPress: n => n.push() },
-    ])
-
-    fireEvent.press(getByText('update'))
-
-    spy.mockReset()
-    fireEvent.press(getByText('hello'))
-    expect(spy).toHaveBeenCalledTimes(0)
-  })
-
-  test('pop() does not fire if there is no child to pop to', () => {
-    const { getByText, spy } = renderNavigator([
-      { title: 'update', onPress: n => n.pop() },
-    ])
-
-    fireEvent.press(getByText('update'))
-    expect(spy).toHaveBeenCalledTimes(0)
-  })
-
-  test('navigate() does not fire if there is no child found', () => {
-    const { getByText, spy } = renderNavigator([
-      { title: 'update', onPress: n => n.navigate('some screen') },
-    ])
-
-    fireEvent.press(getByText('update'))
-    expect(spy).toHaveBeenCalledTimes(0)
-  })
-
-  test('select() does not fire if there is no child found', () => {
-    const { getByText, spy } = renderNavigator([
-      { title: 'update', onPress: n => n.select(100) },
-    ])
-
-    fireEvent.press(getByText('update'))
-    expect(spy).toHaveBeenCalledTimes(0)
+    expect(spy.mock.calls[0][0]).toMatchInlineSnapshot(`
+Object {
+  "activeIndex": 0,
+  "navigation": Object {
+    "modal": Object {
+      "active": false,
+      "dismiss": [Function],
+      "show": [Function],
+    },
+    "navigate": [Function],
+    "parent": undefined,
+    "pop": [Function],
+    "push": [Function],
+    "reset": [Function],
+    "select": [Function],
+    "state": Object {},
+  },
+}
+`)
   })
 })
-
-function renderNavigator(buttons) {
-  const handleNavigationChange = jest.fn()
-
-  function App(props) {
-    return (
-      <Navigator onNavigationChange={props.handleNavigationChange}>
-        <Stack>
-          {buttons.map((button, index) => {
-            return (
-              <NavigateComponent
-                key={index}
-                title={button.title}
-                onPress={button.onPress}
-              />
-            )
-          })}
-        </Stack>
-      </Navigator>
-    )
-  }
-
-  const utils = render(<App handleNavigationChange={handleNavigationChange} />)
-
-  // clears onMount call for tests
-  handleNavigationChange.mockReset()
-
-  return {
-    ...utils,
-    spy: handleNavigationChange,
-  }
-}

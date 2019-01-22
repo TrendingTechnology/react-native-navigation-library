@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, Animated } from 'react-native'
 import { screenWidth } from './lib'
-import { createTransitionContainer } from './transitioner'
+import { withTransitioner } from './transitioner'
 
 class Transition extends React.Component {
   static defaultProps = {
@@ -13,10 +13,10 @@ class Transition extends React.Component {
       overshootClamping: true,
       restDisplacementThreshold: 0.01,
       restSpeedThreshold: 0.01,
-      useNativeDriver: true,
     },
     animationConfigIn: {},
     animationConfigOut: {},
+    useNativeDriver: true,
   }
 
   state = {
@@ -26,8 +26,6 @@ class Transition extends React.Component {
   componentDidMount() {
     if (this.props.in) {
       Animated.timing(this.state.anim, {
-        ...this.props.animationConfig,
-        ...this.props.animationConfigIn,
         toValue: 1,
       }).start(this.props.onTransitionEnd)
     }
@@ -37,14 +35,14 @@ class Transition extends React.Component {
     if (prevProps.in !== this.props.in) {
       if (this.props.in) {
         Animated.timing(this.state.anim, {
+          ...this.props.animationConfigIn,
           ...this.props.animationConfig,
-          ...this.props.animationConfigOut,
           toValue: 1,
         }).start(this.props.onTransitionEnd)
       } else {
         Animated.timing(this.state.anim, {
-          ...this.props.animationConfig,
           ...this.props.animationConfigOut,
+          ...this.props.animationConfig,
           toValue: 0,
         }).start(this.props.onTransitionEnd)
       }
@@ -110,4 +108,4 @@ class Transition extends React.Component {
   }
 }
 
-export default createTransitionContainer(Transition)
+export default withTransitioner(Transition)

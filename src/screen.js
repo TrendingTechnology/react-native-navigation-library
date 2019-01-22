@@ -1,13 +1,16 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
-import { createNavigationScreen } from './navigator'
+import { View } from 'react-native'
+import { withNavigation } from './navigator'
 import Transition from './transition'
 
 class Screen extends React.Component {
   render() {
     return (
-      <Transition {...this.props}>
-        <View style={[this.props.style || styles.screen]}>
+      <Transition
+        {...this.props.transition}
+        activeIndex={this.props.activeIndex}
+      >
+        <View style={[this.props.style || { flex: 1 }]}>
           {this.props.children}
         </View>
       </Transition>
@@ -15,10 +18,5 @@ class Screen extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-})
-
-export default createNavigationScreen(Screen)
+export { Screen }
+export default withNavigation(Screen)

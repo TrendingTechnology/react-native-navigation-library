@@ -1,8 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
-import { createNavigationScreenContainer } from './navigator'
-import { cloneWithNavigation } from './lib'
-import Screen from './screen'
+import { withScreenNavigation } from './navigator'
 
 class Tabs extends React.Component {
   constructor(props) {
@@ -27,30 +24,29 @@ class Tabs extends React.Component {
   }
 
   render() {
+    if (!this.props.children) {
+      return null
+    }
+
     const children = React.Children.toArray(this.props.children)
 
-    return (
-      <View style={[{ flex: 1 }, this.props.style]}>
-        {this.state.rendered.map(childIndex => {
-          return (
-            <Screen
-              {...this.props}
-              index={childIndex}
-              key={childIndex}
-              in={childIndex === this.props.activeIndex}
-              optimized
-            >
-              {cloneWithNavigation(children[childIndex], this.props, {
-                index: childIndex,
-                in: childIndex === this.props.activeIndex,
-                key: childIndex,
-              })}
-            </Screen>
-          )
-        })}
-      </View>
-    )
+    return this.state.rendered.map(childIndex => {
+      const child = children[childIndex]
+
+      if (!child) {
+        return null
+      }
+
+      return React.cloneElement(child, {
+        transition: {
+          index: childIndex,
+          in: childIndex === this.props.activeIndex,
+          optimized: true,
+        },
+      })
+    })
   }
 }
 
-export default createNavigationScreenContainer(Tabs)
+export { Tabs }
+export default withScreenNavigation(Tabs)

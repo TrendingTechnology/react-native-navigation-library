@@ -1,65 +1,37 @@
 import React from 'react'
-import { render, fireEvent } from 'react-native-testing-library'
-import { Modal, Switch, Navigator } from 'react-native-navigation-library'
-import { NavigateComponent } from 'test-utils'
+import { Text } from 'react-native'
+import { render } from 'react-native-testing-library'
+import { Modal } from '../modal-navigator'
 
 describe('<Modal />', () => {
-  test('navigation.show() and navigation.dismiss()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Modal>
-            <NavigateComponent
-              title="modal-1"
-              onPress={navigation => navigation.modal.dismiss()}
-            />
-          </Modal>
-
-          <Switch>
-            <NavigateComponent
-              title="screen-1"
-              onPress={navigation => navigation.modal.show()}
-            />
-          </Switch>
-        </Navigator>
-      )
-    }
-
-    const { getByText } = render(<App />)
-
-    fireEvent.press(getByText('screen-1'))
-    fireEvent.press(getByText('modal-1'))
+  test('empty render', () => {
+    expect(() => render(<Modal />)).not.toThrow()
   })
 
-  test('modals are mapped to relative screens', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Modal>
-            <NavigateComponent
-              title="modal-1"
-              onPress={navigation => navigation.modal.dismiss()}
-            />
-          </Modal>
+  test('renders modal based on activeIndex and modal status', () => {
+    const { getByText } = render(
+      <Navigation activeIndex={0} navigation={{ modal: { active: true } }} />,
+    )
 
-          <Switch>
-            <NavigateComponent
-              title="screen-1"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="screen-2"
-              onPress={navigation => navigation.modal.show()}
-            />
-          </Switch>
-        </Navigator>
-      )
-    }
+    getByText('1')
+    expect(() => getByText('2')).toThrow()
+  })
 
-    const { getByText } = render(<App />)
+  test('transitions out modal when active status changes', () => {
+    const { getByText } = render(
+      <Navigation activeIndex={0} navigation={{ modal: { active: true } }} />,
+    )
 
-    fireEvent.press(getByText('screen-1'))
-    fireEvent.press(getByText('screen-2'))
-    expect(() => getByText('modal-1')).toThrow()
+    expect(getByText('1'))
   })
 })
+
+function Navigation(props) {
+  return (
+    <Modal {...props}>
+      <Text>1</Text>
+      <Text>2</Text>
+      <Text>3</Text>
+    </Modal>
+  )
+}

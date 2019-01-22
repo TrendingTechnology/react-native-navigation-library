@@ -27,22 +27,11 @@ class Transitioner extends React.Component {
   }
 
   render() {
-    const children = React.Children.toArray(this.props.children)
-
-    return (
-      <Provider value={this.state}>
-        {React.Children.map(children, child => {
-          return React.cloneElement(child, {
-            transitioning: this.state.transitioning,
-            previousIndex: this.state.previousIndex,
-          })
-        })}
-      </Provider>
-    )
+    return <Provider value={this.state}>{this.props.children}</Provider>
   }
 }
 
-function createTransitionContainer(TransitionComponent) {
+function withTransitioner(TransitionComponent) {
   return class TransitionContainer extends React.Component {
     render() {
       return (
@@ -64,5 +53,5 @@ function createTransitionContainer(TransitionComponent) {
   }
 }
 
-export { createTransitionContainer }
+export { withTransitioner, Consumer as TransitionContext }
 export default Transitioner

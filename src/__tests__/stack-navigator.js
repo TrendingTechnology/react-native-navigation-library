@@ -1,216 +1,79 @@
 import React from 'react'
-import { View } from 'react-native'
-import { render, fireEvent } from 'react-native-testing-library'
-import { Stack, Navigator, Header } from 'react-native-navigation-library'
-import { NavigateComponent } from 'test-utils'
+import { Text } from 'react-native'
+import { render } from 'react-native-testing-library'
+import { Stack } from '../stack-navigator'
 
 describe('<Stack />', () => {
-  test('navigation.push(), navigation.pop() and navigation.reset()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Header>
-            <View />
-            <View />
-            <NavigateComponent
-              title="Reset"
-              onPress={navigation => navigation.reset()}
-            />
-          </Header>
-          <Stack>
-            <NavigateComponent
-              title="Push 1"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="Push 2"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="Pop"
-              onPress={navigation => navigation.pop()}
-            />
-          </Stack>
-        </Navigator>
-      )
-    }
-
-    const { getByText } = render(<App />)
-
-    expect(() => getByText('Push 2')).toThrow()
-    expect(() => getByText('Pop')).toThrow()
-
-    fireEvent.press(getByText('Push 1'))
-    fireEvent.press(getByText('Push 2'))
-    fireEvent.press(getByText('Pop'))
-
-    expect(() => getByText('Pop')).toThrow()
-
-    fireEvent.press(getByText('Push 2'))
-    fireEvent.press(getByText('Reset'))
-
-    expect(() => getByText('Pop')).toThrow()
-    expect(() => getByText('Push 2')).toThrow()
+  test('empty render', () => {
+    expect(() => render(<Stack />)).not.toThrow()
   })
 
-  test('navigation.navigate()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Stack>
-            <NavigateComponent
-              title="first"
-              name="first"
-              onPress={navigation => navigation.navigate('third')}
-            />
-            <NavigateComponent
-              title="second"
-              name="second"
-              onPress={navigation => navigation.navigate('first')}
-            />
-            <NavigateComponent
-              title="third"
-              name="third"
-              onPress={navigation => navigation.navigate('second')}
-            />
-          </Stack>
-        </Navigator>
-      )
-    }
+  test('renders all children up to activeIndex', () => {
+    const { getByText } = render(<Navigation activeIndex={1} />)
 
-    const { getByText } = render(<App />)
-
-    fireEvent.press(getByText('first'))
-    fireEvent.press(getByText('third'))
-    fireEvent.press(getByText('second'))
-
-    expect(() => getByText('second')).toThrow()
-    expect(() => getByText('third')).toThrow()
+    getByText('1')
+    getByText('2')
+    expect(() => getByText('3')).toThrow()
   })
 
-  test('navigation.select()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Stack>
-            <NavigateComponent
-              title="first"
-              name="first"
-              onPress={navigation => navigation.select(2)}
-            />
-            <NavigateComponent
-              title="second"
-              name="second"
-              onPress={navigation => navigation.select(0)}
-            />
-            <NavigateComponent
-              title="third"
-              name="third"
-              onPress={navigation => navigation.select(1)}
-            />
-          </Stack>
-        </Navigator>
-      )
-    }
+  test('children receive transitionioning prop based on activeIndex', () => {
+    const { getByText, update } = render(<Navigation activeIndex={0} />)
 
-    const { getByText } = render(<App />)
+    expect(getByText('1').props.transition.in).toBe(true)
 
-    fireEvent.press(getByText('first'))
-    fireEvent.press(getByText('third'))
-    fireEvent.press(getByText('second'))
+    update(<Navigation activeIndex={1} />)
 
-    expect(() => getByText('second')).toThrow()
-    expect(() => getByText('third')).toThrow()
+    expect(getByText('1').props.transition.in).toBe(true)
+    expect(getByText('2').props.transition.in).toBe(true)
   })
 
-  test('renders all relevant items in the stack', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Stack>
-            <NavigateComponent
-              title="first"
-              name="first"
-              onPress={navigation => navigation.select(2)}
-            />
-            <NavigateComponent
-              title="second"
-              name="second"
-              onPress={navigation => navigation.select(0)}
-            />
-            <NavigateComponent
-              title="third"
-              name="third"
-              onPress={navigation => navigation.select(1)}
-            />
-          </Stack>
-        </Navigator>
-      )
-    }
+  test('transitions child out', () => {
+    const { getByText, update } = render(
+      <Navigation activeIndex={0} transitioning={true} previousIndex={1} />,
+    )
 
-    const { getByText } = render(<App />)
+    expect(getByText('1').props.transition.in).toBe(true)
+    expect(getByText('2').props.transition.in).toBe(false)
 
-    fireEvent.press(getByText('first'))
+    expect(() => getByText('3')).toThrow()
 
-    expect(() => getByText('third')).not.toThrow()
-    expect(() => getByText('second')).not.toThrow()
-    expect(() => getByText('first')).not.toThrow()
-
-    fireEvent.press(getByText('third'))
-    expect(() => getByText('third')).toThrow()
-    expect(() => getByText('second')).not.toThrow()
-    expect(() => getByText('first')).not.toThrow()
-
-    fireEvent.press(getByText('second'))
-    expect(() => getByText('third')).toThrow()
-    expect(() => getByText('second')).toThrow()
-    expect(() => getByText('first')).not.toThrow()
+    update(
+      <Navigation activeIndex={0} transitioning={false} previousIndex={1} />,
+    )
+    expect(() => getByText('2')).toThrow()
   })
 
-  test('passing data w/ navigation fns', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Stack>
-            <NavigateComponent
-              title="first"
-              name="first"
-              value="test"
-              onPress={navigation =>
-                navigation.select(2, { test: 'from-first' })
-              }
-            />
-            <NavigateComponent
-              title="second"
-              name="second"
-              value="test"
-              onPress={navigation =>
-                navigation.navigate('first', { test: 'from-second' })
-              }
-            />
-            <NavigateComponent
-              title="third"
-              name="third"
-              value="test"
-              onPress={navigation => navigation.pop({ test: 'from-third' })}
-            />
-          </Stack>
-        </Navigator>
-      )
-    }
+  test('transitions multiple children out', () => {
+    const { getByText, update } = render(
+      <Navigation activeIndex={0} transitioning={true} previousIndex={2} />,
+    )
 
-    const { getByText, getAllByText } = render(<App />)
+    expect(getByText('1').props.transition.in).toBe(true)
+    expect(getByText('2').props.transition.in).toBe(false)
+    expect(getByText('3').props.transition.in).toBe(false)
 
-    expect(() => getByText('from-first')).toThrow()
-    fireEvent.press(getByText('first'))
-    expect(() => getAllByText('from-first')).not.toThrow()
+    update(
+      <Navigation transitioning={false} activeIndex={0} previousIndex={2} />,
+    )
+    getByText('1')
+    expect(() => getByText('2')).toThrow()
+    expect(() => getByText('3')).toThrow()
+  })
 
-    fireEvent.press(getByText('third'))
-    expect(() => getByText('from-first')).toThrow()
-    expect(() => getAllByText('from-third')).not.toThrow()
-
-    fireEvent.press(getByText('second'))
-    expect(() => getAllByText('from-third')).toThrow()
-    expect(() => getByText('from-second')).not.toThrow()
+  test('children receive a transition.index prop corresponding to their index', () => {
+    const { getByText } = render(<Navigation activeIndex={2} />)
+    expect(getByText('1').props.transition.index).toEqual(0)
+    expect(getByText('2').props.transition.index).toEqual(1)
+    expect(getByText('3').props.transition.index).toEqual(2)
   })
 })
+
+function Navigation(props) {
+  return (
+    <Stack {...props}>
+      <Text>1</Text>
+      <Text>2</Text>
+      <Text>3</Text>
+    </Stack>
+  )
+}

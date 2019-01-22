@@ -1,7 +1,6 @@
 import React from 'react'
-import { createModalNavigationContainer } from './navigator'
-import { cloneWithNavigation, screenHeight } from './lib'
-import Screen from './screen'
+import { withNavigation } from './navigator'
+import { screenHeight } from './lib'
 
 /*
 
@@ -44,24 +43,20 @@ class Modal extends React.Component {
 
     const child = children[this.props.activeIndex]
 
-    if (!child || child.props.hidden) {
+    if (!child) {
       return null
     }
 
-    return (
-      <Screen
-        {...this.props}
-        index={this.props.activeIndex}
-        in={this.props.navigation.modal.active}
-        animationTransform={this.animation}
-      >
-        {cloneWithNavigation(child, this.props, {
-          animationTransform: this.animation,
-          in: this.props.navigation.modal.active,
-        })}
-      </Screen>
-    )
+    return React.cloneElement(child, {
+      transition: {
+        animationTransform: this.animation,
+        in: this.props.navigation.modal.active,
+        index: this.props.activeIndex,
+        optimized: true,
+      },
+    })
   }
 }
 
-export default createModalNavigationContainer(Modal)
+export { Modal }
+export default withNavigation(Modal)

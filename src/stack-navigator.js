@@ -1,12 +1,8 @@
 import React from 'react'
-import { View } from 'react-native'
-import { createNavigationScreenContainer } from './navigator'
-import { cloneWithNavigation } from './lib'
-import Screen from './screen'
+import { withScreenNavigation } from './navigator'
 
 class Stack extends React.Component {
   render() {
-    // console.log(this.props)
     const children = React.Children.toArray(this.props.children).slice(
       0,
       this.props.transitioning
@@ -14,26 +10,16 @@ class Stack extends React.Component {
         : this.props.activeIndex + 1,
     )
 
-    return (
-      <View style={[{ flex: 1 }, this.props.style]}>
-        {React.Children.map(children, (child, index) => {
-          return (
-            <Screen
-              {...this.props}
-              {...child.props}
-              index={index}
-              in={index <= this.props.activeIndex}
-            >
-              {cloneWithNavigation(child, this.props, {
-                index,
-                in: index <= this.props.activeIndex,
-              })}
-            </Screen>
-          )
-        })}
-      </View>
-    )
+    return React.Children.map(children, (child, index) => {
+      return React.cloneElement(child, {
+        transition: {
+          index,
+          in: index <= this.props.activeIndex,
+        },
+      })
+    })
   }
 }
 
-export default createNavigationScreenContainer(Stack)
+export { Stack }
+export default withScreenNavigation(Stack)

@@ -1,343 +1,67 @@
 import React from 'react'
-import { View, Text } from 'react-native'
-import { render, fireEvent } from 'react-native-testing-library'
-import {
-  Navigator,
-  Header,
-  TabBar,
-  Tabs,
-  Tab,
-} from 'react-native-navigation-library'
-import { NavigateComponent } from 'test-utils'
+import { Text } from 'react-native'
+import { render } from 'react-native-testing-library'
+import { Tabs } from '../tabs-navigator'
 
 describe('<Tabs />', () => {
-  test('navigation.push(), navigation.pop(), and navigation.reset()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Header>
-            <View />
-            <NavigateComponent
-              title="reset"
-              onPress={navigation => navigation.reset()}
-            />
-            <View />
-          </Header>
-          <Tabs>
-            <NavigateComponent
-              title="first-tab"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="second-tab"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="third-tab"
-              onPress={navigation => navigation.pop()}
-            />
-          </Tabs>
-        </Navigator>
-      )
-    }
-
-    const { getByText } = render(<App />)
-
-    getByText('first-tab-active')
-    expect(() => getByText('second-tab')).toThrow()
-    expect(() => getByText('third-tab')).toThrow()
-
-    fireEvent.press(getByText('first-tab'))
-    getByText('first-tab-inactive')
-    getByText('second-tab-active')
-    expect(() => getByText('third-tab')).toThrow()
-
-    fireEvent.press(getByText('second-tab'))
-    getByText('second-tab-inactive')
-    getByText('third-tab-active')
-
-    fireEvent.press(getByText('third-tab'))
-    getByText('third-tab-inactive')
-    getByText('first-tab-inactive')
-    getByText('second-tab-active')
-
-    fireEvent.press(getByText('reset'))
-    getByText('first-tab-active')
-    getByText('second-tab-inactive')
-    getByText('third-tab-inactive')
+  test('empty render', () => {
+    expect(() => render(<Tabs />)).not.toThrow()
   })
 
-  test('navigation.navigate()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Tabs>
-            <NavigateComponent
-              title="first-tab"
-              name="first"
-              onPress={navigation => navigation.navigate('third')}
-            />
-            <NavigateComponent
-              title="second-tab"
-              name="second"
-              onPress={navigation => navigation.navigate('first')}
-            />
-            <NavigateComponent
-              title="third-tab"
-              name="third"
-              onPress={navigation => navigation.navigate('second')}
-            />
-          </Tabs>
-        </Navigator>
-      )
-    }
+  test('renders the activeIndex', () => {
+    const { getByText, update } = render(<Navigation activeIndex={1} />)
 
-    const { getByText } = render(<App />)
+    expect(getByText('2'))
 
-    fireEvent.press(getByText('first-tab'))
-    getByText('third-tab-active')
+    update(<Navigation activeIndex={0} />)
 
-    fireEvent.press(getByText('third-tab'))
-    getByText('second-tab-active')
-    getByText('third-tab-inactive')
-
-    fireEvent.press(getByText('second-tab'))
-    getByText('first-tab-active')
-    getByText('second-tab-inactive')
+    expect(getByText('1'))
   })
 
-  test('navigation.select()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Tabs>
-            <NavigateComponent
-              title="first-tab"
-              name="first"
-              onPress={navigation => navigation.select(2)}
-            />
-            <NavigateComponent
-              title="second-tab"
-              name="second"
-              onPress={navigation => navigation.select(0)}
-            />
-            <NavigateComponent
-              title="third-tab"
-              name="third"
-              onPress={navigation => navigation.select(1)}
-            />
-          </Tabs>
-        </Navigator>
-      )
-    }
-
-    const { getByText } = render(<App />)
-
-    fireEvent.press(getByText('first-tab'))
-    getByText('third-tab-active')
-
-    fireEvent.press(getByText('third-tab'))
-    getByText('second-tab-active')
-    getByText('third-tab-inactive')
-
-    fireEvent.press(getByText('second-tab'))
-    getByText('first-tab-active')
-    getByText('second-tab-inactive')
+  test('does not render a child that is not there', () => {
+    expect(() => render(<Navigation activeIndex={1000} />)).not.toThrow()
   })
 
-  test('only renders the views that have been selected', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Tabs>
-            <NavigateComponent
-              title="first-tab"
-              name="first"
-              onPress={navigation => navigation.select(3)}
-            />
-            <NavigateComponent
-              title="second-tab"
-              name="second"
-              onPress={navigation => navigation.select(2)}
-            />
-            <NavigateComponent
-              title="third-tab"
-              name="third"
-              onPress={navigation => navigation.select(0)}
-            />
-            <NavigateComponent
-              title="fourth-tab"
-              name="fourth"
-              onPress={navigation => navigation.select(1)}
-            />
-          </Tabs>
-        </Navigator>
-      )
-    }
+  test('children recieve transition prop based on activeIndex', () => {
+    const { getByText, update } = render(<Navigation activeIndex={0} />)
 
-    const { getByText } = render(<App />)
+    expect(getByText('1').props.transition).toBeTruthy()
+    expect(getByText('1').props.transition.in).toBe(true)
 
-    fireEvent.press(getByText('first-tab'))
-    getByText('fourth-tab-active')
-    expect(() => getByText('second-tab')).toThrow()
-    expect(() => getByText('third-tab')).toThrow()
+    update(<Navigation activeIndex={1} />)
 
-    fireEvent.press(getByText('fourth-tab'))
-    getByText('second-tab-active')
-    expect(() => getByText('third-tab')).toThrow()
-
-    fireEvent.press(getByText('second-tab'))
-
-    // all four are now mounted but only third should be active
-    getByText('third-tab-active')
-    getByText('first-tab-inactive')
-    getByText('second-tab-inactive')
-    getByText('fourth-tab-inactive')
+    expect(getByText('2').props.transition.in).toBe(true)
+    expect(getByText('1').props.transition.in).toBe(false)
   })
 
-  test('tab bar is mapped to tabs', () => {
-    function App() {
-      return (
-        <Navigator>
-          <TabBar>
-            <Tab>
-              <Text>{`first`}</Text>
-            </Tab>
-            <Tab>
-              <Text>{`second`}</Text>
-            </Tab>
-            <Tab>
-              <Text>{`third`}</Text>
-            </Tab>
-          </TabBar>
-          <Tabs>
-            <NavigateComponent title="first-screen" onPress={() => {}} />
-            <NavigateComponent title="second-screen" onPress={() => {}} />
-            <NavigateComponent title="third-screen" onPress={() => {}} />
-          </Tabs>
-        </Navigator>
-      )
-    }
+  test('children receive a transition.index prop corresponding to their index', () => {
+    const { getByText, update } = render(<Navigation activeIndex={2} />)
+    update(<Navigation activeIndex={0} />)
+    update(<Navigation activeIndex={1} />)
 
-    const { getByText } = render(<App />)
-    fireEvent.press(getByText('second'))
-    getByText('first-screen-inactive')
-    getByText('second-screen-active')
-
-    fireEvent.press(getByText('third'))
-    getByText('second-screen-inactive')
-    getByText('third-screen-active')
-
-    fireEvent.press(getByText('first'))
-    getByText('third-screen-inactive')
-    getByText('first-screen-active')
-
-    fireEvent.press(getByText('third'))
-    getByText('first-screen-inactive')
-    getByText('third-screen-active')
-
-    fireEvent.press(getByText('second'))
-    getByText('third-screen-inactive')
-    getByText('second-screen-active')
+    expect(getByText('1').props.transition.index).toEqual(0)
+    expect(getByText('2').props.transition.index).toEqual(1)
+    expect(getByText('3').props.transition.index).toEqual(2)
   })
 
-  // not sure if it should be the other way around for tabs yet
-  test('push() and pop() are mapped to tab index, not order of rendering', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Tabs>
-            <NavigateComponent
-              title="first-tab"
-              name="first"
-              onPress={navigation => navigation.select(3)}
-            />
-            <NavigateComponent
-              title="second-tab"
-              name="second"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="third-tab"
-              name="third"
-              onPress={navigation => navigation.pop()}
-            />
-            <NavigateComponent
-              title="fourth-tab"
-              name="fourth"
-              onPress={navigation => navigation.pop()}
-            />
-          </Tabs>
-        </Navigator>
-      )
-    }
+  test('children render in order of activeIndex and remain mounted', () => {
+    const { getByText, update } = render(<Navigation activeIndex={1} />)
 
-    const { getByText } = render(<App />)
+    expect(() => getByText('1')).toThrow()
 
-    fireEvent.press(getByText('first-tab'))
-    fireEvent.press(getByText('fourth-tab'))
-    fireEvent.press(getByText('third-tab'))
-    fireEvent.press(getByText('second-tab'))
+    update(<Navigation activeIndex={0} />)
 
-    getByText('second-tab-inactive')
-    getByText('third-tab-active')
-  })
-
-  test('passing data w/ navigation fns', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Tabs>
-            <NavigateComponent
-              title="first-tab"
-              name="first"
-              value="first"
-              onPress={navigation => navigation.push({ second: 'from-first' })}
-            />
-            <NavigateComponent
-              title="second-tab"
-              value="second"
-              onPress={navigation =>
-                navigation.select(2, { third: 'from-second' })
-              }
-            />
-            <NavigateComponent
-              title="third-tab"
-              name="third"
-              value="third"
-              onPress={navigation =>
-                navigation.navigate('fourth', { fourth: 'from-third' })
-              }
-            />
-            <NavigateComponent
-              title="fourth-tab"
-              name="fourth"
-              value="fourth"
-              onPress={navigation =>
-                navigation.navigate('first', { first: 'from-fourth' })
-              }
-            />
-          </Tabs>
-        </Navigator>
-      )
-    }
-
-    const { getByText } = render(<App />)
-
-    expect(() => getByText('from-first')).toThrow()
-    fireEvent.press(getByText('first-tab'))
-    getByText('from-first')
-
-    expect(() => getByText('from-second')).toThrow()
-    fireEvent.press(getByText('second-tab'))
-    getByText('from-second')
-
-    expect(() => getByText('from-third')).toThrow()
-    fireEvent.press(getByText('third-tab'))
-    getByText('from-third')
-
-    expect(() => getByText('from-fourth')).toThrow()
-    fireEvent.press(getByText('fourth-tab'))
-    getByText('from-fourth')
+    getByText('2')
+    getByText('1')
   })
 })
+
+function Navigation(props) {
+  return (
+    <Tabs activeIndex={props.activeIndex}>
+      <Text>1</Text>
+      <Text>2</Text>
+      <Text>3</Text>
+    </Tabs>
+  )
+}

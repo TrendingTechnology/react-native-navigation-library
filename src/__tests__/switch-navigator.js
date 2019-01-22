@@ -1,190 +1,62 @@
 import React from 'react'
-import { render, fireEvent } from 'react-native-testing-library'
-import { Navigator, Switch } from 'react-native-navigation-library'
-import { NavigateComponent } from 'test-utils'
+import { Text } from 'react-native'
+import { render } from 'react-native-testing-library'
+import { Switch } from '../switch-navigator'
 
 describe('<Switch />', () => {
-  test('navigation.push(), navigation.pop(), and navigation.reset()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Switch>
-            <NavigateComponent
-              title="one"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="two"
-              onPress={navigation => navigation.push()}
-            />
-            <NavigateComponent
-              title="three"
-              onPress={navigation => navigation.pop()}
-            />
-          </Switch>
-        </Navigator>
-      )
-    }
-
-    const { getByText } = render(<App />)
-
-    fireEvent.press(getByText('one'))
-    fireEvent.press(getByText('two'))
-    fireEvent.press(getByText('three'))
-    fireEvent.press(getByText('two'))
+  test('empty render', () => {
+    expect(() => render(<Switch />)).not.toThrow()
   })
 
-  test('navigation.navigate()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Switch>
-            <NavigateComponent
-              title="one"
-              name="one"
-              onPress={navigation => navigation.navigate('two')}
-            />
-            <NavigateComponent
-              title="two"
-              name="two"
-              onPress={navigation => navigation.navigate('three')}
-            />
-            <NavigateComponent
-              title="three"
-              name="three"
-              onPress={navigation => navigation.navigate('one')}
-            />
-          </Switch>
-        </Navigator>
-      )
-    }
+  test('renders only one child at a time', () => {
+    const { getByText, update } = render(<Navigation activeIndex={1} />)
+    getByText('2')
+    expect(() => getByText('1')).toThrow()
 
-    const { getByText } = render(<App />)
-
-    fireEvent.press(getByText('one'))
-    fireEvent.press(getByText('two'))
-    fireEvent.press(getByText('three'))
-    fireEvent.press(getByText('one'))
+    update(<Navigation activeIndex={0} />)
+    getByText('1')
+    expect(() => getByText('2')).toThrow()
   })
 
-  test('navigation.select()', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Switch>
-            <NavigateComponent
-              title="one"
-              name="one"
-              onPress={navigation => navigation.select(1)}
-            />
-            <NavigateComponent
-              title="two"
-              name="two"
-              onPress={navigation => navigation.select(2)}
-            />
-            <NavigateComponent
-              title="three"
-              name="three"
-              onPress={navigation => navigation.select(0)}
-            />
-          </Switch>
-        </Navigator>
-      )
-    }
-
-    const { getByText } = render(<App />)
-
-    fireEvent.press(getByText('one'))
-    fireEvent.press(getByText('two'))
-    fireEvent.press(getByText('three'))
-    fireEvent.press(getByText('one'))
+  test('children receive transitioning prop based on activeIndex', () => {
+    const { getByText } = render(
+      <Navigation activeIndex={1} transitioning previousIndex={0} />,
+    )
+    expect(getByText('1').props.transition.in).toBe(false)
+    expect(getByText('2').props.transition.in).toBe(true)
   })
 
-  test('it only renders one screen at a time', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Switch>
-            <NavigateComponent
-              title="one"
-              name="one"
-              onPress={navigation => navigation.select(1)}
-            />
-            <NavigateComponent
-              title="two"
-              name="two"
-              onPress={navigation => navigation.select(2)}
-            />
-            <NavigateComponent
-              title="three"
-              name="three"
-              onPress={navigation => navigation.select(0)}
-            />
-          </Switch>
-        </Navigator>
-      )
-    }
+  test('children receive a transition.index prop corresponding to their index', () => {
+    const { getByText, update } = render(<Navigation activeIndex={2} />)
+    expect(getByText('3').props.transition.index).toEqual(2)
 
-    const { getByText } = render(<App />)
+    update(<Navigation activeIndex={1} />)
+    expect(getByText('2').props.transition.index).toEqual(1)
 
-    expect(() => getByText('two')).toThrow()
-    expect(() => getByText('three')).toThrow()
-
-    fireEvent.press(getByText('one'))
-    expect(() => getByText('one')).toThrow()
-
-    fireEvent.press(getByText('two'))
-    expect(() => getByText('two')).toThrow()
-
-    fireEvent.press(getByText('three'))
-    expect(() => getByText('three')).toThrow()
-
-    getByText('one')
+    update(<Navigation activeIndex={0} />)
+    expect(getByText('1').props.transition.index).toEqual(0)
   })
 
-  test('passing data w/ navigation fns', () => {
-    function App() {
-      return (
-        <Navigator>
-          <Switch>
-            <NavigateComponent
-              title="one"
-              name="one"
-              value="one"
-              onPress={navigation => navigation.select(1, { two: 'from one' })}
-            />
-            <NavigateComponent
-              title="two"
-              name="two"
-              value="two"
-              onPress={navigation =>
-                navigation.select(2, { three: 'from two' })
-              }
-            />
-            <NavigateComponent
-              title="three"
-              name="three"
-              value="three"
-              onPress={navigation =>
-                navigation.select(0, { one: 'from three' })
-              }
-            />
-          </Switch>
-        </Navigator>
-      )
-    }
+  test('transitions from one screen to another', () => {
+    const { getByText, update } = render(
+      <Navigation activeIndex={0} transitioning previousIndex={1} />,
+    )
 
-    const { getByText } = render(<App />)
+    getByText('1')
+    getByText('2')
 
-    fireEvent.press(getByText('one'))
-    getByText('from one')
-
-    fireEvent.press(getByText('two'))
-    expect(() => getByText('from one')).toThrow()
-    getByText('from two')
-
-    fireEvent.press(getByText('three'))
-    expect(() => getByText('from two')).toThrow()
-    getByText('from three')
+    update(<Navigation transitioning={false} activeIndex={0} />)
+    getByText('1')
+    expect(() => getByText('2')).toThrow()
   })
 })
+
+function Navigation(props) {
+  return (
+    <Switch {...props}>
+      <Text>1</Text>
+      <Text>2</Text>
+      <Text>3</Text>
+    </Switch>
+  )
+}
