@@ -1,8 +1,7 @@
 import React from 'react'
 import { StyleSheet, Animated } from 'react-native'
 import { screenWidth } from './lib'
-import { withTransitioner } from './transitioner'
-
+import { withTransitions } from './transitioner'
 class Transition extends React.Component {
   static defaultProps = {
     animationConfig: {
@@ -13,19 +12,21 @@ class Transition extends React.Component {
       overshootClamping: true,
       restDisplacementThreshold: 0.01,
       restSpeedThreshold: 0.01,
+      useNativeDriver: true,
     },
     animationConfigIn: {},
     animationConfigOut: {},
-    useNativeDriver: true,
   }
 
   state = {
-    anim: new Animated.Value(0),
+    anim: this.props.anim || new Animated.Value(0),
   }
 
   componentDidMount() {
     if (this.props.in) {
       Animated.timing(this.state.anim, {
+        ...this.props.animationConfigIn,
+        ...this.props.animationConfig,
         toValue: 1,
       }).start(this.props.onTransitionEnd)
     }
@@ -47,17 +48,6 @@ class Transition extends React.Component {
         }).start(this.props.onTransitionEnd)
       }
     }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    if (this.props.optimized) {
-      return (
-        nextProps.activeIndex === this.props.index ||
-        nextProps.previousIndex === this.props.index
-      )
-    }
-
-    return true
   }
 
   animationTransform = anim => {
@@ -108,4 +98,5 @@ class Transition extends React.Component {
   }
 }
 
-export default withTransitioner(Transition)
+export { Transition }
+export default withTransitions(Transition)

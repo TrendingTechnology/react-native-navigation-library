@@ -48,5 +48,5 @@ const styles = StyleSheet.create({
   },
 })
 
-export { Tab }
+export { Tab, TabBar }
 export default withNavigation(TabBar)

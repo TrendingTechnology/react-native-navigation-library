@@ -44,4 +44,5 @@ const styles = StyleSheet.create({
   },
 })
 
+export { Header }
 export default withNavigation(Header)

@@ -1,4 +1,5 @@
 import React from 'react'
+import { getDisplayName } from './lib'
 
 const { Consumer, Provider } = React.createContext({})
 
@@ -31,8 +32,21 @@ class Transitioner extends React.Component {
   }
 }
 
-function withTransitioner(TransitionComponent) {
-  return class TransitionContainer extends React.Component {
+function withTransitions(TransitionComponent) {
+  class TransitionContainer extends React.Component {
+    shouldComponentUpdate(nextProps) {
+      // only update screens that are about to become active / visible
+      // use opt-in optimized flag to let us animate views in between these value - e.g a stack animation
+      if (this.props.optimized) {
+        return (
+          nextProps.activeIndex === this.props.index ||
+          nextProps.previousIndex === this.props.index
+        )
+      }
+
+      return true
+    }
+
     render() {
       return (
         <Consumer>
@@ -51,7 +65,13 @@ function withTransitioner(TransitionComponent) {
       )
     }
   }
+
+  TransitionContainer.displayName = `withTransitions(${getDisplayName(
+    TransitionComponent,
+  )})`
+
+  return TransitionContainer
 }
 
-export { withTransitioner, Consumer as TransitionContext }
+export { withTransitions, Consumer as TransitionContext }
 export default Transitioner

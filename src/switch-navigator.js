@@ -31,13 +31,11 @@ class Switch extends React.Component {
         const child = children[childIndex]
 
         return React.cloneElement(child, {
-          activeIndex: this.props.activeIndex,
           transition: {
             index: childIndex,
             in: this.props.activeIndex === childIndex,
             optimized: true,
           },
-          navigation: this.props.navigation,
         })
       })
   }
