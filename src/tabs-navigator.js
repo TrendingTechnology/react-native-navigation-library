@@ -1,5 +1,5 @@
 import React from 'react'
-import { withScreenNavigation } from './navigator'
+import { withTransitionNavigation } from './navigator'
 
 class Tabs extends React.Component {
   constructor(props) {
@@ -49,4 +49,4 @@ class Tabs extends React.Component {
 }
 
 export { Tabs }
-export default withScreenNavigation(Tabs)
+export default withTransitionNavigation(Tabs)

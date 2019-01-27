@@ -22,9 +22,21 @@ class Screen extends React.Component {
       )
     }
 
+    const {
+      transition,
+      animationConfig,
+      animationConfigIn,
+      animationConfigOut,
+      animationTransform,
+    } = this.props
+
     return (
       <Transition
-        {...this.props.transition}
+        {...transition}
+        animationConfig={animationConfig}
+        animationConfigIn={animationConfigIn}
+        animationConfigOut={animationConfigOut}
+        animationTransform={animationTransform}
         activeIndex={this.props.activeIndex}
       >
         <View style={[{ flex: 1, backgroundColor: 'white' }, this.props.style]}>

@@ -28,6 +28,7 @@ class Navigator extends React.Component {
         if (this.props.onNavigationChange) {
           this.props.onNavigationChange({
             activeIndex: this.state.activeIndex,
+            activeScreen: this.state.screens[this.state.activeIndex],
             navigation: this.state.navigation,
           })
         }
@@ -56,6 +57,7 @@ class Navigator extends React.Component {
         if (this.props.onNavigationChange) {
           this.props.onNavigationChange({
             activeIndex: this.state.activeIndex,
+            activeScreen: this.state.screens[this.state.activeIndex],
             navigation: this.state.navigation,
           })
         }
@@ -63,22 +65,12 @@ class Navigator extends React.Component {
     )
   }
 
-  setScreens = screens => {
-    this.setState({
-      screens: screens.map((s, index) => s.props.name || index.toString()),
-    })
-  }
-
   push = data => {
-    if (this.state.screens.length > this.state.activeIndex + 1) {
-      this.selectActiveIndex(this.state.activeIndex + 1, data)
-    }
+    this.selectActiveIndex(this.state.activeIndex + 1, data)
   }
 
   pop = data => {
-    if (this.state.activeIndex - 1 >= 0) {
-      this.selectActiveIndex(this.state.activeIndex - 1, data)
-    }
+    this.selectActiveIndex(this.state.activeIndex - 1, data)
   }
 
   reset = () => {
@@ -86,9 +78,7 @@ class Navigator extends React.Component {
   }
 
   select = (index = 0, data) => {
-    if (this.state.screens[index]) {
-      this.selectActiveIndex(index, data)
-    }
+    this.selectActiveIndex(index, data)
   }
 
   navigate = (routeName, data) => {
@@ -117,25 +107,23 @@ class Navigator extends React.Component {
     modal: this.modal,
     navigate: this.navigate,
     parent: this.props.navigation,
-    state: {},
+    state: this.props.initialState || {},
   }
 
   initialState = {
-    activeIndex: 0,
+    activeIndex: this.props.initialIndex || 0,
     navigation: this.navigation,
-    setScreens: this.setScreens,
-  }
-
-  state = {
-    ...this.initialState,
     screens: this.props.screens || [],
     animated: this.props.animated,
   }
+
+  state = this.initialState
 
   componentDidMount() {
     if (this.props.onNavigationChange) {
       this.props.onNavigationChange({
         activeIndex: this.state.activeIndex,
+        activeScreen: this.state.screens[this.state.activeIndex],
         navigation: this.state.navigation,
       })
     }
@@ -149,6 +137,8 @@ class Navigator extends React.Component {
     const children = this.props.children({
       navigation: this.state.navigation,
       activeIndex: this.state.activeIndex,
+      screens: this.state.screens,
+      activeScreen: this.state.screens[this.state.activeIndex],
     })
 
     if (!this.props.animated) {
@@ -192,43 +182,27 @@ function withNavigation(Component) {
   return NavigationContainer
 }
 
-class NavigationScreens extends React.Component {
-  constructor(props) {
-    super(props)
-    props.setScreens && props.setScreens(props.screens)
-  }
-
-  render() {
-    return this.props.children
-  }
-}
-
-function withScreenNavigation(Component) {
-  class ScreenContainer extends React.Component {
+function withTransitionNavigation(Component) {
+  class NavigationContainer extends React.Component {
     render() {
       return (
         <View style={this.props.style || { flex: 1 }}>
           <Consumer>
             {context => {
               return (
-                <NavigationScreens
-                  setScreens={context.setScreens}
-                  screens={React.Children.toArray(this.props.children)}
-                >
-                  <TransitionContext>
-                    {({ transitioning, previousIndex }) => {
-                      return (
-                        <Component
-                          {...this.props}
-                          transitioning={transitioning}
-                          previousIndex={previousIndex}
-                          navigation={context.navigation}
-                          activeIndex={context.activeIndex}
-                        />
-                      )
-                    }}
-                  </TransitionContext>
-                </NavigationScreens>
+                <TransitionContext>
+                  {({ transitioning, previousIndex }) => {
+                    return (
+                      <Component
+                        {...this.props}
+                        transitioning={transitioning}
+                        previousIndex={previousIndex}
+                        navigation={context.navigation}
+                        activeIndex={context.activeIndex}
+                      />
+                    )
+                  }}
+                </TransitionContext>
               )
             }}
           </Consumer>
@@ -237,12 +211,12 @@ function withScreenNavigation(Component) {
     }
   }
 
-  ScreenContainer.displayName = `withScreenNavigation(${getDisplayName(
+  NavigationContainer.displayName = `withTransitionNavigation(${getDisplayName(
     Component,
   )})`
 
-  return ScreenContainer
+  return NavigationContainer
 }
 
-export { withNavigation, withScreenNavigation, Consumer }
+export { withNavigation, withTransitionNavigation, Consumer }
 export default Navigator

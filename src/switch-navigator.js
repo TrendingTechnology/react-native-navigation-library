@@ -1,5 +1,5 @@
 import React from 'react'
-import { withScreenNavigation } from './navigator'
+import { withTransitionNavigation } from './navigator'
 
 class Switch extends React.Component {
   state = {
@@ -42,4 +42,4 @@ class Switch extends React.Component {
 }
 
 export { Switch }
-export default withScreenNavigation(Switch)
+export default withTransitionNavigation(Switch)

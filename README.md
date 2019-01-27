@@ -21,31 +21,41 @@ Sound good? Let's look at some examples:
 
 ### Tabs
 
-*Note -- the API here was inspired (taken) from one of Ryan Florence's lectures -- thanks!*
-
 Here's what a basic tab navigator might look like:
 
 ```
-import { Navigator, Tabs, TabBar, Tab } from 'react-native-navigation-library'
+import { Navigator, Tabs, TabBar, Tab, Screen } from 'react-native-navigation-library'
 
 <Navigator>
-  <Tabs>
-    <MyScreen title="Screen 1" />
-    <MyScreen title="Screen 2" />
-    <MyScreen title="Screen 3" />
-  </Tabs>
+  {({ navigation }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <Tabs>
+          <Screen>
+            <MyScreen title="Screen 1" navigation={navigation} />
+          </Screen>
+          <Screen>
+            <MyScreen title="Screen 2" navigation={navigation}/>
+          </Screen>
+          <Screen>
+            <MyScreen title="Screen 3" navigation={navigation}/>
+          </Screen>
+        </Tabs>
 
-  <TabBar>
-    <Tab>
-      <MyTab title="Tab 1" />
-    </Tab>
-    <Tab>
-      <MyTab title="Tab 2" />
-    </Tab>
-    <Tab>
-      <MyTab title="Tab 3" />
-    </Tab>
-  </TabBar>
+        <TabBar>
+          <Tab>
+            <MyTab title="Tab 1" />
+          </Tab>
+          <Tab>
+            <MyTab title="Tab 2" />
+          </Tab>
+          <Tab>
+            <MyTab title="Tab 3" />
+          </Tab>
+        </TabBar>
+      </View>
+    )
+  }}
 </Navigator>
 ```
 
@@ -58,20 +68,40 @@ import { Navigator, Tabs, TabBar, Tab } from 'react-native-navigation-library'
 ...and here's a stack navigator:
 
 ```
-import { Navigator, Header, Stack } from 'react-native-navigation-library'
+import { Navigator, Header, Stack, Screen } from 'react-native-navigation-library'
 
 <Navigator>
-  <Header>
-    <MyHeader title="Header 1" />
-    <MyHeader title="Header 2" />
-    <MyHeader title="Header 3" />
-  </Header>
+  {({ navigation }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <Header>
+          <MyHeader title="Header 1" />
+          <MyHeader title="Header 2" onBack={() => navigation.pop()} />
+          <MyHeader title="Header 3" onBack={() => navigation.pop()} />
+        </Header>
 
-  <Stack>
-    <MyScreen title="Stack 1" />
-    <MyScreen title="Stack 2" />
-    <MyResetScreen title="Stack 3" />
-  </Stack>
+        <Stack>
+          <Screen>
+            <MyScreen title="Stack 1" onPush={() => navigation.push()} />
+          </Screen>
+          <Screen>
+            <MyScreen
+              title="Stack 2"
+              onPush={() => navigation.push()}
+              onPop={() => navigation.pop()}
+            />
+          </Screen>
+          <Screen>
+            <MyResetScreen
+              title="Stack 3"
+              onReset={() => navigation.reset()}
+              onPop={() => navigation.pop()}
+            />
+          </Screen>
+        </Stack>
+      </View>
+    )
+  }}
 </Navigator>
 ```
 
@@ -84,15 +114,27 @@ import { Navigator, Header, Stack } from 'react-native-navigation-library'
 A switch will only render one screen at a time:
 
 ```
-import { Navigator, Switch } from 'react-native-navigation-library'
+import { Navigator, Switch, Screen } from 'react-native-navigation-library'
 
 <Navigator>
-  <Switch>
-    <MyScreen title="Switch 1" />
-    <MyScreen title="Switch 2" />
-    <MyScreen title="Switch 3" />
-    <MyResetScreen title="Switch 4" />
-  </Switch>
+  {({ navigation }) => {
+    return (
+      <Switch>
+        <Screen>
+          <MyScreen title="Switch 1" navigation={navigation} />
+        </Screen>
+        <Screen>
+          <MyScreen title="Switch 2" navigation={navigation} />
+        </Screen>
+        <Screen>
+          <MyScreen title="Switch 3" navigation={navigation} />
+        </Screen>
+        <Screen>
+          <MyResetScreen title="Switch 4" navigation={navigation} />
+        </Screen>
+      </Switch>
+    )
+  }}
 </Navigator>
 ```
 
@@ -103,26 +145,47 @@ import { Navigator, Switch } from 'react-native-navigation-library'
 ### Modal
 
 ```
-import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library'
+import { Navigator, Stack, Modal, Header, Screen } from 'react-native-navigation-library'
 
 <Navigator>
-  <Header>
-    <MyHeader title="Header 1" />
-    <MyHeader title="Header 2" />
-    <MyHeader title="Header 3" />
-  </Header>
+  {({ navigation }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <Header>
+          <MyHeader title="Header 1" navigation={navigation} />
+          <MyHeader title="Header 2" navigation={navigation} />
+          <MyHeader title="Header 3" navigation={navigation} />
+        </Header>
 
-  <Stack>
-    <MyScreen title="Modal Panel 1" />
-    <MyScreen title="Modal Panel 2" />
-    <MyScreen title="Modal Panel 3" />
-  </Stack>
+        <Stack>
+          <Screen>
+            <MyScreen title="Modal Panel 1" navigation={navigation} />
+          </Screen>
 
-  <Modal>
-    <MyModal title="Modal for Panel 1" />
-    <MyModal title="Modal for Panel 2" />
-    <MyModal title="Modal for Panel 3" />
-  </Modal>
+          <Screen>
+            <MyScreen title="Modal Panel 2" navigation={navigation} />
+          </Screen>
+          <Screen>
+            <MyScreen title="Modal Panel 3" navigation={navigation} />
+          </Screen>
+        </Stack>
+
+        <Modal>
+          <Screen>
+            <MyModal title="Modal for Panel 1" navigation={navigation} />
+          </Screen>
+
+          <Screen>
+            <MyModal title="Modal for Panel 2" navigation={navigation} />
+          </Screen>
+
+          <Screen>
+            <MyModal title="Modal for Panel 3" navigation={navigation} />
+          </Screen>
+        </Modal>
+      </View>
+    )
+  }}
 </Navigator>
 ```
 
@@ -134,22 +197,7 @@ Thats about it! There's a few more components that we'll get into later on, but 
 
 # Navigation
 
-Navigating around is (hopefully) fairly similar to what you're used to. Let's peer into one of the rendered child screens from above (e.g `<MyScreen />`):
-
-```
-function MyScreen(props) {
-  // props.navigation has lots of useful stuff -- see below
-
-  return (
-    <View>
-      <Text>{props.title}</Text>
-      <Text>{props.navigation.state.someData}</Text>
-      <Button title="Next" onPress={() => props.navigation.push({ someData: 'new data' })} />
-      <Button title="Previous" onPress={() => props.navigation.pop({ someData: 'other data' })} />
-    </View>
-  )
-}
-```
+Navigating around is (hopefully) fairly similar to what you're used to.
 
 The navigation prop provides lots of useful stuff for your screens:
 
@@ -158,7 +206,7 @@ navigation: Navigation {
   push: (data: any) => void
   pop: (data: any) => void
   select: (index: number, data: any) => void
-  navigate: (routeName: string, data: any) => void  // NOTE: you need to provide a `name` prop to your screens for this to work
+  navigate: (routeName: string, data: any) => void
   reset: () => void,
   state: {}: any,
   modal: {
@@ -172,48 +220,85 @@ navigation: Navigation {
 
 ### Using `navigation.navigate()`
 
-As noted above, in order to navigate to a screen by it's name, you'll have to give that screen a `name` prop. Otherwise it will do nothing.
+As noted above, in order to navigate to a screen by it's name, you'll have to provide a `screens={['screen-1', 'screen-2]}` prop to the navigator
 
 ```
 import { Navigator, Header, Switch } from 'react-native-navigation-library'
 
 // navigation.navigate() will work for these screens
 
-<Navigator>
-  <Switch>
-    <MyScreen name='first' />
-    <MyScreen name='second' />
-    <MyScreen name='third' />
-    <MyResetScreen name='fourth' />
-  </Switch>
+<Navigator screens={['first', 'second', 'third', 'fourth']}>
+  {({ navigation }) => {
+    return (
+      <Switch>
+        <MyScreen navigate={() => navigation.navigate('third')} />
+        <MyScreen navigate={() => navigation.navigate('fourth')} />
+        <MyScreen navigate={() => navigation.navigate('second')} />
+        <MyResetScreen navigate={() => navigation.navigate('first')} reset={() => navigation.reset() />
+      </Switch>
+    )
+  }}
 </Navigator>
 ```
 
 # Other Stuff
 
-### Positioning screens
+### Screen
 
-You can specify a layout for a given screen with the style prop:
+The screen component provides default animation and styles out of the box. It can be configured with animation and style props
 
 ```
-import { Screen, Navigator, Stack } from 'react-native-navigation-library'
+import { StyleSheet } from 'react-native'
+import { Screen, Navigator, Stack, Screen } from 'react-native-navigation-library'
 
 <Navigator>
-  <Stack>
-    <MyScreen title="Screen 1" />
+  {({ navigation }) => {
+    return (
+      <Stack>
+        <Screen
+          style={{ borderWidth: 1 }}
+          animationTransform={animatedValue => {
+            return [
+              {
+                translateY: animatedValue.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1000, 75],
+                }),
+              },
+            ]
+          }}
+          animationConfig={{
+            timing: Animated.spring,
+            stiffness: 100,
+            damping: 200,
+            mass: 3,
+            overshootClamping: true,
+            restDisplacementThreshold: 0.01,
+            restSpeedThreshold: 0.01,
+          }}
+          animationConfigIn={{
+            stiffness: 200,
+          }}
+          animationConfigOut={{
+            mass: 100,
+          }}
+        >
+          <MyScreen title="Screen 1" navigation={navigation} />
+        </Screen>
 
-    <MiniScreen
-      title="A mini screen"
-      style={{
-        position: 'absolute',
-        left: 30,
-        right: 30,
-        top: 100,
-        bottom: 100,
-        borderWidth: 1,
-      }}
-    />
-  </Stack>
+        <Screen style={{
+            position: 'absolute',
+            left: 30,
+            right: 30,
+            top: 100,
+            bottom: 100,
+            borderWidth: 1,
+          }}>
+          <MiniScreen title="A mini screen" />
+        </Screen>
+      </Stack>
+    )
+  }}
 </Navigator>
 ```
 
@@ -227,22 +312,30 @@ import { Screen, Navigator, Stack } from 'react-native-navigation-library'
 import { Header, Navigator, Stack } from 'react-native-navigation-library'
 
 <Navigator>
-  <Header>
+  <Header hidden={false}>
     <MyHeader title='Header 1">
     <MyHeader title='Header 2">
+    <View hidden>
   </Header>
 
   <Stack>
-    <MyScreen title='Screen 1'>
-    <MyScreen title='Screen 2'>
-    <MyScreen title='Screen 3 -- I have no header'>
+    <Screen>
+      <MyScreen title='Screen 1'>
+    </Screen>
+    <Screen>
+      <MyScreen title='Screen 2'>
+    </Screen>
+    <Screen>
+      <MyScreen title='Screen 3 -- I have no header'>
+    </Screen>
+    <Screen>
+      <MyScreen title='Screen 4 -- I have no header'>
+    </Screen>
   </Stack>
 </Navigator>
 ```
 
 Each header child element is mapped to a screen in the `<Stack />`, so you declare what component is rendered for each screen, or if you don't want different headers, you can just copy paste the same component like I did in the example above.
-
-You might also notice that there is only two header elements but three screens -- in my example I didn't want a header on the third screen, so 'Screen 3' will have a hidden header
 
 ### TabBar
 
@@ -276,27 +369,36 @@ import { Navigator, Header, Tabs, TabBar, Tab } from 'react-native-navigation-li
 
 It's worth noting that any nested `<Navigator />` will expose it's parent navigation inside the navigation prop
 
-For now, `<Navigator />` has one prop:
-
 ```
 class App extends React.Component {
   state = {
     activeIndex: 0,
+    activeScreen: '',
     navigation: {},
   }
 
   handleNavigationChange = (updatedNavigation: Navigation) => {
     this.setState({
       activeIndex: updatedNavigation.activeIndex,
+      activeScreen: updatedNavigation.activeScreen,
       navigation: updatedNavigation.navigation,
     })
   }
 
   render() {
     return (
-      <Navigator onNavigationChange={this.handleNavigationChange}>
+      <Navigator
+        screens={['hi', 'hey']}
+        initialState={{ test: 'value' }}
+        initialIndex={1}
+        onNavigationChange={this.handleNavigationChange}
+        animated={false}
+      >
         <Stack>
-          <MyScreen title='Hi' />
+          <Screen>
+            <MyScreen title="Hi" />
+            <MyScreen title="Hey" />
+          </Screen>
         </Stack>
       </Navigator>
     )

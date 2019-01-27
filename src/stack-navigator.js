@@ -1,5 +1,5 @@
 import React from 'react'
-import { withScreenNavigation } from './navigator'
+import { withTransitionNavigation } from './navigator'
 
 class Stack extends React.Component {
   render() {
@@ -22,4 +22,4 @@ class Stack extends React.Component {
 }
 
 export { Stack }
-export default withScreenNavigation(Stack)
+export default withTransitionNavigation(Stack)
