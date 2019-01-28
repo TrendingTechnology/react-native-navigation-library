@@ -1,6 +1,9 @@
 import React from 'react'
+import { Dimensions } from 'react-native'
 import { withNavigation } from './navigator'
-import { screenHeight } from './lib'
+import Screen from './screen'
+
+const { height: screenHeight } = Dimensions.get('window')
 
 /*
 
@@ -27,6 +30,28 @@ Example:
 */
 
 class Modal extends React.Component {
+  state = {
+    active: false,
+    transitioning: false,
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.navigation) {
+      if (nextProps.navigation.modal.active !== prevState.active) {
+        return {
+          active: nextProps.navigation.modal.active,
+          transitioning: nextProps.animated,
+        }
+      }
+    }
+
+    return null
+  }
+
+  handleTransitionEnd = () => {
+    this.setState({ transitioning: false })
+  }
+
   animation = anim => {
     return [
       {
@@ -47,14 +72,23 @@ class Modal extends React.Component {
       return null
     }
 
-    return React.cloneElement(child, {
-      transition: {
-        animationTransform: this.animation,
-        in: this.props.navigation.modal.active,
-        index: this.props.activeIndex,
-        optimized: true,
-      },
-    })
+    if (!this.state.transitioning && !this.state.active) {
+      return null
+    }
+
+    return (
+      <Screen
+        index={this.props.activeIndex}
+        animated={this.props.animated}
+        transition={{
+          in: this.props.navigation.modal.active,
+          onTransitionEnd: this.handleTransitionEnd,
+        }}
+        animationTransform={this.animation}
+      >
+        {React.cloneElement(child, { navigation: this.props.navigation })}
+      </Screen>
+    )
   }
 }
 

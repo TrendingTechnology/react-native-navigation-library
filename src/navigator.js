@@ -1,7 +1,4 @@
 import React from 'react'
-import { View } from 'react-native'
-import Transitioner, { TransitionContext } from './transitioner'
-import { getDisplayName } from './lib'
 
 const { Provider, Consumer } = React.createContext({})
 
@@ -73,10 +70,6 @@ class Navigator extends React.Component {
     this.selectActiveIndex(this.state.activeIndex - 1, data)
   }
 
-  reset = () => {
-    this.setState(this.initialState)
-  }
-
   select = (index = 0, data) => {
     this.selectActiveIndex(index, data)
   }
@@ -86,6 +79,10 @@ class Navigator extends React.Component {
     if (route !== -1) {
       this.selectActiveIndex(route, data)
     }
+  }
+
+  reset = () => {
+    this.setState(this.initialState)
   }
 
   modal = {
@@ -130,28 +127,19 @@ class Navigator extends React.Component {
   }
 
   render() {
-    if (!this.props.children) {
-      return null
+    if (typeof this.props.children === 'function') {
+      return (
+        <Provider value={this.state}>
+          {this.props.children({
+            navigation: this.state.navigation,
+            activeIndex: this.state.activeIndex,
+            activeScreen: this.state.screens[this.state.activeIndex],
+          })}
+        </Provider>
+      )
     }
 
-    const children = this.props.children({
-      navigation: this.state.navigation,
-      activeIndex: this.state.activeIndex,
-      screens: this.state.screens,
-      activeScreen: this.state.screens[this.state.activeIndex],
-    })
-
-    if (!this.props.animated) {
-      return <Provider value={this.state}>{children}</Provider>
-    }
-
-    return (
-      <Provider value={this.state}>
-        <Transitioner activeIndex={this.state.activeIndex}>
-          {children}
-        </Transitioner>
-      </Provider>
-    )
+    return <Provider value={this.state}>{this.props.children}</Provider>
   }
 }
 
@@ -175,48 +163,12 @@ function withNavigation(Component) {
     }
   }
 
-  NavigationContainer.displayName = `withNavigation(${getDisplayName(
-    Component,
-  )})`
+  NavigationContainer.displayName = `withNavigation(${Component.displayName ||
+    Component.name ||
+    'Component'})`
 
   return NavigationContainer
 }
 
-function withTransitionNavigation(Component) {
-  class NavigationContainer extends React.Component {
-    render() {
-      return (
-        <View style={this.props.style || { flex: 1 }}>
-          <Consumer>
-            {context => {
-              return (
-                <TransitionContext>
-                  {({ transitioning, previousIndex }) => {
-                    return (
-                      <Component
-                        {...this.props}
-                        transitioning={transitioning}
-                        previousIndex={previousIndex}
-                        navigation={context.navigation}
-                        activeIndex={context.activeIndex}
-                      />
-                    )
-                  }}
-                </TransitionContext>
-              )
-            }}
-          </Consumer>
-        </View>
-      )
-    }
-  }
-
-  NavigationContainer.displayName = `withTransitionNavigation(${getDisplayName(
-    Component,
-  )})`
-
-  return NavigationContainer
-}
-
-export { withNavigation, withTransitionNavigation, Consumer }
+export { withNavigation }
 export default Navigator

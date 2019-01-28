@@ -5,6 +5,5 @@ import Stack from './src/stack-navigator'
 import Tabs from './src/tabs-navigator'
 import Switch from './src/switch-navigator'
 import Modal from './src/modal-navigator'
-import Screen from './src/screen'
 
-export { Stack, Header, Tabs, TabBar, Tab, Switch, Navigator, Screen, Modal }
+export { Stack, Header, Tabs, TabBar, Tab, Switch, Navigator, Modal }

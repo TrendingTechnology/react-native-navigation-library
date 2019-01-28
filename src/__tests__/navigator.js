@@ -17,7 +17,6 @@ describe('<Navigator />', () => {
     expect(spy).toHaveBeenCalledWith({
       activeIndex: 0,
       activeScreen: 'test',
-      screens: ['test'],
       navigation: expect.any(Object),
     })
 
@@ -39,9 +38,6 @@ Object {
     "select": [Function],
     "state": Object {},
   },
-  "screens": Array [
-    "test",
-  ],
 }
 `)
   })

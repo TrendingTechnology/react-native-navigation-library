@@ -1,7 +1,5 @@
 import React from 'react'
 import { StyleSheet, Animated } from 'react-native'
-import { screenWidth } from './lib'
-import { withTransitions } from './transitioner'
 class Transition extends React.Component {
   static defaultProps = {
     animationConfig: {
@@ -16,6 +14,18 @@ class Transition extends React.Component {
     },
     animationConfigIn: {},
     animationConfigOut: {},
+    animationTransform: anim => {
+      return [
+        {
+          translateX: anim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0],
+            extrapolate: 'clamp',
+          }),
+        },
+      ]
+    },
+    onTransitionEnd: () => {},
   }
 
   state = {
@@ -25,8 +35,8 @@ class Transition extends React.Component {
   componentDidMount() {
     if (this.props.in) {
       Animated.timing(this.state.anim, {
-        ...this.props.animationConfigIn,
         ...this.props.animationConfig,
+        ...this.props.animationConfigIn,
         toValue: 1,
       }).start(this.props.onTransitionEnd)
     }
@@ -36,54 +46,22 @@ class Transition extends React.Component {
     if (prevProps.in !== this.props.in) {
       if (this.props.in) {
         Animated.timing(this.state.anim, {
-          ...this.props.animationConfigIn,
           ...this.props.animationConfig,
+          ...this.props.animationConfigIn,
           toValue: 1,
         }).start(this.props.onTransitionEnd)
       } else {
         Animated.timing(this.state.anim, {
-          ...this.props.animationConfigOut,
           ...this.props.animationConfig,
+          ...this.props.animationConfigOut,
           toValue: 0,
         }).start(this.props.onTransitionEnd)
       }
     }
   }
 
-  animationTransform = anim => {
-    if (this.props.animationTransform) {
-      return this.props.animationTransform(anim)
-    }
-
-    let outputRange = []
-
-    if (this.props.index === this.props.activeIndex) {
-      if (this.props.previousIndex > this.props.index) {
-        outputRange = [-screenWidth, 0]
-      } else {
-        outputRange = [screenWidth, 0]
-      }
-    } else {
-      if (this.props.index < this.props.activeIndex) {
-        outputRange = [-screenWidth, 0]
-      } else {
-        outputRange = [screenWidth, 0]
-      }
-    }
-
-    return [
-      {
-        translateX: anim.interpolate({
-          inputRange: [0, 1],
-          outputRange: outputRange,
-          extrapolate: 'clamp',
-        }),
-      },
-    ]
-  }
-
   render() {
-    const transform = this.animationTransform(this.state.anim)
+    const transform = this.props.animationTransform(this.state.anim)
 
     return (
       <Animated.View
@@ -98,5 +76,4 @@ class Transition extends React.Component {
   }
 }
 
-export { Transition }
-export default withTransitions(Transition)
+export default Transition

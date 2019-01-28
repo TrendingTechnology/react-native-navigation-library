@@ -1,13 +1,24 @@
 import React from 'react'
-import { withTransitionNavigation } from './navigator'
+import { View } from 'react-native'
+import Screen from './screen'
+import { withNavigation } from './navigator'
 
 class Tabs extends React.Component {
-  constructor(props) {
-    super(props)
+  state = {
+    rendered: [this.props.activeIndex],
+    activeIndex: this.props.activeIndex,
+    previousIndex: null,
+  }
 
-    this.state = {
-      rendered: [this.props.activeIndex],
+  static getDerivedStateFromProps = (nextProps, prevState) => {
+    if (nextProps.activeIndex !== prevState.activeIndex) {
+      return {
+        previousIndex: prevState.activeIndex,
+        activeIndex: nextProps.activeIndex,
+      }
     }
+
+    return null
   }
 
   componentDidUpdate(prevProps) {
@@ -24,29 +35,38 @@ class Tabs extends React.Component {
   }
 
   render() {
-    if (!this.props.children) {
-      return null
-    }
-
     const children = React.Children.toArray(this.props.children)
 
-    return this.state.rendered.map(childIndex => {
-      const child = children[childIndex]
+    return (
+      <View style={[{ flex: 1, overflow: 'hidden' }, this.props.style]}>
+        {this.state.rendered.map(childIndex => {
+          const child = children[childIndex]
 
-      if (!child) {
-        return null
-      }
+          if (!child) {
+            return null
+          }
 
-      return React.cloneElement(child, {
-        transition: {
-          index: childIndex,
-          in: childIndex === this.props.activeIndex,
-          optimized: true,
-        },
-      })
-    })
+          return (
+            <Screen
+              {...child.props}
+              key={childIndex}
+              animated={this.props.animated}
+              index={childIndex}
+              previousIndex={this.state.previousIndex}
+              activeIndex={this.props.activeIndex}
+              transition={{
+                in: childIndex === this.props.activeIndex,
+              }}
+              optimized
+            >
+              {React.cloneElement(child, { navigation: this.props.navigation })}
+            </Screen>
+          )
+        })}
+      </View>
+    )
   }
 }
 
 export { Tabs }
-export default withTransitionNavigation(Tabs)
+export default withNavigation(Tabs)
