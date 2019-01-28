@@ -9,7 +9,7 @@ module.exports = {
     '\\.js$': '<rootDir>/node_modules/react-native/jest/preprocessor.js',
   },
   collectCoverageFrom: ['**/src/**/*.js'],
-  setupTestFrameworkScriptFile: path.resolve(__dirname, './setup-tests.js'),
+  setupFilesAfterEnv: [path.resolve(__dirname, './setup-tests.js')],
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname',

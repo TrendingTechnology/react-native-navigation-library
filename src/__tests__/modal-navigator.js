@@ -9,26 +9,23 @@ describe('<Modal />', () => {
   })
 
   test('renders modal based on activeIndex and modal status', () => {
-    const { getByText } = render(
+    const { getByText, update } = render(
       <Navigation activeIndex={0} navigation={{ modal: { active: true } }} />,
     )
 
     getByText('1')
     expect(() => getByText('2')).toThrow()
-  })
 
-  test('transitions out modal when active status changes', () => {
-    const { getByText } = render(
-      <Navigation activeIndex={0} navigation={{ modal: { active: true } }} />,
+    update(
+      <Navigation activeIndex={0} navigation={{ modal: { active: false } }} />,
     )
-
-    expect(getByText('1'))
+    expect(() => getByText('1')).toThrow()
   })
 })
 
 function Navigation(props) {
   return (
-    <Modal {...props}>
+    <Modal {...props} animated={false}>
       <Text>1</Text>
       <Text>2</Text>
       <Text>3</Text>

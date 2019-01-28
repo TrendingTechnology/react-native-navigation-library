@@ -1,45 +1,73 @@
 import React from 'react'
-import { withTransitionNavigation } from './navigator'
+import { View } from 'react-native'
+import { withNavigation } from './navigator'
+import Screen from './screen'
 
 class Switch extends React.Component {
   state = {
-    rendered: [this.props.activeIndex],
+    activeIndex: this.props.activeIndex,
+    previousIndex: null,
+    transitioning: false,
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.activeIndex !== this.props.activeIndex) {
-      this.setState(state => {
-        const previous = state.rendered.filter(
-          i => i !== this.props.activeIndex,
-        )
-        return {
-          rendered: [this.props.activeIndex, ...previous],
-        }
-      })
+  static getDerivedStateFromProps = (nextProps, prevState) => {
+    if (nextProps.activeIndex !== prevState.activeIndex) {
+      return {
+        previousIndex: prevState.activeIndex,
+        activeIndex: nextProps.activeIndex,
+        transitioning: nextProps.animated,
+      }
     }
+
+    return null
+  }
+
+  handleTransitionEnd = () => {
+    this.setState({ transitioning: false })
   }
 
   render() {
-    const children = React.Children.toArray(this.props.children)
+    const arr = React.Children.toArray(this.props.children)
 
-    return [
-      this.props.transitioning && this.props.previousIndex,
-      this.props.activeIndex,
-    ]
-      .filter(i => i === 0 || Boolean(i))
-      .map(childIndex => {
-        const child = children[childIndex]
+    const children = []
 
-        return React.cloneElement(child, {
-          transition: {
-            index: childIndex,
-            in: this.props.activeIndex === childIndex,
-            optimized: true,
-          },
-        })
-      })
+    if (this.state.transitioning) {
+      children.push(this.state.previousIndex)
+    }
+
+    children.push(this.props.activeIndex)
+
+    return (
+      <View style={[{ flex: 1, overflow: 'hidden' }, this.props.style]}>
+        {children.map(childIndex => {
+          const child = arr[childIndex]
+
+          if (!child) {
+            return null
+          }
+
+          return (
+            <Screen
+              {...child.props}
+              key={childIndex}
+              animated={this.props.animated}
+              activeIndex={this.props.activeIndex}
+              previousIndex={this.state.previousIndex}
+              index={childIndex}
+              transition={{
+                in: this.props.activeIndex === childIndex,
+                onTransitionEnd: this.handleTransitionEnd,
+              }}
+              optimized
+            >
+              {React.cloneElement(child, { navigation: this.props.navigation })}
+            </Screen>
+          )
+        })}
+      </View>
+    )
   }
 }
 
 export { Switch }
-export default withTransitionNavigation(Switch)
+export default withNavigation(Switch)

@@ -1,2 +1,11 @@
-/examples
+examples
 coverage 
+test
+/src/__tests__
+
+.prettierrc
+.eslintignore
+.eslintrc
+.watchmanconfig
+jest.config.js
+babel.config.js
