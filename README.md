@@ -105,21 +105,21 @@ import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library
 
 <Navigator>
   <Header>
-    <MyHeader title="Header 1" navigation={navigation} />
-    <MyHeader title="Header 2" navigation={navigation} />
-    <MyHeader title="Header 3" navigation={navigation} />
+    <MyHeader title="Header 1" />
+    <MyHeader title="Header 2" />
+    <MyHeader title="Header 3" />
   </Header>
 
   <Stack>
-    <MyScreen title="Modal Panel 1" navigation={navigation} />
-    <MyScreen title="Modal Panel 2" navigation={navigation} />
-    <MyScreen title="Modal Panel 3" navigation={navigation} />
+    <MyScreen title="Modal Panel 1" />
+    <MyScreen title="Modal Panel 2" />
+    <MyScreen title="Modal Panel 3" />
   </Stack>
 
   <Modal>
-    <MyModal title="Modal for Panel 1" navigation={navigation} />
-    <MyModal title="Modal for Panel 2" navigation={navigation} />
-    <MyModal title="Modal for Panel 3" navigation={navigation} />
+    <MyModal title="Modal for Panel 1" />
+    <MyModal title="Modal for Panel 2" />
+    <MyModal title="Modal for Panel 3" />
   </Modal>
 </Navigator>
 ```
@@ -127,8 +127,6 @@ import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library
 <p align="center">
   <img src="examples/modal-example.gif" >
 </p>
-
-Thats about it! There's a few more components that we'll get into later on, but hopefully you get the gist. Mix, match, and compose away. Nest navigators, put the tab bar where ever you want. You want a header for each of your tabs, or maybe just one or two of those tabs? No problem - you get to define the components that are rendered and where. But how to do the navigating?
 
 # Navigation
 
@@ -332,22 +330,18 @@ class App extends React.Component {
 
 # Pros and Cons
 
-This library might not be for everyone.
-
-I was frustrated with how separated everything seemed using other libraries, but some people might like it that way.
-
-Some features aren't that implemented (yet):
+Some features aren't implemented (yet):
 
 - deep linking
 - navigating through several layers of navigators
 - probably a lot of other stuff I haven't thought of
 
-Navigating certainly is not at the same level of sophistication as a library like `react-navigation` or `react-native-navigation`, although I believe that those libraries also help create that need for you.
+Navigating is not at the same level of sophistication as a library like `react-navigation` or `react-native-navigation`
 
-Lastly, committing to a navigation library can have a large impact on how you architect your app. This library is pretty small, and you can incrementally adopt it in small parts -- it's possible to experiment, and I hope that you do!
+Committing to a navigation library can have a large impact on how you architect your app. This library is pretty small and you can incrementally adopt it -- it's possible to experiment, and I hope that you do!
 
 # Acknowledgements
 
-The inspiration for this API came from watching [Ryan Florence's talks](https://reach.tech), specifically the lectures he's done on Tabs components. So, thank you Ryan!
+The inspiration for this API came from watching [Ryan Florence's lectures](https://reach.tech), specifically the lectures he's done on Tabs components. So, thank you Ryan!
 
 I'm sure I have missed a ton of stuff, so do not hesitate and reach out!

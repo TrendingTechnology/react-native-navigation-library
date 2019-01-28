@@ -1,6 +1,6 @@
 {
   "name": "react-native-navigation-library",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "declarative navigation library for react native",
   "main": "./react-native-navigation-library.js",
   "scripts": {
@@ -9,10 +9,10 @@
   },
   "keywords": [
     "react",
-    "react",
-    "native",
-    "react",
-    "navigation"
+    "react-native",
+    "navigation",
+    "react-navigation",
+    "react-native-navigation"
   ],
   "author": "andrew smith",
   "repository": {
