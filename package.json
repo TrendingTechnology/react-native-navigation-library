@@ -1,6 +1,6 @@
 {
   "name": "react-native-navigation-library",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "declarative navigation library for react native",
   "main": "./react-native-navigation-library.js",
   "scripts": {

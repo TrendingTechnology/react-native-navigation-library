@@ -46,8 +46,16 @@ class Tabs extends React.Component {
             return null
           }
 
+          const testingProps = {
+            testID:
+              childIndex === this.props.activeIndex
+                ? 'active-screen'
+                : `inactive-screen-${childIndex}`,
+          }
+
           return (
             <Screen
+              {...testingProps}
               {...child.props}
               key={childIndex}
               animated={this.props.animated}

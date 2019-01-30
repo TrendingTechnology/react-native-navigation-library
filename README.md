@@ -328,6 +328,28 @@ class App extends React.Component {
 }
 ```
 
+# Testing
+
+One strength of this library is that you can write end to end and integration tests with your navigations.
+
+This library uses Animated apis -- if you're testing with jest, you can mock them out in your environment setup file like this:
+
+```
+jest.useFakeTimers()
+
+jest.mock('Easing', () => {
+  return {
+    _bezier: jest.fn(),
+    _easing: jest.fn(),
+    inOut: jest.fn(),
+  }
+})
+
+jest.mock('NativeAnimatedHelper')
+```
+
+If you're trying to narrow down the active screen, each navigator will expose a testID that you can query for like so: `queryByTestId('active-screen')` -- might be useful to snapshot or peek into whats going on in your tests.
+
 # Pros and Cons
 
 Some features aren't implemented (yet):

@@ -37,8 +37,16 @@ class Stack extends React.Component {
     return (
       <View style={[{ flex: 1, overflow: 'hidden' }, this.props.style]}>
         {React.Children.map(children, (child, index) => {
+          const testingProps = {
+            testID:
+              index === this.props.activeIndex
+                ? `active-screen`
+                : `inactive-screen-${index}`,
+          }
+
           return (
             <Screen
+              {...testingProps}
               {...child.props}
               animated={this.props.animated}
               index={index}
