@@ -11,7 +11,7 @@ jest.mock('Animated', () => {
         interpolate: jest.fn(),
       }
     }),
-    timing: jest.fn(() => {
+    spring: jest.fn(() => {
       return {
         start: jest.fn(),
       }
@@ -32,13 +32,13 @@ describe('<Transition />', () => {
 
   test('animates when `in` prop changes', () => {
     const { update } = render(<Transition />)
-    expect(Animated.timing).toHaveBeenCalledTimes(0)
+    expect(Animated.spring).toHaveBeenCalledTimes(0)
 
     update(<Transition in />)
-    expect(Animated.timing).toHaveBeenCalledTimes(1)
+    expect(Animated.spring).toHaveBeenCalledTimes(1)
 
     update(<Transition in={false} />)
-    expect(Animated.timing).toHaveBeenCalledTimes(2)
+    expect(Animated.spring).toHaveBeenCalledTimes(2)
   })
 
   test('animation config as a prop', () => {
@@ -48,7 +48,7 @@ describe('<Transition />', () => {
     }
 
     render(<Transition animationConfig={fakeAnimationConfig} in />)
-    expect(Animated.timing).toHaveBeenCalledWith(
+    expect(Animated.spring).toHaveBeenCalledWith(
       expect.any(Object),
       fakeAnimationConfig,
     )

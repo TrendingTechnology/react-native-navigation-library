@@ -34,7 +34,7 @@ class Transition extends React.Component {
 
   componentDidMount() {
     if (this.props.in) {
-      Animated.timing(this.state.anim, {
+      Animated.spring(this.state.anim, {
         ...this.props.animationConfig,
         ...this.props.animationConfigIn,
         toValue: 1,
@@ -45,13 +45,13 @@ class Transition extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.in !== this.props.in) {
       if (this.props.in) {
-        Animated.timing(this.state.anim, {
+        Animated.spring(this.state.anim, {
           ...this.props.animationConfig,
           ...this.props.animationConfigIn,
           toValue: 1,
         }).start(this.props.onTransitionEnd)
       } else {
-        Animated.timing(this.state.anim, {
+        Animated.spring(this.state.anim, {
           ...this.props.animationConfig,
           ...this.props.animationConfigOut,
           toValue: 0,
