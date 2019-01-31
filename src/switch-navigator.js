@@ -52,19 +52,21 @@ class Switch extends React.Component {
             return null
           }
 
+          const testIdPrefix = this.props.name ? this.props.name + '-' : ''
+
           const testingProps = {
             testID:
               childIndex === this.props.activeIndex
-                ? `${this.props.name}-active-screen`
-                : `${this.props.name}-inactive-screen-${childIndex}`,
+                ? `${testIdPrefix}active-screen`
+                : `${testIdPrefix}inactive-screen-${childIndex}`,
           }
 
           const { style: childStyle, ...childProps } = child.props
 
           return (
             <Screen
-              {...testingProps}
               {...childProps}
+              testingProps={testingProps}
               style={[this.props.screenStyle, childStyle]}
               key={childIndex}
               animated={this.props.animated}

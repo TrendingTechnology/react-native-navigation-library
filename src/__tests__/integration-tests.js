@@ -63,7 +63,7 @@ test('stack navigation', () => {
     )
   }
 
-  const { getByText, getByTestId } = render(<StackApp />)
+  const { getByText } = render(<StackApp />)
   getByText('hello 123')
   fireEvent.press(getByText('Screen 1'))
   getByText('hello joe')
@@ -75,18 +75,6 @@ test('stack navigation', () => {
   getByText('hello hey')
   fireEvent.press(getByText('Header 1'))
   getByText('hello 123')
-
-  fireEvent.press(getByText('Screen 1'))
-  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-2')
-
-  fireEvent.press(getByText('Screen 2'))
-  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-3')
-
-  fireEvent.press(getByText('Screen 3'))
-  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-2')
-
-  fireEvent.press(getByText('Header 2'))
-  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-1')
 })
 
 test('tabs navigation', () => {
@@ -126,31 +114,24 @@ test('tabs navigation', () => {
     )
   }
 
-  const { getByText, getByTestId } = render(<TabsApp />)
+  const { getByText } = render(<TabsApp />)
 
   fireEvent.press(getByText('Tab 1'))
-  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-1')
 
   fireEvent.press(getByText('Tab 2'))
-  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Tab 3'))
-  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-3')
 
   fireEvent.press(getByText('Tab 1'))
-  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-1')
 
   fireEvent.press(getByText('Tab 2'))
   fireEvent.press(getByText('Screen 2'))
-  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-3')
 
   fireEvent.press(getByText('Tab 1'))
   fireEvent.press(getByText('Screen 1'))
-  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Tab 3'))
   fireEvent.press(getByText('Screen 3'))
-  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-2')
 })
 
 test('switch navigator', () => {
@@ -182,23 +163,19 @@ test('switch navigator', () => {
     )
   }
 
-  const { getByText, getByTestId } = render(<SwitchApp />)
+  const { getByText } = render(<SwitchApp />)
 
   expect(() => getByText('Screen 2')).toThrow()
 
   fireEvent.press(getByText('Screen 1'))
   expect(() => getByText('Screen 1')).toThrow()
-  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Screen 2'))
   expect(() => getByText('Screen 2')).toThrow()
-  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-3')
 
   fireEvent.press(getByText('Screen 3'))
   expect(() => getByText('Screen 3')).toThrow()
-  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Header 2'))
   expect(() => getByText('Screen 2')).toThrow()
-  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-1')
 })

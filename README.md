@@ -342,9 +342,7 @@ jest.mock('NativeAnimatedHelper')
 
 If you're trying to narrow down the active screen, each navigator will expose a testID that you can query for like so: `queryByTestId('{my-navigation-name}-active-screen')` -- this might be useful to snapshot or peek into whats going on as you write your tests.
 
-# Pros and Cons
-
-I think I've mentioned most of the pros already, but primarily what you get is a lot more flexibility with how you structure and style your navigation.
+# WIP
 
 Some features aren't implemented (yet):
 
@@ -352,12 +350,10 @@ Some features aren't implemented (yet):
 - navigating through several layers of navigators
 - probably a lot of other stuff I haven't thought of
 
-Navigating is not at the same level of sophistication as a library like `react-navigation` or `react-native-navigation`, and you don't get as much out of the box like you do with those libraries. It's also entirely javascript, theres no native implementation, so something like `react-native-navigation` might perform better in complex apps.
-
-Committing to a navigation library can have a large impact on how you architect your app, but this library is pretty small and you can incrementally adopt it. I could even see it used along with something like React Router to tie together segments of navigation throughout your app -- it's possible to experiment, and I hope that you do!
-
 # Acknowledgements
 
 The inspiration for this API came from watching [Ryan Florence's lectures](https://reach.tech), specifically the lectures he's done on Tabs components. So, thank you Ryan!
 
-I'm sure I have missed a ton of stuff, so do not hesitate and reach out!
+Committing to a navigation library can have a large impact on how you architect your app, but this library is pretty small and you can incrementally adopt it, and I hope that you do!
+
+I'm sure I have missed a ton of stuff, so do not hesitate and reach out

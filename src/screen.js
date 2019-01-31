@@ -60,7 +60,9 @@ class Screen extends React.Component {
             this.props.style,
           ]}
         >
-          {this.props.children}
+          {React.cloneElement(this.props.children, {
+            ...this.props.testingProps,
+          })}
         </View>
       )
     }
@@ -80,8 +82,13 @@ class Screen extends React.Component {
         animationConfigIn={animationConfigIn}
         animationConfigOut={animationConfigOut}
       >
-        <View style={[{ flex: 1 }, this.props.style]}>
-          {this.props.children}
+        <View
+          {...this.props.testingProps}
+          style={[{ flex: 1 }, this.props.style]}
+        >
+          {React.cloneElement(this.props.children, {
+            ...this.props.testingProps,
+          })}
         </View>
       </Transition>
     )

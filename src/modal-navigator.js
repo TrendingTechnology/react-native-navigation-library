@@ -5,30 +5,6 @@ import Screen from './screen'
 
 const { height: screenHeight } = Dimensions.get('window')
 
-/*
-
-Modals are mapped to an individual screen (e.g <Screen 1 /> and <Modal 1 /> in markup below) and are displayed via props.navigation.modal.show()
-
-Example: 
-  <Navigator>
-    <Stack>
-      <Screen 1 />
-      <Screen 2 />
-      <Screen 3 />
-    </Stack>
-
-    <Modal>
-      <Modal 1 />
-      <Modal 2 />
-      <Modal 3 />
-    </Modal>
-  </Navigator>
-
-
-  For Screen 1 to display Modal 1 : props.navigation.modal.show() 
-  For Screen 2 to display Modal 2 : props.navigation.modal.show()
-*/
-
 class Modal extends React.Component {
   state = {
     active: false,

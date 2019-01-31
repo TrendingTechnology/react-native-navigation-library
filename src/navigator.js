@@ -45,7 +45,7 @@ class Navigator extends React.Component {
               ...state.navigation.modal,
               active: active,
             },
-            data: {
+            state: {
               ...state.navigation.state,
               ...data,
             },
