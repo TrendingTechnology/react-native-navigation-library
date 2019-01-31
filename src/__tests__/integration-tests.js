@@ -24,7 +24,7 @@ test('stack navigation', () => {
                 <Button title="Header 3" onPress={() => navigation.pop()} />
               </Header>
 
-              <Stack>
+              <Stack name="stack">
                 <View name="screen-1">
                   <Button
                     title="Screen 1"
@@ -77,16 +77,16 @@ test('stack navigation', () => {
   getByText('hello 123')
 
   fireEvent.press(getByText('Screen 1'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-2')
+  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Screen 2'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-3')
+  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-3')
 
   fireEvent.press(getByText('Screen 3'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-2')
+  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Header 2'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-1')
+  expect(getByTestId('stack-active-screen').props.name).toEqual('screen-1')
 })
 
 test('tabs navigation', () => {
@@ -96,7 +96,7 @@ test('tabs navigation', () => {
         {({ navigation }) => {
           return (
             <View style={{ flex: 1 }}>
-              <Tabs>
+              <Tabs name="tabs">
                 <View name="screen-1">
                   <Button title="Screen 1" onPress={() => navigation.push()} />
                 </View>
@@ -129,28 +129,28 @@ test('tabs navigation', () => {
   const { getByText, getByTestId } = render(<TabsApp />)
 
   fireEvent.press(getByText('Tab 1'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-1')
+  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-1')
 
   fireEvent.press(getByText('Tab 2'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-2')
+  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Tab 3'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-3')
+  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-3')
 
   fireEvent.press(getByText('Tab 1'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-1')
+  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-1')
 
   fireEvent.press(getByText('Tab 2'))
   fireEvent.press(getByText('Screen 2'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-3')
+  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-3')
 
   fireEvent.press(getByText('Tab 1'))
   fireEvent.press(getByText('Screen 1'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-2')
+  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Tab 3'))
   fireEvent.press(getByText('Screen 3'))
-  expect(getByTestId('active-screen').props.name).toEqual('screen-2')
+  expect(getByTestId('tabs-active-screen').props.name).toEqual('screen-2')
 })
 
 test('switch navigator', () => {
@@ -164,7 +164,7 @@ test('switch navigator', () => {
                 <View hidden />
                 <Button title="Header 2" onPress={() => navigation.pop()} />
               </Header>
-              <Switch>
+              <Switch name="switch">
                 <View name="screen-1">
                   <Button title="Screen 1" onPress={() => navigation.push()} />
                 </View>
@@ -188,17 +188,17 @@ test('switch navigator', () => {
 
   fireEvent.press(getByText('Screen 1'))
   expect(() => getByText('Screen 1')).toThrow()
-  expect(getByTestId('active-screen').props.name).toEqual('screen-2')
+  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Screen 2'))
   expect(() => getByText('Screen 2')).toThrow()
-  expect(getByTestId('active-screen').props.name).toEqual('screen-3')
+  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-3')
 
   fireEvent.press(getByText('Screen 3'))
   expect(() => getByText('Screen 3')).toThrow()
-  expect(getByTestId('active-screen').props.name).toEqual('screen-2')
+  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-2')
 
   fireEvent.press(getByText('Header 2'))
   expect(() => getByText('Screen 2')).toThrow()
-  expect(getByTestId('active-screen').props.name).toEqual('screen-1')
+  expect(getByTestId('switch-active-screen').props.name).toEqual('screen-1')
 })

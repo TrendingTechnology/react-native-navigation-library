@@ -55,8 +55,8 @@ class Switch extends React.Component {
           const testingProps = {
             testID:
               childIndex === this.props.activeIndex
-                ? `active-screen`
-                : `inactive-screen-${childIndex}`,
+                ? `${this.props.name}-active-screen`
+                : `${this.props.name}-inactive-screen-${childIndex}`,
           }
 
           const { style: childStyle, ...childProps } = child.props

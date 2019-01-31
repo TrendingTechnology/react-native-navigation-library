@@ -46,8 +46,8 @@ class Stack extends React.Component {
           const testingProps = {
             testID:
               index === this.props.activeIndex
-                ? `active-screen`
-                : `inactive-screen-${index}`,
+                ? `${this.props.name}-active-screen`
+                : `${this.props.name}-inactive-screen-${index}`,
           }
 
           const { style: childStyle, ...childProps } = child.props

@@ -131,7 +131,7 @@ The navigation prop is passed to children of `<Stack />`, `<Tabs />`, and `<Swit
 
 ### Using `navigation.navigate()`
 
-Navigating using route names requires a `screens: [string]` prop to be passed to the Navigator:
+Navigating using route names requires name props for your screens, _or_ an array of screen names passed to the Navigator:
 
 ```
 import { Navigator, Header, Switch } from 'react-native-navigation-library'
@@ -147,10 +147,10 @@ import { Navigator, Header, Switch } from 'react-native-navigation-library'
         </Header>
 
         <Switch>
-          <MyScreen navigate={() => navigation.navigate('third', { someData: 'hello there' })} />
-          <MyScreen navigate={() => navigation.navigate('fourth')} />
-          <MyScreen navigate={() => navigation.navigate('second')} />
-          <MyResetScreen navigate={() => navigation.navigate('first')} reset={() => navigation.reset() />
+          <MyScreen name='first' navigate={() => navigation.navigate('third', { someData: 'hello there' })} />
+          <MyScreen name='second' navigate={() => navigation.navigate('fourth')} />
+          <MyScreen name='third' navigate={() => navigation.navigate('second')} />
+          <MyResetScreen name='fourth' navigate={() => navigation.navigate('first')} reset={() => navigation.reset() />
         </Switch>
       </View>
     )
