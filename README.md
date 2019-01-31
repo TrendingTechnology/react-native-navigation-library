@@ -1,5 +1,11 @@
 # react-native-navigation-library
 
+A composable, flexible, and declarative API for your app's navigation.
+
+The primitives in this library (try to) stay out of your way as much as possible and lay more responsibility on the user (you). There's only a few core components and a few basic behaviours to grasp, so the code you write is focused more on what you care about and are familiar with: your components. It's super composable, so nesting your navigators and mapping out your app is relatively straightforward.
+
+Sound good? Let's look at some examples:
+
 <p align="center">
   <img src="examples/signup-example.gif">
   <img src="examples/nested-feeds.gif">
@@ -9,13 +15,9 @@
   <em>These aren't going to win any design awards, but hopefully you get the idea.</em>
 </p>
 
-# Why should I use this?
+# Install
 
-You want a composable, flexible, and declarative API for your app's navigation.
-
-The primitives in this library (try to) stay out of your way as much as possible and lay more responsibility on the user (you). That means the code you write is focused on what you care about (UI/UX, hopefully) and uses what you're already familiar with: your components. And all of your Screens, Modals, Headers, TabBars, etc are colocated -- right there in your render function, so it's plain to see what's going on. It's super composable, so nesting your navigators and mapping out your app is relatively straightforward.
-
-Sound good? Let's look at some examples:
+`npm install --save react-native-navigation-library`
 
 # Navigation Components
 
@@ -51,6 +53,8 @@ import { Navigator, Tabs, TabBar, Tab } from 'react-native-navigation-library'
   <img src="examples/tabs-example.gif">
 </p>
 
+_Behaviour:_ Children are mounted in the order in which they become active, meaning navigating from Screen 1 to Screen 3 will not mount Screen 2. Note that the TabBar is optional -- you can navigate with your screen components using the `navigation` prop as well (more on this later)
+
 ### Stack
 
 ...and here's a stack navigator:
@@ -77,9 +81,9 @@ import { Navigator, Header, Stack } from 'react-native-navigation-library'
   <img src="examples/stack-example.gif" >
 </p>
 
-### Switch
+_Behaviour:_ Children are mounted in order, up until the active child. Navigating to Screen 3 will also mount Screen 1 and 2. This might be useful when the sequence of children is important.
 
-A switch will only render one screen at a time:
+### Switch
 
 ```
 import { Navigator, Switch } from 'react-native-navigation-library'
@@ -97,6 +101,64 @@ import { Navigator, Switch } from 'react-native-navigation-library'
 <p align="center">
   <img src="examples/switch-example.gif" >
 </p>
+
+_Behaviour:_ Only the active child is mounted, previous children are unmounted.
+
+That's about it! Note that each of the accessory components in the examples above (Header, TabBar, Tab, Modal, etc) are composable, meaning you can mix and match and render in any combination that you'd like, depending on your needed use case.
+
+# Navigation prop
+
+Navigating around is (hopefully) fairly similar to what you're used to:
+
+```
+navigation: Navigation {
+  push: (data: any) => void
+  pop: (data: any) => void
+  select: (index: number, data: any) => void
+  navigate: (routeName: string, data: any) => void
+  reset: () => void,
+  state: {}: any,
+  modal: {
+    visible: boolean,
+    show: (data: any) => void,
+    dismiss: (data: any) => void,
+  }
+  parent?: (navigation: Navigation)
+}
+```
+
+The navigation prop is passed to children of `<Stack />`, `<Tabs />`, and `<Switch />`, and provides lots of useful stuff for your screens. `<Navigator />` also accepts a render prop if you'd like to be more explicit (see next example).
+
+### Using `navigation.navigate()`
+
+Navigating using route names requires a `screens: [string]` prop to be passed to the Navigator:
+
+```
+import { Navigator, Header, Switch } from 'react-native-navigation-library'
+<Navigator screens={['first', 'second', 'third', 'fourth']}>
+  {({ navigation }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <Header>
+          <MyHeader title='Screen 1' onPress={() => navigation.navigate('second')} />
+          <MyHeader title='Screen 2' onPress={() => navigation.navigate('third')} />
+          <MyHeader title='Screen 3' onPress={() => navigation.navigate('fourth')} />
+          <MyHeader title='Screen 3' onPress={() => navigation.reset()} />
+        </Header>
+
+        <Switch>
+          <MyScreen navigate={() => navigation.navigate('third', { someData: 'hello there' })} />
+          <MyScreen navigate={() => navigation.navigate('fourth')} />
+          <MyScreen navigate={() => navigation.navigate('second')} />
+          <MyResetScreen navigate={() => navigation.navigate('first')} reset={() => navigation.reset() />
+        </Switch>
+      </View>
+    )
+  }}
+</Navigator>
+```
+
+# Other Stuff
 
 ### Modal
 
@@ -128,61 +190,12 @@ import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library
   <img src="examples/modal-example.gif" >
 </p>
 
-# Navigation
-
-Navigating around is (hopefully) fairly similar to what you're used to.
-
-The navigation prop provides lots of useful stuff for your screens:
-
-```
-navigation: Navigation {
-  push: (data: any) => void
-  pop: (data: any) => void
-  select: (index: number, data: any) => void
-  navigate: (routeName: string, data: any) => void
-  reset: () => void,
-  state: {}: any,
-  modal: {
-    visible: boolean,
-    show: (data: any) => void,
-    dismiss: (data: any) => void,
-  }
-  parent?: (navigation: Navigation) // NOTE: this is only when your navigator is nested inside another navigator
-}
-```
-
-### Using `navigation.navigate()`
-
-As noted above, in order to navigate to a screen by it's name, you'll have to provide a `screens={['screen-1', 'screen-2]}` prop to the navigator
-
-```
-import { Navigator, Header, Switch } from 'react-native-navigation-library'
-
-// navigation.navigate() will work for these screens
-
-<Navigator screens={['first', 'second', 'third', 'fourth']}>
-  {({ navigation }) => {
-    return (
-      <Switch>
-        <MyScreen navigate={() => navigation.navigate('third', { someData: 'hello there' })} />
-        <MyScreen navigate={() => navigation.navigate('fourth')} />
-        <MyScreen navigate={() => navigation.navigate('second')} />
-        <MyResetScreen navigate={() => navigation.navigate('first')} reset={() => navigation.reset() />
-      </Switch>
-    )
-  }}
-</Navigator>
-```
-
-# Other Stuff
-
 ### Animation and styles
 
-Each of your defined screens are provided default animation and styles out of the box. They can be configured with animation and style props
+Each of your defined screens are provided default animation and styles out of the box. They can be configured with animation and style props:
 
 ```
-import { StyleSheet } from 'react-native'
-import { Screen, Navigator, Stack } from 'react-native-navigation-library'
+import { Navigator, Stack } from 'react-native-navigation-library'
 
 <Navigator>
   <Stack>
@@ -240,67 +253,44 @@ import { Screen, Navigator, Stack } from 'react-native-navigation-library'
 import { Header, Navigator, Stack } from 'react-native-navigation-library'
 
 <Navigator>
-  <Header hidden={false}>
-    <MyHeader title='Header 1">
-    <MyHeader title='Header 2">
-    <View hidden>
-  </Header>
+  {({ navigation }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <Header hidden={false}>
+          <MyHeader title='Header 1" hidden>
+          <MyHeader title='Header 2" goBack={() => navigation.pop()} />
+        </Header>
 
-  <Stack>
-    <MyScreen title='Screen 1'>
-    <MyScreen title='Screen 2'>
-    <MyScreen title='Screen 3 -- I have no header'>
-    <MyScreen title='Screen 4 -- I have no header'>
-  </Stack>
+        <Stack>
+          <MyScreen title='Screen 1 -- I have no header'>
+          <MyScreen title='Screen 2'>
+          <MyScreen title='Screen 3 -- I have no header'>
+          <MyScreen title='Screen 4 -- I have no header'>
+        </Stack>
+      </View>
+    )
+  }}
 </Navigator>
 ```
 
-Each header child element is mapped to a screen in the `<Stack />`, so you declare what component is rendered for each screen, or if you don't want different headers, you can just copy paste the same component like I did in the example above.
-
-### TabBar
-
-Each `<Tab />` receives an `active` prop which can be used to render active / inactive states. Other than that, `<Tab />` is a relatively dumb component -- what you render inside is completely up to you!
-
-```
-import { Navigator, Header, Tabs, TabBar, Tab } from 'react-native-navigation-library'
-
-<Navigator>
-  <Tabs>
-    <MyScreen title="Panel 1"  />
-    <MyScreen title="Panel 2"  />
-    <MyScreen title="Panel 3"  />
-  </Tabs>
-
-  <TabBar>
-    <Tab>
-      <MyTab title="Tab 1" />
-    </Tab>
-    <Tab>
-      <MyTab title="Tab 2" />
-    </Tab>
-    <Tab>
-      <MyTab title="Tab 3" />
-    </Tab>
-  </TabBar>
-</Navigator>
-```
+Each header child element is mapped to a screen based on ordering -- so you declare what header component is rendered for each screen. Each child can be toggled with the `hidden` prop.
 
 ### Navigator
 
-It's worth noting that any nested `<Navigator />` will expose it's parent navigation inside the navigation prop, and provides an optional `children` render prop that exposes its navigation
+It's worth noting that any nested `<Navigator />` will expose it's parent navigation inside the navigation prop if you need it.
+
+You can listen for navigation changes via the onNavigationChange callback, and pass some other initial props to a Navigator:
 
 ```
 class App extends React.Component {
   state = {
     activeIndex: 0,
-    activeScreen: '',
     navigation: {},
   }
 
   handleNavigationChange = (updatedNavigation: Navigation) => {
     this.setState({
       activeIndex: updatedNavigation.activeIndex,
-      activeScreen: updatedNavigation.activeScreen,
       navigation: updatedNavigation.navigation,
     })
   }
@@ -317,8 +307,8 @@ class App extends React.Component {
         {({ navigation }) => {
           return (
             <Stack>
-              <MyScreen title="Hi" />
-              <MyScreen title="Hey" />
+              <MyFormScreen title="Hi" onSubmit={(formValues) => navigation.push({ formValues })} />
+              <MyScreen title="Hey" formValues={navigation.state.formValues} />
             </Stack>
           )
         }}
@@ -328,9 +318,11 @@ class App extends React.Component {
 }
 ```
 
+You can also turn animations off -- this can be useful if you want a slightly faster development workflow.
+
 # Testing
 
-One strength of this library is that you can write end to end and integration tests with your navigations.
+One strength of this library is that you can write end to end and integration tests
 
 This library uses Animated apis -- if you're testing with jest, you can mock them out in your environment setup file like this:
 
@@ -348,9 +340,11 @@ jest.mock('Easing', () => {
 jest.mock('NativeAnimatedHelper')
 ```
 
-If you're trying to narrow down the active screen, each navigator will expose a testID that you can query for like so: `queryByTestId('active-screen')` -- might be useful to snapshot or peek into whats going on in your tests.
+If you're trying to narrow down the active screen, each navigator will expose a testID that you can query for like so: `queryByTestId('{my-navigation-name}-active-screen')` -- this might be useful to snapshot or peek into whats going on as you write your tests.
 
 # Pros and Cons
+
+I think I've mentioned most of the pros already, but primarily what you get is a lot more flexibility with how you structure and style your navigation.
 
 Some features aren't implemented (yet):
 
@@ -358,9 +352,9 @@ Some features aren't implemented (yet):
 - navigating through several layers of navigators
 - probably a lot of other stuff I haven't thought of
 
-Navigating is not at the same level of sophistication as a library like `react-navigation` or `react-native-navigation`
+Navigating is not at the same level of sophistication as a library like `react-navigation` or `react-native-navigation`, and you don't get as much out of the box like you do with those libraries. It's also entirely javascript, theres no native implementation, so something like `react-native-navigation` might perform better in complex apps.
 
-Committing to a navigation library can have a large impact on how you architect your app. This library is pretty small and you can incrementally adopt it -- it's possible to experiment, and I hope that you do!
+Committing to a navigation library can have a large impact on how you architect your app, but this library is pretty small and you can incrementally adopt it. I could even see it used along with something like React Router to tie together segments of navigation throughout your app -- it's possible to experiment, and I hope that you do!
 
 # Acknowledgements
 

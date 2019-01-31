@@ -4,10 +4,16 @@ import { withNavigation } from './navigator'
 import Screen from './screen'
 
 class Stack extends React.Component {
-  state = {
-    activeIndex: this.props.activeIndex,
-    previousIndex: null,
-    transitioning: false,
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      activeIndex: props.activeIndex,
+      previousIndex: null,
+      transitioning: false,
+    }
+
+    props.updateScreens && props.updateScreens(props.children)
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
@@ -44,10 +50,13 @@ class Stack extends React.Component {
                 : `inactive-screen-${index}`,
           }
 
+          const { style: childStyle, ...childProps } = child.props
+
           return (
             <Screen
               {...testingProps}
-              {...child.props}
+              {...childProps}
+              style={[this.props.screenStyle, childStyle]}
               animated={this.props.animated}
               index={index}
               activeIndex={this.props.activeIndex}
@@ -55,6 +64,7 @@ class Stack extends React.Component {
               transition={{
                 in: index <= this.props.activeIndex,
                 onTransitionEnd: this.handleTransitionEnd,
+                transitioning: this.state.transitioning,
               }}
             >
               {React.cloneElement(child, { navigation: this.props.navigation })}
@@ -67,4 +77,4 @@ class Stack extends React.Component {
 }
 
 export { Stack }
-export default withNavigation(Stack)
+export default withNavigation(Stack, 'screen-container')

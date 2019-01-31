@@ -4,10 +4,16 @@ import Screen from './screen'
 import { withNavigation } from './navigator'
 
 class Tabs extends React.Component {
-  state = {
-    rendered: [this.props.activeIndex],
-    activeIndex: this.props.activeIndex,
-    previousIndex: null,
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      activeIndex: props.activeIndex,
+      rendered: [props.activeIndex],
+      transitioning: false,
+    }
+
+    props.updateScreens && props.updateScreens(props.children)
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
@@ -53,10 +59,13 @@ class Tabs extends React.Component {
                 : `inactive-screen-${childIndex}`,
           }
 
+          const { style: childStyle, ...childProps } = child.props
+
           return (
             <Screen
               {...testingProps}
-              {...child.props}
+              {...childProps}
+              style={[this.props.screenStyle, childStyle]}
               key={childIndex}
               animated={this.props.animated}
               index={childIndex}
@@ -77,4 +86,4 @@ class Tabs extends React.Component {
 }
 
 export { Tabs }
-export default withNavigation(Tabs)
+export default withNavigation(Tabs, 'screen-container')

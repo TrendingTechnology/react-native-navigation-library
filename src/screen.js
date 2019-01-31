@@ -55,7 +55,6 @@ class Screen extends React.Component {
           style={[
             {
               flex: 1,
-              backgroundColor: 'white',
               ...StyleSheet.absoluteFillObject,
             },
             this.props.style,
@@ -81,7 +80,7 @@ class Screen extends React.Component {
         animationConfigIn={animationConfigIn}
         animationConfigOut={animationConfigOut}
       >
-        <View style={[{ flex: 1, backgroundColor: 'white' }, this.props.style]}>
+        <View style={[{ flex: 1 }, this.props.style]}>
           {this.props.children}
         </View>
       </Transition>

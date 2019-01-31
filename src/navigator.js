@@ -8,29 +8,31 @@ class Navigator extends React.Component {
   }
 
   selectActiveIndex = (index, data = {}) => {
-    this.setState(
-      state => {
-        return {
-          activeIndex: index,
-          navigation: {
-            ...state.navigation,
-            state: {
-              ...state.navigation.state,
-              ...data,
+    if (this.state.screens[index]) {
+      this.setState(
+        state => {
+          return {
+            activeIndex: index,
+            navigation: {
+              ...state.navigation,
+              state: {
+                ...state.navigation.state,
+                ...data,
+              },
             },
-          },
-        }
-      },
-      () => {
-        if (this.props.onNavigationChange) {
-          this.props.onNavigationChange({
-            activeIndex: this.state.activeIndex,
-            activeScreen: this.state.screens[this.state.activeIndex],
-            navigation: this.state.navigation,
-          })
-        }
-      },
-    )
+          }
+        },
+        () => {
+          if (this.props.onNavigationChange) {
+            this.props.onNavigationChange({
+              activeIndex: this.state.activeIndex,
+              activeScreen: this.state.screens[this.state.activeIndex],
+              navigation: this.state.navigation,
+            })
+          }
+        },
+      )
+    }
   }
 
   toggleModal = (active, data = {}) => {
@@ -60,6 +62,14 @@ class Navigator extends React.Component {
         }
       },
     )
+  }
+
+  updateScreens = children => {
+    if (this.state.screens.length === 0) {
+      this.setState({
+        screens: children.map((child, index) => child.props.name || `${index}`),
+      })
+    }
   }
 
   push = data => {
@@ -110,11 +120,14 @@ class Navigator extends React.Component {
   initialState = {
     activeIndex: this.props.initialIndex || 0,
     navigation: this.navigation,
-    screens: this.props.screens || [],
     animated: this.props.animated,
+    updateScreens: this.updateScreens,
   }
 
-  state = this.initialState
+  state = {
+    ...this.initialState,
+    screens: this.props.screens || [],
+  }
 
   componentDidMount() {
     if (this.props.onNavigationChange) {
@@ -143,7 +156,7 @@ class Navigator extends React.Component {
   }
 }
 
-function withNavigation(Component) {
+function withNavigation(Component, type) {
   class NavigationContainer extends React.Component {
     render() {
       return (
@@ -155,6 +168,9 @@ function withNavigation(Component) {
                 navigation={context.navigation}
                 activeIndex={context.activeIndex}
                 animated={context.animated}
+                updateScreens={
+                  type === 'screen-container' ? context.updateScreens : null
+                }
               />
             )
           }}

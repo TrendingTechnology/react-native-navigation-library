@@ -4,10 +4,16 @@ import { withNavigation } from './navigator'
 import Screen from './screen'
 
 class Switch extends React.Component {
-  state = {
-    activeIndex: this.props.activeIndex,
-    previousIndex: null,
-    transitioning: false,
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      activeIndex: props.activeIndex,
+      previousIndex: null,
+      transitioning: false,
+    }
+
+    props.updateScreens && props.updateScreens(props.children)
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
@@ -53,10 +59,13 @@ class Switch extends React.Component {
                 : `inactive-screen-${childIndex}`,
           }
 
+          const { style: childStyle, ...childProps } = child.props
+
           return (
             <Screen
               {...testingProps}
-              {...child.props}
+              {...childProps}
+              style={[this.props.screenStyle, childStyle]}
               key={childIndex}
               animated={this.props.animated}
               activeIndex={this.props.activeIndex}
@@ -78,4 +87,4 @@ class Switch extends React.Component {
 }
 
 export { Switch }
-export default withNavigation(Switch)
+export default withNavigation(Switch, 'screen-container')

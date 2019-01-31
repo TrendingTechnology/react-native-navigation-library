@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Animated } from 'react-native'
+
 class Transition extends React.Component {
   static defaultProps = {
     animationConfig: {

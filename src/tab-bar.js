@@ -27,7 +27,7 @@ class Tab extends React.Component {
   render() {
     return (
       <TouchableOpacity
-        style={[{ flex: 1, backgroundColor: 'white' }, this.props.style]}
+        style={[{ flex: 1 }, this.props.style]}
         onPress={this.props.onSelect}
       >
         {React.cloneElement(this.props.children, {
