@@ -31,19 +31,20 @@ class Stack extends React.Component {
       0,
       this.state.transitioning
         ? Math.max(this.state.previousIndex + 1, this.props.activeIndex + 1)
-        : this.props.activeIndex + 1,
+        : this.props.activeIndex + 1
     )
 
     return (
       <View style={[{ flex: 1, overflow: 'hidden' }, this.props.style]}>
         {React.Children.map(children, (child, index) => {
+          const focused = index === this.props.activeIndex
+
           const testIdPrefix = this.props.name ? this.props.name + '-' : ''
 
           const testingProps = {
-            testID:
-              index === this.props.activeIndex
-                ? `${testIdPrefix}active-screen`
-                : `${testIdPrefix}inactive-screen-${index}`,
+            testID: focused
+              ? `${testIdPrefix}active-screen`
+              : `${testIdPrefix}inactive-screen-${index}`,
           }
 
           const { style: screenStyle, ...childProps } = child.props
@@ -63,7 +64,10 @@ class Stack extends React.Component {
                 transitioning: this.state.transitioning,
               }}
             >
-              {React.cloneElement(child, { navigation: this.props.navigation })}
+              {React.cloneElement(child, {
+                navigation: this.props.navigation,
+                focused: index === this.props.activeIndex,
+              })}
             </Screen>
           )
         })}

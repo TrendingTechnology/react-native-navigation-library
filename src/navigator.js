@@ -9,68 +9,73 @@ class Navigator extends React.Component {
 
   selectActiveIndex = (index, data = {}) => {
     if (this.state.screens[index]) {
-      this.setState(
-        state => {
-          return {
-            activeIndex: index,
-            navigation: {
-              ...state.navigation,
-              state: {
-                ...state.navigation.state,
-                ...data,
-              },
-            },
-          }
-        },
-        () => {
-          if (this.props.onNavigationChange) {
-            this.props.onNavigationChange({
-              activeIndex: this.state.activeIndex,
-              activeScreen: this.state.screens[this.state.activeIndex],
-              navigation: this.state.navigation,
-            })
-          }
-        },
-      )
+      this.setState(state => {
+        return {
+          activeIndex: index,
+          previous: [...state.previous, state.activeIndex],
+          navigation: this.updateNavigationState(state, data),
+        }
+      }, this.onNavigationChange)
+    }
+  }
+
+  onNavigationChange = () => {
+    if (this.props.onNavigationChange) {
+      this.props.onNavigationChange({
+        activeIndex: this.state.activeIndex,
+        activeScreen: this.state.screens[this.state.activeIndex],
+        navigation: this.state.navigation,
+      })
+    }
+  }
+
+  updateNavigationState = (state, data) => {
+    return {
+      ...state.navigation,
+      state: {
+        ...state.navigation.state,
+        ...data,
+      },
     }
   }
 
   toggleModal = (active, data = {}) => {
-    this.setState(
-      state => {
-        return {
-          navigation: {
-            ...state.navigation,
-            modal: {
-              ...state.navigation.modal,
-              active: active,
-            },
-            state: {
-              ...state.navigation.state,
-              ...data,
-            },
+    this.setState(state => {
+      return {
+        navigation: {
+          ...this.updateNavigationState(state, data),
+          modal: {
+            ...state.navigation.modal,
+            active: active,
           },
-        }
-      },
-      () => {
-        if (this.props.onNavigationChange) {
-          this.props.onNavigationChange({
-            activeIndex: this.state.activeIndex,
-            activeScreen: this.state.screens[this.state.activeIndex],
-            navigation: this.state.navigation,
-          })
-        }
-      },
-    )
+        },
+      }
+    }, this.onNavigationChange)
   }
 
   updateScreens = children => {
     if (this.state.screens.length === 0) {
       this.setState({
         screens: React.Children.toArray(children).map(
-          (child, index) => child.props.name || `${index}`,
+          (child, index) => child.props.name || `${index}`
         ),
       })
+    }
+  }
+
+  back = data => {
+    if (this.state.previous.length > 0) {
+      const prevIndex = this.state.previous[this.state.previous.length - 1]
+
+      if (this.state.screens[prevIndex]) {
+        this.setState(state => {
+          return {
+            activeIndex: prevIndex,
+            previous: state.previous.slice(0, state.previous.length - 1),
+            navigation: this.updateNavigationState(state, data),
+          }
+        })
+      }
     }
   }
 
@@ -109,6 +114,7 @@ class Navigator extends React.Component {
   }
 
   navigation = {
+    back: this.back,
     push: this.push,
     pop: this.pop,
     reset: this.reset,
@@ -122,6 +128,7 @@ class Navigator extends React.Component {
   initialState = {
     activeIndex: this.props.initialIndex || 0,
     navigation: this.navigation,
+    previous: [],
   }
 
   state = {
@@ -169,6 +176,7 @@ function withNavigation(Component) {
                 {...this.props}
                 navigation={context.navigation}
                 activeIndex={context.activeIndex}
+                animated={context.animated}
               />
             )
           }}
@@ -188,7 +196,8 @@ function withScreenNavigation(Component) {
   class RegisterScreens extends React.Component {
     constructor(props) {
       super(props)
-      props.updateScreens(React.Children.toArray(props.screens))
+      props.updateScreens &&
+        props.updateScreens(React.Children.toArray(props.screens))
     }
 
     render() {

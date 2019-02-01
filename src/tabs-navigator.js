@@ -25,7 +25,7 @@ class Tabs extends React.Component {
     if (prevProps.activeIndex !== this.props.activeIndex) {
       this.setState(state => {
         const previous = state.rendered.filter(
-          i => i !== this.props.activeIndex,
+          i => i !== this.props.activeIndex
         )
         return {
           rendered: [...previous, this.props.activeIndex],
@@ -46,13 +46,13 @@ class Tabs extends React.Component {
             return null
           }
 
+          const focused = childIndex === this.props.activeIndex
           const testIdPrefix = this.props.name ? this.props.name + '-' : ''
 
           const testingProps = {
-            testID:
-              childIndex === this.props.activeIndex
-                ? `${testIdPrefix}active-screen`
-                : `${testIdPrefix}inactive-screen-${childIndex}`,
+            testID: focused
+              ? `${testIdPrefix}active-screen`
+              : `${testIdPrefix}inactive-screen-${childIndex}`,
           }
 
           const { style: screenStyle, ...childProps } = child.props
@@ -72,7 +72,10 @@ class Tabs extends React.Component {
               }}
               optimized
             >
-              {React.cloneElement(child, { navigation: this.props.navigation })}
+              {React.cloneElement(child, {
+                navigation: this.props.navigation,
+                focused: childIndex === this.props.activeIndex,
+              })}
             </Screen>
           )
         })}
