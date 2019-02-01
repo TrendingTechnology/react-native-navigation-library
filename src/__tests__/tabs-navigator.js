@@ -34,6 +34,16 @@ describe('<Tabs />', () => {
     getByText('1')
     expect(() => getByText('3')).toThrow()
   })
+
+  test('can render a single child', () => {
+    expect(() =>
+      render(
+        <Tabs>
+          <Text>1</Text>
+        </Tabs>,
+      ),
+    ).not.toThrow()
+  })
 })
 
 function Navigation(props) {

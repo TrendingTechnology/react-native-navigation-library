@@ -61,13 +61,13 @@ class Tabs extends React.Component {
                 : `${testIdPrefix}inactive-screen-${childIndex}`,
           }
 
-          const { style: childStyle, ...childProps } = child.props
+          const { style: screenStyle, ...childProps } = child.props
 
           return (
             <Screen
               {...childProps}
               testingProps={testingProps}
-              style={[this.props.screenStyle, childStyle]}
+              style={[this.props.screenStyle, screenStyle]}
               key={childIndex}
               animated={this.props.animated}
               index={childIndex}

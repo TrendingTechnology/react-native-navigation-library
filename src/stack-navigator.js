@@ -52,13 +52,13 @@ class Stack extends React.Component {
                 : `${testIdPrefix}inactive-screen-${index}`,
           }
 
-          const { style: childStyle, ...childProps } = child.props
+          const { style: screenStyle, ...childProps } = child.props
 
           return (
             <Screen
               {...childProps}
               testingProps={testingProps}
-              style={[this.props.screenStyle, childStyle]}
+              style={[this.props.screenStyle, screenStyle]}
               animated={this.props.animated}
               index={index}
               activeIndex={this.props.activeIndex}

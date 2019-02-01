@@ -16,12 +16,22 @@ describe('<Stack />', () => {
     expect(() => getByText('3')).toThrow()
   })
 
-  test('unmounts children that are not active', async () => {
+  test('unmounts children that are not active', () => {
     const { getByText, update } = render(<Navigation activeIndex={1} />)
 
     update(<Navigation activeIndex={0} />)
 
     expect(() => getByText('2')).toThrow()
+  })
+
+  test('can render a single child', () => {
+    expect(() =>
+      render(
+        <Stack>
+          <Text>1</Text>
+        </Stack>,
+      ),
+    ).not.toThrow()
   })
 })
 

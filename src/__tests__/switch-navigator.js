@@ -28,6 +28,16 @@ describe('<Switch />', () => {
     getByText('2')
     expect(() => getByText('1')).toThrow()
   })
+
+  test('can render a single child', () => {
+    expect(() =>
+      render(
+        <Switch>
+          <Text>1</Text>
+        </Switch>,
+      ),
+    ).not.toThrow()
+  })
 })
 
 function Navigation(props) {

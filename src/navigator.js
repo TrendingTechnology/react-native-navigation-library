@@ -67,7 +67,9 @@ class Navigator extends React.Component {
   updateScreens = children => {
     if (this.state.screens.length === 0) {
       this.setState({
-        screens: children.map((child, index) => child.props.name || `${index}`),
+        screens: React.Children.toArray(children).map(
+          (child, index) => child.props.name || `${index}`,
+        ),
       })
     }
   }
