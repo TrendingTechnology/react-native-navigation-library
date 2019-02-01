@@ -1,19 +1,13 @@
 import React from 'react'
 import { View } from 'react-native'
 import Screen from './screen'
-import { withNavigation } from './navigator'
+import { withScreenNavigation } from './navigator'
 
 class Tabs extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      activeIndex: props.activeIndex,
-      rendered: [props.activeIndex],
-      transitioning: false,
-    }
-
-    props.updateScreens && props.updateScreens(props.children)
+  state = {
+    activeIndex: this.props.activeIndex,
+    rendered: [this.props.activeIndex],
+    transitioning: false,
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
@@ -88,4 +82,4 @@ class Tabs extends React.Component {
 }
 
 export { Tabs }
-export default withNavigation(Tabs, 'screen-container')
+export default withScreenNavigation(Tabs)

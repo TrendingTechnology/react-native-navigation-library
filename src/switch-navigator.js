@@ -1,19 +1,13 @@
 import React from 'react'
 import { View } from 'react-native'
-import { withNavigation } from './navigator'
+import { withScreenNavigation } from './navigator'
 import Screen from './screen'
 
 class Switch extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      activeIndex: props.activeIndex,
-      previousIndex: null,
-      transitioning: false,
-    }
-
-    props.updateScreens && props.updateScreens(props.children)
+  state = {
+    activeIndex: this.props.activeIndex,
+    previousIndex: null,
+    transitioning: false,
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
@@ -89,4 +83,4 @@ class Switch extends React.Component {
 }
 
 export { Switch }
-export default withNavigation(Switch, 'screen-container')
+export default withScreenNavigation(Switch)

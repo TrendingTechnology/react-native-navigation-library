@@ -22,6 +22,7 @@ class Header extends React.Component {
       <View style={[styles.header, this.props.style]}>
         {React.cloneElement(child, {
           activeIndex: this.props.activeIndex,
+          navigation: this.props.navigation,
         })}
       </View>
     )

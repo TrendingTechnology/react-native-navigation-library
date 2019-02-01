@@ -122,13 +122,13 @@ class Navigator extends React.Component {
   initialState = {
     activeIndex: this.props.initialIndex || 0,
     navigation: this.navigation,
-    animated: this.props.animated,
-    updateScreens: this.updateScreens,
   }
 
   state = {
     ...this.initialState,
     screens: this.props.screens || [],
+    updateScreens: this.updateScreens,
+    animated: this.props.animated,
   }
 
   componentDidMount() {
@@ -158,7 +158,7 @@ class Navigator extends React.Component {
   }
 }
 
-function withNavigation(Component, type) {
+function withNavigation(Component) {
   class NavigationContainer extends React.Component {
     render() {
       return (
@@ -169,10 +169,6 @@ function withNavigation(Component, type) {
                 {...this.props}
                 navigation={context.navigation}
                 activeIndex={context.activeIndex}
-                animated={context.animated}
-                updateScreens={
-                  type === 'screen-container' ? context.updateScreens : null
-                }
               />
             )
           }}
@@ -188,5 +184,47 @@ function withNavigation(Component, type) {
   return NavigationContainer
 }
 
-export { withNavigation }
+function withScreenNavigation(Component) {
+  class RegisterScreens extends React.Component {
+    constructor(props) {
+      super(props)
+      props.updateScreens(React.Children.toArray(props.screens))
+    }
+
+    render() {
+      return this.props.children
+    }
+  }
+  class NavigationContainer extends React.Component {
+    render() {
+      return (
+        <Consumer>
+          {context => {
+            return (
+              <RegisterScreens
+                updateScreens={context.updateScreens}
+                screens={this.props.children}
+              >
+                <Component
+                  {...this.props}
+                  navigation={context.navigation}
+                  activeIndex={context.activeIndex}
+                  animated={context.animated}
+                />
+              </RegisterScreens>
+            )
+          }}
+        </Consumer>
+      )
+    }
+  }
+
+  NavigationContainer.displayName = `withNavigation(${Component.displayName ||
+    Component.name ||
+    'Component'})`
+
+  return NavigationContainer
+}
+
+export { withNavigation, withScreenNavigation }
 export default Navigator
