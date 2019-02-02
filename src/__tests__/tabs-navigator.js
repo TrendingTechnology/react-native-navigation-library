@@ -5,7 +5,7 @@ import { Tabs } from '../tabs-navigator'
 
 describe('<Tabs />', () => {
   test('empty render', () => {
-    expect(() => render(<Tabs />)).not.toThrow()
+    expect(() => render(<Tabs name="tabs" activeIndex={0} />)).not.toThrow()
   })
 
   test('renders the activeIndex', () => {
@@ -38,17 +38,17 @@ describe('<Tabs />', () => {
   test('can render a single child', () => {
     expect(() =>
       render(
-        <Tabs>
+        <Tabs name="tabs" activeIndex={0}>
           <Text>1</Text>
-        </Tabs>,
-      ),
+        </Tabs>
+      )
     ).not.toThrow()
   })
 })
 
 function Navigation(props) {
   return (
-    <Tabs activeIndex={props.activeIndex}>
+    <Tabs name="tabs" activeIndex={props.activeIndex}>
       <Text>1</Text>
       <Text>2</Text>
       <Text>3</Text>

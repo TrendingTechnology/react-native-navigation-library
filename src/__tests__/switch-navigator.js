@@ -5,7 +5,7 @@ import { Switch } from '../switch-navigator'
 
 describe('<Switch />', () => {
   test('empty render', () => {
-    expect(() => render(<Switch />)).not.toThrow()
+    expect(() => render(<Switch name="switch" activeIndex={0} />)).not.toThrow()
   })
 
   test('renders only one child at a time', () => {
@@ -32,17 +32,17 @@ describe('<Switch />', () => {
   test('can render a single child', () => {
     expect(() =>
       render(
-        <Switch>
+        <Switch name="switch" activeIndex={0}>
           <Text>1</Text>
-        </Switch>,
-      ),
+        </Switch>
+      )
     ).not.toThrow()
   })
 })
 
 function Navigation(props) {
   return (
-    <Switch {...props} animated={false}>
+    <Switch activeIndex={0} {...props} name="switch" animated={false}>
       <Text>1</Text>
       <Text>2</Text>
       <Text>3</Text>

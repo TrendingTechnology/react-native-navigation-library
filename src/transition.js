@@ -1,9 +1,24 @@
 import React from 'react'
 import { StyleSheet, Animated } from 'react-native'
 
+// type Props = {
+//   config: any,
+//   configIn: any,
+//   configOut: any,
+//   animation: animatedValue => any,
+//   anim?: any,
+//   in: boolean,
+//   children: any,
+//   onTransitionEnd: () => void,
+// }
+
+// type State = {
+//   anim: any,
+// }
+
 class Transition extends React.Component {
   static defaultProps = {
-    animationConfig: {
+    config: {
       timing: Animated.spring,
       stiffness: 1000,
       damping: 500,
@@ -11,20 +26,19 @@ class Transition extends React.Component {
       overshootClamping: true,
       restDisplacementThreshold: 0.01,
       restSpeedThreshold: 0.01,
-      useNativeDriver: true,
     },
-    animationConfigIn: {},
-    animationConfigOut: {},
-    animationTransform: anim => {
-      return [
-        {
+    configIn: {},
+    configOut: {},
+    animation: anim => {
+      return {
+        transform: {
           translateX: anim.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 0],
             extrapolate: 'clamp',
           }),
         },
-      ]
+      }
     },
     onTransitionEnd: () => {},
   }
@@ -36,8 +50,9 @@ class Transition extends React.Component {
   componentDidMount() {
     if (this.props.in) {
       Animated.spring(this.state.anim, {
-        ...this.props.animationConfig,
-        ...this.props.animationConfigIn,
+        ...this.props.config,
+        ...this.props.configIn,
+        useNativeDriver: true,
         toValue: 1,
       }).start(this.props.onTransitionEnd)
     }
@@ -47,14 +62,16 @@ class Transition extends React.Component {
     if (prevProps.in !== this.props.in) {
       if (this.props.in) {
         Animated.spring(this.state.anim, {
-          ...this.props.animationConfig,
-          ...this.props.animationConfigIn,
+          ...this.props.config,
+          ...this.props.configIn,
+          useNativeDriver: true,
           toValue: 1,
         }).start(this.props.onTransitionEnd)
       } else {
         Animated.spring(this.state.anim, {
-          ...this.props.animationConfig,
-          ...this.props.animationConfigOut,
+          ...this.props.config,
+          ...this.props.configOut,
+          useNativeDriver: true,
           toValue: 0,
         }).start(this.props.onTransitionEnd)
       }
@@ -62,13 +79,13 @@ class Transition extends React.Component {
   }
 
   render() {
-    const transform = this.props.animationTransform(this.state.anim)
+    const animation = this.props.animation(this.state.anim)
 
     return (
       <Animated.View
         style={{
           ...StyleSheet.absoluteFillObject,
-          transform: transform,
+          ...animation,
         }}
       >
         {this.props.children}

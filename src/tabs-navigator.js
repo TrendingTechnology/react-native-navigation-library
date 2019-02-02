@@ -1,13 +1,49 @@
 import React from 'react'
-import { View } from 'react-native'
+import PropTypes from 'prop-types'
+import { View, ViewPropTypes } from 'react-native'
 import Screen from './screen'
 import { withScreenNavigation } from './navigator'
 
+// type Props = {
+//   activeIndex: number,
+//   children: any,
+//   style: any,
+//   screenStyle: any,
+//   animated: boolean,
+//   transition: {
+//     config: any,
+//     configIn: any,
+//     configOut: any,
+//     animation: animatedValue => any,
+//     onTransitionEnd: () => void,
+//   },
+//   navigation: Navigation,
+// }
+// type State = {
+//   activeIndex: number,
+//   previousIndex?: number,
+// }
+
 class Tabs extends React.Component {
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    activeIndex: PropTypes.number.isRequired,
+    style: ViewPropTypes.style,
+    screenStyle: ViewPropTypes.style,
+    animated: PropTypes.bool,
+    transition: PropTypes.shape({
+      config: PropTypes.object,
+      configIn: PropTypes.object,
+      configOut: PropTypes.object,
+      animation: PropTypes.func,
+      onTransitionEnd: PropTypes.func,
+    }),
+    navigation: PropTypes.object,
+  }
+
   state = {
     activeIndex: this.props.activeIndex,
     rendered: [this.props.activeIndex],
-    transitioning: false,
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
@@ -47,30 +83,26 @@ class Tabs extends React.Component {
           }
 
           const focused = childIndex === this.props.activeIndex
-          const testIdPrefix = this.props.name ? this.props.name + '-' : ''
-
-          const testingProps = {
-            testID: focused
-              ? `${testIdPrefix}active-screen`
-              : `${testIdPrefix}inactive-screen-${childIndex}`,
-          }
-
-          const { style: screenStyle, ...childProps } = child.props
 
           return (
             <Screen
-              {...childProps}
-              testingProps={testingProps}
-              style={[this.props.screenStyle, screenStyle]}
               key={childIndex}
-              animated={this.props.animated}
               index={childIndex}
               previousIndex={this.state.previousIndex}
               activeIndex={this.props.activeIndex}
+              screen={{
+                testID: focused
+                  ? `active-screen`
+                  : `inactive-screen-${childIndex}`,
+                optimized: true,
+                animated: this.props.animated || child.props.animated,
+                style: { ...this.props.screenStyle, ...child.props.style },
+              }}
               transition={{
                 in: childIndex === this.props.activeIndex,
+                ...this.props.transition,
+                ...child.props.transition,
               }}
-              optimized
             >
               {React.cloneElement(child, {
                 navigation: this.props.navigation,

@@ -26,7 +26,7 @@ describe('<Transition />', () => {
 
   test('animation transform as prop', () => {
     const animation = jest.fn()
-    render(<Transition animationTransform={animation} />)
+    render(<Transition animation={animation} />)
     expect(animation).toHaveBeenCalledTimes(1)
   })
 
@@ -47,10 +47,10 @@ describe('<Transition />', () => {
       toValue: 1,
     }
 
-    render(<Transition animationConfig={fakeAnimationConfig} in />)
-    expect(Animated.spring).toHaveBeenCalledWith(
-      expect.any(Object),
-      fakeAnimationConfig,
-    )
+    render(<Transition config={fakeAnimationConfig} in />)
+    expect(Animated.spring).toHaveBeenCalledWith(expect.any(Object), {
+      ...fakeAnimationConfig,
+      useNativeDriver: true,
+    })
   })
 })

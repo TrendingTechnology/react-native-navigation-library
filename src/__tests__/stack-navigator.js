@@ -5,7 +5,7 @@ import { Stack } from '../stack-navigator'
 
 describe('<Stack />', () => {
   test('empty render', () => {
-    expect(() => render(<Stack />)).not.toThrow()
+    expect(() => render(<Stack name="stack" activeIndex={0} />)).not.toThrow()
   })
 
   test('renders all children up to activeIndex', () => {
@@ -27,17 +27,17 @@ describe('<Stack />', () => {
   test('can render a single child', () => {
     expect(() =>
       render(
-        <Stack>
+        <Stack name="stack" activeIndex={0}>
           <Text>1</Text>
-        </Stack>,
-      ),
+        </Stack>
+      )
     ).not.toThrow()
   })
 })
 
 function Navigation(props) {
   return (
-    <Stack {...props} animated={false}>
+    <Stack name="stack" {...props} animated={false}>
       <Text>1</Text>
       <Text>2</Text>
       <Text>3</Text>

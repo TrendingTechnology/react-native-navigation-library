@@ -25,6 +25,7 @@ Object {
   "activeIndex": 0,
   "activeScreen": "test",
   "navigation": Object {
+    "back": [Function],
     "modal": Object {
       "active": false,
       "dismiss": [Function],
@@ -58,6 +59,7 @@ Object {
   "activeIndex": 0,
   "activeScreen": "test2",
   "navigation": Object {
+    "back": [Function],
     "modal": Object {
       "active": false,
       "dismiss": [Function],
@@ -99,7 +101,7 @@ Object {
     const onUpdate = jest.fn()
 
     const { getByText } = render(
-      <NavigationFunctions onNavigationChange={onUpdate} />,
+      <NavigationFunctions onNavigationChange={onUpdate} />
     )
 
     fireEvent.press(getByText('push'))

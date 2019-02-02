@@ -1,9 +1,47 @@
 import React from 'react'
-import { View } from 'react-native'
+import PropTypes from 'prop-types'
+import { View, ViewPropTypes } from 'react-native'
 import { withScreenNavigation } from './navigator'
 import Screen from './screen'
 
+// type Props = {
+//   activeIndex: number,
+//   children: any,
+//   style: any,
+//   screenStyle: any,
+//   animated: boolean,
+//   transition: {
+//     config: any,
+//     configIn: any,
+//     configOut: any,
+//     animation: animatedValue => any,
+//     onTransitionEnd: () => void,
+//   },
+//   navigation: Navigation,
+// }
+
+// type State = {
+//   activeIndex: number,
+//   previousIndex?: number,
+//   transitioning: boolean,
+// }
+
 class Stack extends React.Component {
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    activeIndex: PropTypes.number.isRequired,
+    style: ViewPropTypes.style,
+    screenStyle: ViewPropTypes.style,
+    animated: PropTypes.bool,
+    transition: PropTypes.shape({
+      config: PropTypes.object,
+      configIn: PropTypes.object,
+      configOut: PropTypes.object,
+      animation: PropTypes.func,
+      onTransitionEnd: PropTypes.func,
+    }),
+  }
+
   state = {
     activeIndex: this.props.activeIndex,
     previousIndex: null,
@@ -39,29 +77,22 @@ class Stack extends React.Component {
         {React.Children.map(children, (child, index) => {
           const focused = index === this.props.activeIndex
 
-          const testIdPrefix = this.props.name ? this.props.name + '-' : ''
-
-          const testingProps = {
-            testID: focused
-              ? `${testIdPrefix}active-screen`
-              : `${testIdPrefix}inactive-screen-${index}`,
-          }
-
-          const { style: screenStyle, ...childProps } = child.props
-
           return (
             <Screen
-              {...childProps}
-              testingProps={testingProps}
-              style={[this.props.screenStyle, screenStyle]}
-              animated={this.props.animated}
               index={index}
               activeIndex={this.props.activeIndex}
               previousIndex={this.state.previousIndex}
+              screen={{
+                testID: focused ? `active-screen` : `inactive-screen-${index}`,
+                optimized: false,
+                animated: this.props.animated || child.props.animated,
+                style: { ...this.props.screenStyle, ...child.props.style },
+              }}
               transition={{
                 in: index <= this.props.activeIndex,
                 onTransitionEnd: this.handleTransitionEnd,
-                transitioning: this.state.transitioning,
+                ...this.props.transition,
+                ...child.props.transition,
               }}
             >
               {React.cloneElement(child, {

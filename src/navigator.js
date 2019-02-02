@@ -1,21 +1,91 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const { Provider, Consumer } = React.createContext({})
+
+// type Props = {
+//   animated: boolean,
+//   initialIndex?: number,
+//   initialState?: any,
+//   screens?: [string],
+//   navigation?: Navigation,
+//   onNavigationChange: (navigation: CallbackArgs) => void,
+//   children: any,
+// }
+
+// type Navigation = {
+//   back: (data: any, callback: (navigation: CallbackArgs) => void) => void,
+//   push: (data: any, callback: (navigation: CallbackArgs) => void) => void,
+//   pop: (data: any, callback: (navigation: CallbackArgs) => void) => void,
+//   reset: (callback: (navigation: CallbackArgs) => void) => void,
+//   select: (
+//     index: number,
+//     data: any,
+//     callback: (navigation: CallbackArgs) => void
+//   ) => void,
+//   modal: {
+//     active: boolean,
+//     dismiss: (data: any) => void,
+//     show: (data: any) => void,
+//   },
+//   navigate: (
+//     routeName: string,
+//     data: any,
+//     callback: (navigation: CallbackArgs) => void
+//   ) => void,
+//   parent?: Navigation,
+//   state: any,
+// }
+
+// type CallbackArgs = {
+//   activeIndex: number,
+//   activeScreen: string,
+//   navigation: Navigation,
+// }
+
+// type State = {
+//   navigation: Navigation,
+//   activeIndex: number,
+//   previous: [number],
+//   screens: [string],
+//   updateScreens: (screens: [any]) => void,
+//   animated: boolean,
+// }
 
 class Navigator extends React.Component {
   static defaultProps = {
     animated: true,
   }
 
-  selectActiveIndex = (index, data = {}) => {
+  static propTypes = {
+    animated: PropTypes.bool,
+    initialIndex: PropTypes.number,
+    initialState: PropTypes.object,
+    navigation: PropTypes.object,
+    onNavigationChange: PropTypes.func,
+  }
+
+  selectActiveIndex = (index, data = {}, callback) => {
     if (this.state.screens[index]) {
-      this.setState(state => {
-        return {
-          activeIndex: index,
-          previous: [...state.previous, state.activeIndex],
-          navigation: this.updateNavigationState(state, data),
+      this.setState(
+        state => {
+          return {
+            activeIndex: index,
+            previous: [...state.previous, state.activeIndex],
+            navigation: this.updateNavigationState(state, data),
+          }
+        },
+        () => {
+          this.onNavigationChange()
+          if (callback) {
+            callback({
+              activeIndex: this.state.activeIndex,
+              activeScreen: this.state.screens[this.state.activeIndex],
+              navigation: this.state.navigation,
+            })
+          }
         }
-      }, this.onNavigationChange)
+      )
     }
   }
 
@@ -79,27 +149,35 @@ class Navigator extends React.Component {
     }
   }
 
-  push = data => {
-    this.selectActiveIndex(this.state.activeIndex + 1, data)
+  push = (data, callback) => {
+    this.selectActiveIndex(this.state.activeIndex + 1, data, callback)
   }
 
-  pop = data => {
-    this.selectActiveIndex(this.state.activeIndex - 1, data)
+  pop = (data, callback) => {
+    this.selectActiveIndex(this.state.activeIndex - 1, data, callback)
   }
 
-  select = (index = 0, data) => {
-    this.selectActiveIndex(index, data)
+  select = (index = 0, data, callback) => {
+    this.selectActiveIndex(index, data, callback)
   }
 
-  navigate = (routeName, data) => {
+  navigate = (routeName, data, callback) => {
     const route = this.state.screens.indexOf(routeName)
     if (route !== -1) {
-      this.selectActiveIndex(route, data)
+      this.selectActiveIndex(route, data, callback)
     }
   }
 
-  reset = () => {
-    this.setState(this.initialState)
+  reset = callback => {
+    this.setState(this.initialState, () => {
+      if (callback) {
+        callback({
+          activeIndex: this.state.activeIndex,
+          activeScreen: this.state.screens[this.state.activeIndex],
+          navigation: this.state.navigation,
+        })
+      }
+    })
   }
 
   modal = {
@@ -218,6 +296,7 @@ function withScreenNavigation(Component) {
                   {...this.props}
                   navigation={context.navigation}
                   activeIndex={context.activeIndex}
+                  previous={context.previous}
                   animated={context.animated}
                 />
               </RegisterScreens>
