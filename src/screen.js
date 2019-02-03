@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { View, StyleSheet, Dimensions, ViewPropTypes } from 'react-native'
+import { View, StyleSheet, ViewPropTypes } from 'react-native'
 import Transition from './transition'
-
-const { width: screenWidth } = Dimensions.get('window')
 
 // type Props = {
 //   activeIndex: number,
@@ -60,44 +58,10 @@ class Screen extends React.Component {
     return true
   }
 
-  animation = anim => {
-    if (this.props.transition.animation) {
-      return this.props.transition.animation(anim)
-    }
-
-    let outputRange = []
-
-    if (this.props.index === this.props.activeIndex) {
-      if (this.props.previousIndex > this.props.index) {
-        outputRange = [-screenWidth, 0]
-      } else {
-        outputRange = [screenWidth, 0]
-      }
-    } else {
-      if (this.props.index < this.props.activeIndex) {
-        outputRange = [-screenWidth, 0]
-      } else {
-        outputRange = [screenWidth, 0]
-      }
-    }
-
-    return {
-      transform: [
-        {
-          translateX: anim.interpolate({
-            inputRange: [0, 1],
-            outputRange: outputRange,
-            extrapolate: 'clamp',
-          }),
-        },
-      ],
-    }
-  }
-
   render() {
     if (this.props.screen.animated) {
       return (
-        <Transition animation={this.animation} {...this.props.transition}>
+        <Transition {...this.props.transition}>
           <View
             testID={this.props.screen.testID}
             style={{ flex: 1, ...this.props.screen.style }}

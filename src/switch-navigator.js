@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { View, ViewPropTypes } from 'react-native'
 import { withScreenNavigation } from './navigator'
 import Screen from './screen'
+import { slideInOut } from './animations'
 
 // type Props = {
 //   activeIndex: number,
@@ -87,6 +88,14 @@ class Switch extends React.Component {
 
           const focused = childIndex === this.props.activeIndex
 
+          const indices = [
+            childIndex,
+            this.state.previousIndex,
+            this.props.activeIndex,
+          ]
+
+          const animation = slideInOut(indices)
+
           return (
             <Screen
               key={childIndex}
@@ -104,6 +113,7 @@ class Switch extends React.Component {
               transition={{
                 in: childIndex === this.props.activeIndex,
                 onTransitionEnd: this.handleTransitionEnd,
+                animation: animation,
                 ...this.props.transition,
                 ...child.props.transition,
               }}

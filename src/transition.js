@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Animated } from 'react-native'
+import { StyleSheet, Animated, Platform } from 'react-native'
 
 // type Props = {
 //   config: any,
@@ -16,19 +16,13 @@ import { StyleSheet, Animated } from 'react-native'
 //   anim: any,
 // }
 
+import { config } from './animations'
+
 class Transition extends React.Component {
   static defaultProps = {
-    config: {
-      timing: Animated.spring,
-      stiffness: 1000,
-      damping: 500,
-      mass: 3,
-      overshootClamping: true,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
-    },
-    configIn: {},
-    configOut: {},
+    config: {},
+    configIn: config.configIn,
+    configOut: config.configOut,
     animation: anim => {
       return {
         transform: {
@@ -40,6 +34,7 @@ class Transition extends React.Component {
         },
       }
     },
+    method: Platform.OS === 'android' ? Animated.timing : Animated.spring,
     onTransitionEnd: () => {},
   }
 
@@ -49,31 +44,37 @@ class Transition extends React.Component {
 
   componentDidMount() {
     if (this.props.in) {
-      Animated.spring(this.state.anim, {
-        ...this.props.config,
-        ...this.props.configIn,
-        useNativeDriver: true,
-        toValue: 1,
-      }).start(this.props.onTransitionEnd)
+      this.props
+        .method(this.state.anim, {
+          ...this.props.config,
+          ...this.props.configIn,
+          useNativeDriver: true,
+          toValue: 1,
+        })
+        .start(this.props.onTransitionEnd)
     }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.in !== this.props.in) {
       if (this.props.in) {
-        Animated.spring(this.state.anim, {
-          ...this.props.config,
-          ...this.props.configIn,
-          useNativeDriver: true,
-          toValue: 1,
-        }).start(this.props.onTransitionEnd)
+        this.props
+          .method(this.state.anim, {
+            ...this.props.config,
+            ...this.props.configIn,
+            useNativeDriver: true,
+            toValue: 1,
+          })
+          .start(this.props.onTransitionEnd)
       } else {
-        Animated.spring(this.state.anim, {
-          ...this.props.config,
-          ...this.props.configOut,
-          useNativeDriver: true,
-          toValue: 0,
-        }).start(this.props.onTransitionEnd)
+        this.props
+          .method(this.state.anim, {
+            ...this.props.config,
+            ...this.props.configOut,
+            useNativeDriver: true,
+            toValue: 0,
+          })
+          .start(this.props.onTransitionEnd)
       }
     }
   }

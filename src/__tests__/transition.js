@@ -1,23 +1,7 @@
 import React from 'react'
-import { Animated, View } from 'react-native'
+import { Animated } from 'react-native'
 import { render } from 'react-native-testing-library'
 import Transition from '../transition'
-
-jest.mock('Animated', () => {
-  return {
-    View: props => <View>{props.children}</View>,
-    Value: jest.fn(() => {
-      return {
-        interpolate: jest.fn(),
-      }
-    }),
-    spring: jest.fn(() => {
-      return {
-        start: jest.fn(),
-      }
-    }),
-  }
-})
 
 describe('<Transition />', () => {
   test('empty render', () => {
@@ -47,7 +31,7 @@ describe('<Transition />', () => {
       toValue: 1,
     }
 
-    render(<Transition config={fakeAnimationConfig} in />)
+    render(<Transition configIn={fakeAnimationConfig} in />)
     expect(Animated.spring).toHaveBeenCalledWith(expect.any(Object), {
       ...fakeAnimationConfig,
       useNativeDriver: true,

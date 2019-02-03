@@ -14,7 +14,7 @@ import {
 test('stack navigation', () => {
   function StackApp() {
     return (
-      <Navigator initialState={{ hello: '123' }}>
+      <Navigator initialState={{ hello: '123' }} animated={false}>
         {({ navigation, activeIndex }) => {
           return (
             <View style={{ flex: 1 }}>
@@ -80,7 +80,7 @@ test('stack navigation', () => {
 test('tabs navigation', () => {
   function TabsApp() {
     return (
-      <Navigator>
+      <Navigator animated={false}>
         {({ navigation }) => {
           return (
             <View style={{ flex: 1 }}>
@@ -134,10 +134,10 @@ test('tabs navigation', () => {
   fireEvent.press(getByText('Screen 3'))
 })
 
-test('switch navigator', () => {
+test('switch navigator', async () => {
   function SwitchApp() {
     return (
-      <Navigator>
+      <Navigator animated={false}>
         {({ navigation }) => {
           return (
             <View style={{ flex: 1 }}>

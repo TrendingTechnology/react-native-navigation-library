@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { View, ViewPropTypes } from 'react-native'
+import { View, ViewPropTypes, Platform } from 'react-native'
 import { withScreenNavigation } from './navigator'
 import Screen from './screen'
 
@@ -25,6 +25,8 @@ import Screen from './screen'
 //   previousIndex?: number,
 //   transitioning: boolean,
 // }
+
+import { fadeInOut, slideInOut } from './animations'
 
 class Stack extends React.Component {
   static propTypes = {
@@ -77,6 +79,17 @@ class Stack extends React.Component {
         {React.Children.map(children, (child, index) => {
           const focused = index === this.props.activeIndex
 
+          const indices = [
+            index,
+            this.state.previousIndex,
+            this.props.activeIndex,
+          ]
+
+          const animation = Platform.select({
+            ios: slideInOut(indices),
+            android: fadeInOut,
+          })
+
           return (
             <Screen
               index={index}
@@ -91,6 +104,7 @@ class Stack extends React.Component {
               transition={{
                 in: index <= this.props.activeIndex,
                 onTransitionEnd: this.handleTransitionEnd,
+                animation: animation,
                 ...this.props.transition,
                 ...child.props.transition,
               }}
