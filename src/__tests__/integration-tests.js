@@ -134,7 +134,7 @@ test('tabs navigation', () => {
   fireEvent.press(getByText('Screen 3'))
 })
 
-test('switch navigator', () => {
+test('switch navigator', async () => {
   function SwitchApp() {
     return (
       <Navigator>

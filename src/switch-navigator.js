@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { View, ViewPropTypes } from 'react-native'
+import { View, ViewPropTypes, Platform, Animated } from 'react-native'
 import { withScreenNavigation } from './navigator'
 import Screen from './screen'
+import { slideInOut, fadeInOut } from './animations'
 
 // type Props = {
 //   activeIndex: number,
@@ -25,6 +26,8 @@ import Screen from './screen'
 //   previousIndex?: number,
 //   transitioning: boolean,
 // }
+
+import { mapScreenProps } from './lib'
 
 class Switch extends React.Component {
   static propTypes = {
@@ -87,6 +90,24 @@ class Switch extends React.Component {
 
           const focused = childIndex === this.props.activeIndex
 
+          const indices = [
+            childIndex,
+            this.state.previousIndex,
+            this.props.activeIndex,
+          ]
+
+          const animation = Platform.select({
+            ios: slideInOut(indices),
+            android: fadeInOut,
+          })
+
+          const { screen, transition } = mapScreenProps(
+            childIndex,
+            this.props,
+            this.state,
+            child
+          )
+
           return (
             <Screen
               key={childIndex}
@@ -94,18 +115,16 @@ class Switch extends React.Component {
               previousIndex={this.state.previousIndex}
               index={childIndex}
               screen={{
-                testID: focused
-                  ? `active-screen`
-                  : `inactive-screen-${childIndex}`,
+                ...screen,
                 optimized: true,
-                animated: this.props.animated || child.props.animated,
-                style: { ...this.props.screenStyle, ...child.props.style },
               }}
               transition={{
                 in: childIndex === this.props.activeIndex,
                 onTransitionEnd: this.handleTransitionEnd,
-                ...this.props.transition,
-                ...child.props.transition,
+                method:
+                  Platform.OS === 'android' ? Animated.timing : Animated.spring,
+                animation: animation,
+                ...transition,
               }}
             >
               {React.cloneElement(child, {

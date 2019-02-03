@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Dimensions, ViewPropTypes } from 'react-native'
 import { withNavigation } from './navigator'
 import Screen from './screen'
+import { mapScreenProps } from './lib'
 
 const { height: screenHeight } = Dimensions.get('window')
 
@@ -74,24 +75,32 @@ class Modal extends React.Component {
       return null
     }
 
+    const focused = this.props.navigation.modal.active
+
+    const { screen, transition } = mapScreenProps(
+      this.props.activeIndex,
+      this.props,
+      this.state,
+      child
+    )
+
     return (
       <Screen
         index={this.props.activeIndex}
         screen={{
-          testID: `active-modal`,
-          optimized: false,
-          animated: this.props.animated,
-          style: { ...this.props.screenStyle, ...child.props.style },
+          ...screen,
         }}
         transition={{
-          in: this.props.navigation.modal.active,
+          in: focused,
           onTransitionEnd: this.handleTransitionEnd,
           animation: this.animation,
-          ...this.props.transition,
-          ...child.props.transition,
+          ...transition,
         }}
       >
-        {React.cloneElement(child, { navigation: this.props.navigation })}
+        {React.cloneElement(child, {
+          navigation: this.props.navigation,
+          focused: focused,
+        })}
       </Screen>
     )
   }

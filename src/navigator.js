@@ -1,4 +1,5 @@
 import React from 'react'
+import { BackHandler } from 'react-native'
 import PropTypes from 'prop-types'
 
 const { Provider, Consumer } = React.createContext({})
@@ -216,6 +217,12 @@ class Navigator extends React.Component {
     animated: this.props.animated,
   }
 
+  handleBackPress = () => {
+    // TODO -- can use focused and navigation prop to recursively pop views
+    this.state.navigation.back()
+    return true
+  }
+
   componentDidMount() {
     if (this.props.onNavigationChange) {
       this.props.onNavigationChange({
@@ -224,6 +231,12 @@ class Navigator extends React.Component {
         navigation: this.state.navigation,
       })
     }
+
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
   }
 
   render() {
