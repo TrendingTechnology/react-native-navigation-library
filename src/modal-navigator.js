@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Dimensions, ViewPropTypes } from 'react-native'
-import { withNavigation } from './navigator'
+import { Dimensions, ViewPropTypes, Platform } from 'react-native'
+import { withModalNavigation } from './navigator'
 import Screen from './screen'
+import { fadeInOut } from './animations'
+import { mapScreenProps } from './lib'
 
 const { height: screenHeight } = Dimensions.get('window')
 
@@ -29,19 +31,24 @@ class Modal extends React.Component {
   state = {
     active: false,
     transitioning: false,
+    modalIndex: null,
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.navigation) {
-      if (nextProps.navigation.modal.active !== prevState.active) {
-        return {
-          active: nextProps.navigation.modal.active,
-          transitioning: nextProps.animated,
-        }
+  componentDidUpdate(prevProps) {
+    if (prevProps.activeIndex !== this.props.activeIndex) {
+      if (this.props.activeIndex !== -1) {
+        this.setState({
+          active: true,
+          modalIndex: this.props.activeIndex,
+          transitioning: this.props.animated,
+        })
+      } else {
+        this.setState({
+          active: false,
+          transitioning: this.props.animated,
+        })
       }
     }
-
-    return null
   }
 
   handleTransitionEnd = () => {
@@ -64,7 +71,11 @@ class Modal extends React.Component {
   render() {
     const children = React.Children.toArray(this.props.children)
 
-    const child = children[this.props.activeIndex]
+    const focused = this.state.active || this.state.transitioning
+
+    const child = focused
+      ? children[this.state.modalIndex]
+      : children[this.props.activeIndex]
 
     if (!child) {
       return null
@@ -74,28 +85,37 @@ class Modal extends React.Component {
       return null
     }
 
+    const animation = Platform.select({
+      ios: this.animation,
+      android: fadeInOut,
+    })
+
+    const { screen, transition } = mapScreenProps(
+      this.props.activeIndex,
+      this.props,
+      this.state,
+      child
+    )
+
     return (
       <Screen
         index={this.props.activeIndex}
-        screen={{
-          testID: `active-modal`,
-          optimized: false,
-          animated: this.props.animated,
-          style: { ...this.props.screenStyle, ...child.props.style },
-        }}
+        screen={screen}
         transition={{
-          in: this.props.navigation.modal.active,
+          in: this.state.active,
           onTransitionEnd: this.handleTransitionEnd,
-          animation: this.animation,
-          ...this.props.transition,
-          ...child.props.transition,
+          animation: animation,
+          ...transition,
         }}
       >
-        {React.cloneElement(child, { navigation: this.props.navigation })}
+        {React.cloneElement(child, {
+          navigation: this.props.navigation,
+          focused: this.state.active,
+        })}
       </Screen>
     )
   }
 }
 
 export { Modal }
-export default withNavigation(Modal)
+export default withModalNavigation(Modal)

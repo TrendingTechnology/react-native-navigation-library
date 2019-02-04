@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Animated, Platform } from 'react-native'
+import { StyleSheet, Animated } from 'react-native'
 
 // type Props = {
 //   config: any,
@@ -34,7 +34,7 @@ class Transition extends React.Component {
         },
       }
     },
-    method: Platform.OS === 'android' ? Animated.timing : Animated.spring,
+    method: Animated.spring,
     onTransitionEnd: () => {},
   }
 

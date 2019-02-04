@@ -10,6 +10,10 @@ describe('<Modal />', () => {
 
   test('renders modal based on activeIndex and modal status', () => {
     const { getByText, update } = render(
+      <Navigation activeIndex={-1} navigation={{ modal: { active: true } }} />
+    )
+
+    update(
       <Navigation activeIndex={0} navigation={{ modal: { active: true } }} />
     )
 
@@ -17,7 +21,7 @@ describe('<Modal />', () => {
     expect(() => getByText('2')).toThrow()
 
     update(
-      <Navigation activeIndex={0} navigation={{ modal: { active: false } }} />
+      <Navigation activeIndex={-1} navigation={{ modal: { active: false } }} />
     )
     expect(() => getByText('1')).toThrow()
   })
@@ -25,7 +29,7 @@ describe('<Modal />', () => {
 
 function Navigation(props) {
   return (
-    <Modal name="modal" activeIndex={0} {...props} animated={false}>
+    <Modal activeIndex={0} {...props} animated={false}>
       <Text>1</Text>
       <Text>2</Text>
       <Text>3</Text>

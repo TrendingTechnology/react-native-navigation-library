@@ -48,11 +48,18 @@ class Screen extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    if (this.props.optimized) {
-      return (
-        nextProps.activeIndex === this.props.index ||
-        nextProps.previousIndex === this.props.index
-      )
+    if (this.props.screen.optimized) {
+      if (nextProps.activeIndex === this.props.index) {
+        return true
+      }
+
+      if (nextProps.previousIndex === this.props.index) {
+        if (nextProps.screen.transitioning) {
+          return true
+        }
+      }
+
+      return false
     }
 
     return true

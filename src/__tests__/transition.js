@@ -25,6 +25,13 @@ describe('<Transition />', () => {
     expect(Animated.spring).toHaveBeenCalledTimes(2)
   })
 
+  test('onTransitionEnd called after transition', () => {
+    const onTransitionEnd = jest.fn()
+    render(<Transition onTransitionEnd={onTransitionEnd} in />)
+    // expect(Animated.spring).toHaveBeenCalledTimes(0)
+    expect(onTransitionEnd).toHaveBeenCalledTimes(1)
+  })
+
   test('animation config as a prop', () => {
     const fakeAnimationConfig = {
       test: 'me',

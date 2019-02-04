@@ -1,9 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { View, ViewPropTypes } from 'react-native'
+import { View, ViewPropTypes, Platform, Animated } from 'react-native'
 import { withScreenNavigation } from './navigator'
 import Screen from './screen'
-import { slideInOut } from './animations'
+import { slideInOut, fadeInOut } from './animations'
+import { mapScreenProps } from './lib'
 
 // type Props = {
 //   activeIndex: number,
@@ -94,7 +95,17 @@ class Switch extends React.Component {
             this.props.activeIndex,
           ]
 
-          const animation = slideInOut(indices)
+          const animation = Platform.select({
+            ios: slideInOut(indices),
+            android: fadeInOut,
+          })
+
+          const { screen, transition } = mapScreenProps(
+            childIndex,
+            this.props,
+            this.state,
+            child
+          )
 
           return (
             <Screen
@@ -103,19 +114,16 @@ class Switch extends React.Component {
               previousIndex={this.state.previousIndex}
               index={childIndex}
               screen={{
-                testID: focused
-                  ? `active-screen`
-                  : `inactive-screen-${childIndex}`,
+                ...screen,
                 optimized: true,
-                animated: this.props.animated || child.props.animated,
-                style: { ...this.props.screenStyle, ...child.props.style },
               }}
               transition={{
                 in: childIndex === this.props.activeIndex,
                 onTransitionEnd: this.handleTransitionEnd,
+                method:
+                  Platform.OS === 'android' ? Animated.timing : Animated.spring,
                 animation: animation,
-                ...this.props.transition,
-                ...child.props.transition,
+                ...transition,
               }}
             >
               {React.cloneElement(child, {

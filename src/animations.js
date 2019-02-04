@@ -1,7 +1,6 @@
 import { Platform, Animated, Easing, Dimensions } from 'react-native'
 const { height, width } = Dimensions.get('window')
 
-// configurations
 const config = Platform.select({
   ios: {
     configIn: {

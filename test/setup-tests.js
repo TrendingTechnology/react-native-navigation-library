@@ -22,10 +22,9 @@ jest.mock('Animated', () => {
     }),
     spring: jest.fn(() => {
       return {
-        start: callback =>
-          jest.fn(() => {
-            callback()
-          }),
+        start: jest.fn(callback => {
+          callback()
+        }),
       }
     }),
     timing: jest.fn(() => {

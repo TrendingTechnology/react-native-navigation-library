@@ -4,6 +4,7 @@ import { View, ViewPropTypes } from 'react-native'
 import Screen from './screen'
 import { withScreenNavigation } from './navigator'
 import { slideInOut } from './animations'
+import { mapScreenProps } from './lib'
 
 // type Props = {
 //   activeIndex: number,
@@ -45,6 +46,7 @@ class Tabs extends React.Component {
   state = {
     activeIndex: this.props.activeIndex,
     rendered: [this.props.activeIndex],
+    transitioning: false,
   }
 
   static getDerivedStateFromProps = (nextProps, prevState) => {
@@ -52,6 +54,7 @@ class Tabs extends React.Component {
       return {
         previousIndex: prevState.activeIndex,
         activeIndex: nextProps.activeIndex,
+        transitioning: nextProps.animated,
       }
     }
 
@@ -71,6 +74,10 @@ class Tabs extends React.Component {
     }
   }
 
+  handleTransitionEnd = () => {
+    this.setState({ transitioning: false })
+  }
+
   render() {
     const children = React.Children.toArray(this.props.children)
 
@@ -83,8 +90,6 @@ class Tabs extends React.Component {
             return null
           }
 
-          const focused = childIndex === this.props.activeIndex
-
           const indices = [
             childIndex,
             this.state.previousIndex,
@@ -93,6 +98,13 @@ class Tabs extends React.Component {
 
           const animation = slideInOut(indices)
 
+          const { screen, transition } = mapScreenProps(
+            childIndex,
+            this.props,
+            this.state,
+            child
+          )
+
           return (
             <Screen
               key={childIndex}
@@ -100,18 +112,14 @@ class Tabs extends React.Component {
               previousIndex={this.state.previousIndex}
               activeIndex={this.props.activeIndex}
               screen={{
-                testID: focused
-                  ? `active-screen`
-                  : `inactive-screen-${childIndex}`,
                 optimized: true,
-                animated: this.props.animated || child.props.animated,
-                style: { ...this.props.screenStyle, ...child.props.style },
+                ...screen,
               }}
               transition={{
                 in: childIndex === this.props.activeIndex,
                 animation: animation,
-                ...this.props.transition,
-                ...child.props.transition,
+                onTransitionEnd: this.handleTransitionEnd,
+                ...transition,
               }}
             >
               {React.cloneElement(child, {
