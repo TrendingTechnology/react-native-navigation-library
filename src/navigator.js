@@ -49,7 +49,7 @@ const { Provider, Consumer } = React.createContext({})
 //   activeIndex: number,
 //   previous: [number],
 //   screens: [string],
-//   updateScreens: (screens: [any]) => void,
+//   registerScreens: (screens: [any]) => void,
 //   animated: boolean,
 // }
 
@@ -110,24 +110,20 @@ class Navigator extends React.Component {
     }
   }
 
-  toggleModal = (active, data = {}) => {
-    this.setState(state => {
-      return {
-        navigation: {
-          ...this.updateNavigationState(state, data),
-          modal: {
-            ...state.navigation.modal,
-            active: active,
-          },
-        },
-      }
-    }, this.onNavigationChange)
-  }
-
-  updateScreens = children => {
+  registerScreens = screens => {
     if (this.state.screens.length === 0) {
       this.setState({
-        screens: React.Children.toArray(children).map(
+        screens: React.Children.toArray(screens).map(
+          (child, index) => child.props.name || `${index}`
+        ),
+      })
+    }
+  }
+
+  registerModals = modals => {
+    if (this.state.modals.length === 0) {
+      this.setState({
+        modals: React.Children.toArray(modals).map(
           (child, index) => child.props.name || `${index}`
         ),
       })
@@ -147,6 +143,8 @@ class Navigator extends React.Component {
           }
         })
       }
+    } else if (this.props.navigation) {
+      this.props.navigation.back(data)
     }
   }
 
@@ -181,14 +179,35 @@ class Navigator extends React.Component {
     })
   }
 
+  toggleModal = (name, data, active) => {
+    const modal = this.state.modals.indexOf(name)
+
+    if (modal !== -1) {
+      this.setState(state => {
+        return {
+          navigation: {
+            ...this.updateNavigationState(state, data),
+            modal: {
+              ...state.navigation.modal,
+              activeIndex: active ? modal : -1,
+              active: active,
+            },
+          },
+        }
+      }, this.onNavigationChange)
+    }
+  }
+
   modal = {
     active: false,
-    show: data => {
-      this.toggleModal(true, data)
+    activeIndex: -1,
+
+    show: (name, data) => {
+      this.toggleModal(name, data, true)
     },
 
-    dismiss: data => {
-      this.toggleModal(false, data)
+    dismiss: (name, data) => {
+      this.toggleModal(name, data, false)
     },
   }
 
@@ -213,14 +232,26 @@ class Navigator extends React.Component {
   state = {
     ...this.initialState,
     screens: this.props.screens || [],
-    updateScreens: this.updateScreens,
+    modals: this.props.modals || [],
+    registerScreens: this.registerScreens,
+    registerModals: this.registerModals,
     animated: this.props.animated,
   }
 
   handleBackPress = () => {
-    // TODO -- can use focused and navigation prop to recursively pop views
-    this.state.navigation.back()
-    return true
+    if (this.props.focused || !this.props.navigation) {
+      this.state.navigation.back()
+      return true
+    }
+
+    if (this.props.navigation) {
+      this.props.navigation.back()
+      return true
+    }
+
+    // fire warning here if missing props in the case of nested navigations
+    // that didnt get navigation/focused props
+    return false
   }
 
   componentDidMount() {
@@ -287,8 +318,8 @@ function withScreenNavigation(Component) {
   class RegisterScreens extends React.Component {
     constructor(props) {
       super(props)
-      props.updateScreens &&
-        props.updateScreens(React.Children.toArray(props.screens))
+      props.registerScreens &&
+        props.registerScreens(React.Children.toArray(props.screens))
     }
 
     render() {
@@ -302,7 +333,7 @@ function withScreenNavigation(Component) {
           {context => {
             return (
               <RegisterScreens
-                updateScreens={context.updateScreens}
+                registerScreens={context.registerScreens}
                 screens={this.props.children}
               >
                 <Component
@@ -327,5 +358,49 @@ function withScreenNavigation(Component) {
   return NavigationContainer
 }
 
-export { withNavigation, withScreenNavigation }
+function withModalNavigation(ModalNavigator) {
+  class RegisterModals extends React.Component {
+    constructor(props) {
+      super(props)
+
+      props.registerModals &&
+        props.registerModals(React.Children.toArray(props.modals))
+    }
+    render() {
+      return this.props.children
+    }
+  }
+
+  class ModalNavigationContainer extends React.Component {
+    render() {
+      return (
+        <Consumer>
+          {context => {
+            return (
+              <RegisterModals
+                registerModals={context.registerModals}
+                modals={this.props.children}
+              >
+                <ModalNavigator
+                  {...this.props}
+                  navigation={context.navigation}
+                  activeIndex={context.navigation.modal.activeIndex}
+                  animated={context.animated}
+                />
+              </RegisterModals>
+            )
+          }}
+        </Consumer>
+      )
+    }
+  }
+
+  ModalNavigationContainer.displayName = `withNavigation(${ModalNavigator.displayName ||
+    ModalNavigator.name ||
+    'ModalNavigator'})`
+
+  return ModalNavigationContainer
+}
+
+export { withNavigation, withScreenNavigation, withModalNavigation }
 export default Navigator

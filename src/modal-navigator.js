@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Dimensions, ViewPropTypes } from 'react-native'
-import { withNavigation } from './navigator'
+import { withModalNavigation } from './navigator'
 import Screen from './screen'
 import { mapScreenProps } from './lib'
 
@@ -87,9 +87,7 @@ class Modal extends React.Component {
     return (
       <Screen
         index={this.props.activeIndex}
-        screen={{
-          ...screen,
-        }}
+        screen={screen}
         transition={{
           in: focused,
           onTransitionEnd: this.handleTransitionEnd,
@@ -107,4 +105,4 @@ class Modal extends React.Component {
 }
 
 export { Modal }
-export default withNavigation(Modal)
+export default withModalNavigation(Modal)
