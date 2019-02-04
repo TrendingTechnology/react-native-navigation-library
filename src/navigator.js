@@ -64,6 +64,7 @@ class Navigator extends React.Component {
     initialState: PropTypes.object,
     navigation: PropTypes.object,
     onNavigationChange: PropTypes.func,
+    name: PropTypes.string.isRequired,
   }
 
   selectActiveIndex = (index, data = {}, callback) => {
@@ -236,6 +237,7 @@ class Navigator extends React.Component {
     registerScreens: this.registerScreens,
     registerModals: this.registerModals,
     animated: this.props.animated,
+    name: this.props.name,
   }
 
   handleBackPress = () => {
@@ -338,9 +340,9 @@ function withScreenNavigation(Component) {
               >
                 <Component
                   {...this.props}
+                  name={context.name}
                   navigation={context.navigation}
                   activeIndex={context.activeIndex}
-                  previous={context.previous}
                   animated={context.animated}
                 />
               </RegisterScreens>
@@ -402,5 +404,5 @@ function withModalNavigation(ModalNavigator) {
   return ModalNavigationContainer
 }
 
-export { withNavigation, withScreenNavigation, withModalNavigation }
+export { Navigator, withNavigation, withScreenNavigation, withModalNavigation }
 export default Navigator
