@@ -14,7 +14,7 @@ import {
 test('stack navigation', () => {
   function StackApp() {
     return (
-      <Navigator initialState={{ hello: '123' }}>
+      <Navigator name="stack" initialState={{ hello: '123' }}>
         {({ navigation, activeIndex }) => {
           return (
             <View style={{ flex: 1 }}>
@@ -24,7 +24,7 @@ test('stack navigation', () => {
                 <Button title="Header 3" onPress={() => navigation.pop()} />
               </Header>
 
-              <Stack name="stack">
+              <Stack>
                 <View name="screen-1">
                   <Button
                     title="Screen 1"
@@ -80,11 +80,11 @@ test('stack navigation', () => {
 test('tabs navigation', () => {
   function TabsApp() {
     return (
-      <Navigator>
+      <Navigator name="tabs">
         {({ navigation }) => {
           return (
             <View style={{ flex: 1 }}>
-              <Tabs name="tabs">
+              <Tabs>
                 <View name="screen-1">
                   <Button title="Screen 1" onPress={() => navigation.push()} />
                 </View>
@@ -137,7 +137,7 @@ test('tabs navigation', () => {
 test('switch navigator', async () => {
   function SwitchApp() {
     return (
-      <Navigator>
+      <Navigator name="switch">
         {({ navigation }) => {
           return (
             <View style={{ flex: 1 }}>
@@ -145,7 +145,7 @@ test('switch navigator', async () => {
                 <View hidden />
                 <Button title="Header 2" onPress={() => navigation.pop()} />
               </Header>
-              <Switch name="switch">
+              <Switch>
                 <View name="screen-1">
                   <Button title="Screen 1" onPress={() => navigation.push()} />
                 </View>

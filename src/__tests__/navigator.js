@@ -5,13 +5,13 @@ import Navigator from '../navigator'
 
 describe('<Navigator />', () => {
   test('empty render', () => {
-    expect(() => render(<Navigator />)).not.toThrow()
+    expect(() => render(<Navigator name="123" />)).not.toThrow()
   })
 
   test('passes navigation in render prop', () => {
     const spy = jest.fn(() => null)
 
-    render(<Navigator children={spy} screens={['test']} />)
+    render(<Navigator name="123" children={spy} screens={['test']} />)
 
     expect(spy).toHaveBeenCalled()
     expect(spy).toHaveBeenCalledWith({
@@ -28,6 +28,7 @@ Object {
     "back": [Function],
     "modal": Object {
       "active": false,
+      "activeIndex": -1,
       "dismiss": [Function],
       "show": [Function],
     },
@@ -45,7 +46,9 @@ Object {
 
   test('onNavigationChange fires when navigation is updated', () => {
     const spy = jest.fn()
-    render(<Navigator onNavigationChange={spy} screens={['test2']} />)
+    render(
+      <Navigator name="123" onNavigationChange={spy} screens={['test2']} />
+    )
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith({
@@ -62,6 +65,7 @@ Object {
     "back": [Function],
     "modal": Object {
       "active": false,
+      "activeIndex": -1,
       "dismiss": [Function],
       "show": [Function],
     },
@@ -101,7 +105,7 @@ Object {
     const onUpdate = jest.fn()
 
     const { getByText } = render(
-      <NavigationFunctions onNavigationChange={onUpdate} />
+      <NavigationFunctions name="123" onNavigationChange={onUpdate} />
     )
 
     fireEvent.press(getByText('push'))
