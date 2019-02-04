@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { View, ViewPropTypes, Platform, Animated } from 'react-native'
 import { withScreenNavigation } from './navigator'
 import Screen from './screen'
+import { fadeInOut, slideInOut } from './animations'
+import { mapScreenProps } from './lib'
 
 // type Props = {
 //   activeIndex: number,
@@ -25,9 +27,6 @@ import Screen from './screen'
 //   previousIndex?: number,
 //   transitioning: boolean,
 // }
-
-import { fadeInOut, slideInOut } from './animations'
-import { mapScreenProps } from './lib'
 
 class Stack extends React.Component {
   static propTypes = {

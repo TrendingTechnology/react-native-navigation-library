@@ -4,6 +4,7 @@ import { View, ViewPropTypes, Platform, Animated } from 'react-native'
 import { withScreenNavigation } from './navigator'
 import Screen from './screen'
 import { slideInOut, fadeInOut } from './animations'
+import { mapScreenProps } from './lib'
 
 // type Props = {
 //   activeIndex: number,
@@ -26,8 +27,6 @@ import { slideInOut, fadeInOut } from './animations'
 //   previousIndex?: number,
 //   transitioning: boolean,
 // }
-
-import { mapScreenProps } from './lib'
 
 class Switch extends React.Component {
   static propTypes = {
