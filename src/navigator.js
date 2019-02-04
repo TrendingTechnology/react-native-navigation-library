@@ -241,30 +241,19 @@ class Navigator extends React.Component {
   }
 
   handleBackPress = () => {
-    if (this.props.focused || !this.props.navigation) {
+    if (this.state.activeIndex !== 0) {
       this.state.navigation.back()
       return true
-    }
-
-    if (this.props.navigation) {
+    } else if (this.props.navigation) {
       this.props.navigation.back()
       return true
     }
 
-    // fire warning here if missing props in the case of nested navigations
-    // that didnt get navigation/focused props
     return false
   }
 
   componentDidMount() {
-    if (this.props.onNavigationChange) {
-      this.props.onNavigationChange({
-        activeIndex: this.state.activeIndex,
-        activeScreen: this.state.screens[this.state.activeIndex],
-        navigation: this.state.navigation,
-      })
-    }
-
+    this.onNavigationChange()
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
   }
 
@@ -320,8 +309,10 @@ function withScreenNavigation(Component) {
   class RegisterScreens extends React.Component {
     constructor(props) {
       super(props)
-      props.registerScreens &&
+
+      if (props.registerScreens) {
         props.registerScreens(React.Children.toArray(props.screens))
+      }
     }
 
     render() {
@@ -365,9 +356,11 @@ function withModalNavigation(ModalNavigator) {
     constructor(props) {
       super(props)
 
-      props.registerModals &&
+      if (props.registerModals) {
         props.registerModals(React.Children.toArray(props.modals))
+      }
     }
+
     render() {
       return this.props.children
     }

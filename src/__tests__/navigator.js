@@ -1,7 +1,27 @@
 import React from 'react'
-import { Button, View } from 'react-native'
+import { Button, View, BackHandler } from 'react-native'
 import { render, fireEvent } from 'react-native-testing-library'
 import Navigator from '../navigator'
+import Stack from '../stack-navigator'
+
+jest.mock('BackHandler', () => {
+  let listeners = []
+  return {
+    fire: () => {
+      for (let listener of listeners) {
+        if (listener() === true) {
+          break
+        }
+      }
+    },
+    addEventListener: (name, listener) => {
+      listeners = [listener, ...listeners]
+    },
+    removeEventListener: () => {
+      listeners.shift()
+    },
+  }
+})
 
 describe('<Navigator />', () => {
   test('empty render', () => {
@@ -135,5 +155,79 @@ Object {
       activeScreen: 'navigate',
       navigation: expect.any(Object),
     })
+  })
+
+  test('android back button behaviour', () => {
+    const onNavigationChange = jest.fn()
+
+    const { getByText } = render(
+      <Navigator
+        name="android-test"
+        screens={['one', 'two']}
+        onNavigationChange={onNavigationChange}
+      >
+        {({ navigation }) => {
+          return (
+            <Stack>
+              <Button title="1" onPress={() => navigation.push()} />
+              <Button title="2" onPress={() => navigation.push()} />
+            </Stack>
+          )
+        }}
+      </Navigator>
+    )
+
+    fireEvent.press(getByText('1'))
+    getByText('2')
+
+    BackHandler.fire()
+
+    expect(onNavigationChange).toHaveBeenCalledWith({
+      activeIndex: 0,
+      activeScreen: 'one',
+      navigation: expect.any(Object),
+    })
+  })
+
+  test('handle back bubbles up to parent', () => {
+    const { getByText } = render(
+      <Navigator name="android-test" screens={['one', 'two']}>
+        {({ navigation }) => {
+          return (
+            <Stack>
+              <Button title="1" onPress={() => navigation.push()} />
+              <Navigator name="inner-1">
+                {({ navigation: innerNav }) => {
+                  return (
+                    <Stack>
+                      <Button
+                        name="second-screen"
+                        title="2"
+                        onPress={() => innerNav.push()}
+                      />
+                      <Navigator name="inner-2">
+                        <Stack>
+                          <Button title="3" onPress={() => navigation.push()} />
+                        </Stack>
+                      </Navigator>
+                    </Stack>
+                  )
+                }}
+              </Navigator>
+            </Stack>
+          )
+        }}
+      </Navigator>
+    )
+
+    fireEvent.press(getByText('1'))
+    fireEvent.press(getByText('2'))
+    getByText('3')
+
+    BackHandler.fire()
+    getByText('2')
+
+    BackHandler.fire()
+    getByText('1')
   })
 })
