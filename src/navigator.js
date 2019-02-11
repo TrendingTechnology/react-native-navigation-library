@@ -106,8 +106,18 @@ class Navigator extends React.Component {
     },
   }
 
+  getActiveIndex = () => {
+    const { match, screens } = this.props
+    let activeIndex = 0
+    if (match) {
+      activeIndex = screens.indexOf(match.params.activeScreen)
+    }
+
+    return activeIndex
+  }
+
   initialState = {
-    activeIndex: this.props.initialIndex || 0,
+    activeIndex: this.getActiveIndex(),
     navigation: {
       push: this.push,
       pop: this.pop,
@@ -130,11 +140,7 @@ class Navigator extends React.Component {
   state = this.initialState
 
   setActiveIndex = data => {
-    const { match } = this.props
-    let activeIndex = 0
-    if (match) {
-      activeIndex = this.props.screens.indexOf(match.params.activeScreen)
-    }
+    const activeIndex = this.getActiveIndex()
 
     this.setState(state => {
       return {
