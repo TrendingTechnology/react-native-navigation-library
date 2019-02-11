@@ -1,6 +1,6 @@
 {
   "name": "react-native-navigation-library",
-  "version": "0.1.16",
+  "version": "0.2.0",
   "description": "declarative navigation library for react native",
   "main": "./react-native-navigation-library.js",
   "scripts": {
@@ -54,5 +54,8 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "dependencies": {
+    "react-router-native": "^4.3.0"
   }
 }

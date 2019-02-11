@@ -1,7 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { View, ViewPropTypes, Platform, Animated } from 'react-native'
-import { withScreenNavigation } from './navigator'
+import { View, Platform, Animated } from 'react-native'
+import { withNavigation } from './navigator'
 import Screen from './screen'
 import { slideInOut, fadeInOut } from './animations'
 import { mapScreenProps } from './lib'
@@ -28,23 +27,23 @@ import { mapScreenProps } from './lib'
 //   transitioning: boolean,
 // }
 
-class Switch extends React.Component {
-  static propTypes = {
-    name: PropTypes.string.isRequired,
-    activeIndex: PropTypes.number.isRequired,
-    style: ViewPropTypes.style,
-    screenStyle: ViewPropTypes.style,
-    animated: PropTypes.bool,
-    transition: PropTypes.shape({
-      config: PropTypes.object,
-      configIn: PropTypes.object,
-      configOut: PropTypes.object,
-      animation: PropTypes.func,
-      onTransitionEnd: PropTypes.func,
-    }),
-    navigation: PropTypes.object,
-  }
+// static propTypes = {
+//   name: PropTypes.string.isRequired,
+//   activeIndex: PropTypes.number.isRequired,
+//   style: ViewPropTypes.style,
+//   screenStyle: ViewPropTypes.style,
+//   animated: PropTypes.bool,
+//   transition: PropTypes.shape({
+//     config: PropTypes.object,
+//     configIn: PropTypes.object,
+//     configOut: PropTypes.object,
+//     animation: PropTypes.func,
+//     onTransitionEnd: PropTypes.func,
+//   }),
+//   navigation: PropTypes.object,
+// }
 
+class Switch extends React.Component {
   state = {
     activeIndex: this.props.activeIndex,
     previousIndex: null,
@@ -129,6 +128,7 @@ class Switch extends React.Component {
               {React.cloneElement(child, {
                 navigation: this.props.navigation,
                 focused: focused,
+                basepath: this.props.basepath,
               })}
             </Screen>
           )
@@ -139,4 +139,4 @@ class Switch extends React.Component {
 }
 
 export { Switch }
-export default withScreenNavigation(Switch)
+export default withNavigation(Switch)

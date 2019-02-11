@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { View, ViewPropTypes, Platform, Animated } from 'react-native'
-import { withScreenNavigation } from './navigator'
+import { withNavigation } from './navigator'
 import Screen from './screen'
 import { fadeInOut, slideInOut } from './animations'
 import { mapScreenProps } from './lib'
@@ -116,6 +116,7 @@ class Stack extends React.Component {
               {React.cloneElement(child, {
                 navigation: this.props.navigation,
                 focused: index === this.props.activeIndex,
+                basepath: this.props.basepath,
               })}
             </Screen>
           )
@@ -126,4 +127,4 @@ class Stack extends React.Component {
 }
 
 export { Stack }
-export default withScreenNavigation(Stack)
+export default withNavigation(Stack)

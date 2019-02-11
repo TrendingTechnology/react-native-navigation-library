@@ -1,183 +1,76 @@
 import React from 'react'
-import { BackHandler } from 'react-native'
 import PropTypes from 'prop-types'
 
 const { Provider, Consumer } = React.createContext({})
 
-// type Props = {
-//   animated: boolean,
-//   initialIndex?: number,
-//   initialState?: any,
-//   screens?: [string],
-//   navigation?: Navigation,
-//   onNavigationChange: (navigation: CallbackArgs) => void,
-//   children: any,
-// }
-
-// type Navigation = {
-//   back: (data: any, callback: (navigation: CallbackArgs) => void) => void,
-//   push: (data: any, callback: (navigation: CallbackArgs) => void) => void,
-//   pop: (data: any, callback: (navigation: CallbackArgs) => void) => void,
-//   reset: (callback: (navigation: CallbackArgs) => void) => void,
-//   select: (
-//     index: number,
-//     data: any,
-//     callback: (navigation: CallbackArgs) => void
-//   ) => void,
-//   modal: {
-//     active: boolean,
-//     dismiss: (data: any) => void,
-//     show: (data: any) => void,
-//   },
-//   navigate: (
-//     routeName: string,
-//     data: any,
-//     callback: (navigation: CallbackArgs) => void
-//   ) => void,
-//   parent?: Navigation,
-//   state: any,
-// }
-
-// type CallbackArgs = {
-//   activeIndex: number,
-//   activeScreen: string,
-//   navigation: Navigation,
-// }
-
-// type State = {
-//   navigation: Navigation,
-//   activeIndex: number,
-//   previous: [number],
-//   screens: [string],
-//   registerScreens: (screens: [any]) => void,
-//   animated: boolean,
-// }
+import { Route } from 'react-router-native'
 
 class Navigator extends React.Component {
   static defaultProps = {
     animated: true,
+    screens: [],
   }
 
   static propTypes = {
-    animated: PropTypes.bool,
-    initialIndex: PropTypes.number,
-    initialState: PropTypes.object,
-    navigation: PropTypes.object,
-    onNavigationChange: PropTypes.func,
     name: PropTypes.string.isRequired,
-  }
-
-  selectActiveIndex = (index, data = {}, callback) => {
-    if (this.state.screens[index]) {
-      this.setState(
-        state => {
-          return {
-            activeIndex: index,
-            previous: [...state.previous, state.activeIndex],
-            navigation: this.updateNavigationState(state, data),
-          }
-        },
-        () => {
-          this.onNavigationChange()
-          if (callback) {
-            callback({
-              activeIndex: this.state.activeIndex,
-              activeScreen: this.state.screens[this.state.activeIndex],
-              navigation: this.state.navigation,
-            })
-          }
-        }
-      )
-    }
+    screens: PropTypes.array.isRequired,
   }
 
   onNavigationChange = () => {
     if (this.props.onNavigationChange) {
       this.props.onNavigationChange({
         activeIndex: this.state.activeIndex,
-        activeScreen: this.state.screens[this.state.activeIndex],
+        activeScreen: this.props.screens[this.state.activeIndex],
         navigation: this.state.navigation,
       })
     }
   }
 
-  updateNavigationState = (state, data) => {
-    return {
-      ...state.navigation,
-      state: {
-        ...state.navigation.state,
-        ...data,
-      },
+  push = data => {
+    const { activeIndex } = this.state
+    const nextScreen = this.props.screens[activeIndex + 1]
+
+    if (nextScreen) {
+      this.props.history.push(`${this.props.basepath}/${nextScreen}`, data)
     }
   }
 
-  registerScreens = screens => {
-    if (this.state.screens.length === 0) {
-      this.setState({
-        screens: React.Children.toArray(screens).map(
-          (child, index) => child.props.name || `${index}`
-        ),
-      })
+  pop = data => {
+    const { activeIndex } = this.state
+    const previousScreen = this.props.screens[activeIndex - 1]
+    if (previousScreen) {
+      this.props.history.push(`${this.props.basepath}/${previousScreen}`, data)
     }
   }
 
-  registerModals = modals => {
-    if (this.state.modals.length === 0) {
-      this.setState({
-        modals: React.Children.toArray(modals).map(
-          (child, index) => child.props.name || `${index}`
-        ),
-      })
+  navigate = (routeName, data) => {
+    this.props.history.push(`${this.props.basepath}/${routeName}`, data)
+  }
+
+  goTo = (routeName, data) => {
+    this.props.history.push(`${routeName}`, data)
+  }
+
+  replaceWith = (routeName, data) => {
+    this.props.history.replace(`${routeName}`, data)
+  }
+
+  back = () => {
+    if (this.props.history.index !== 0) {
+      this.props.history.goBack()
     }
   }
 
-  back = data => {
-    if (this.state.previous.length > 0) {
-      const prevIndex = this.state.previous[this.state.previous.length - 1]
-
-      if (this.state.screens[prevIndex]) {
-        this.setState(state => {
-          return {
-            activeIndex: prevIndex,
-            previous: state.previous.slice(0, state.previous.length - 1),
-            navigation: this.updateNavigationState(state, data),
-          }
-        })
-      }
-    } else if (this.props.navigation) {
-      this.props.navigation.back(data)
+  select = (index, data) => {
+    const nextScreen = this.props.screens[index]
+    if (nextScreen) {
+      this.props.history.push(`${this.props.basepath}/${nextScreen}`, data)
     }
   }
 
-  push = (data, callback) => {
-    this.selectActiveIndex(this.state.activeIndex + 1, data, callback)
-  }
-
-  pop = (data, callback) => {
-    this.selectActiveIndex(this.state.activeIndex - 1, data, callback)
-  }
-
-  select = (index = 0, data, callback) => {
-    this.selectActiveIndex(index, data, callback)
-  }
-
-  navigate = (routeName, data, callback) => {
-    const route = this.state.screens.indexOf(routeName)
-    if (route !== -1) {
-      this.selectActiveIndex(route, data, callback)
-    }
-  }
-
-  reset = callback => {
-    this.setState(this.initialState, () => {
-      if (callback) {
-        callback({
-          activeIndex: this.state.activeIndex,
-          activeScreen: this.state.screens[this.state.activeIndex],
-          navigation: this.state.navigation,
-        })
-      }
-    })
+  reset = () => {
+    this.props.history.go(-this.state.updateCount)
+    this.setState(this.initialState)
   }
 
   toggleModal = (name, data, active) => {
@@ -187,7 +80,8 @@ class Navigator extends React.Component {
       this.setState(state => {
         return {
           navigation: {
-            ...this.updateNavigationState(state, data),
+            ...state.navigation,
+            state: { ...state.navigation.state, ...data },
             modal: {
               ...state.navigation.modal,
               activeIndex: active ? modal : -1,
@@ -212,70 +106,171 @@ class Navigator extends React.Component {
     },
   }
 
-  navigation = {
-    back: this.back,
-    push: this.push,
-    pop: this.pop,
-    reset: this.reset,
-    select: this.select,
-    modal: this.modal,
-    navigate: this.navigate,
-    parent: this.props.navigation,
-    state: this.props.initialState || {},
+  registerModals = modals => {
+    if (this.state.modals.length === 0) {
+      this.setState({
+        modals: React.Children.toArray(modals).map(
+          (child, index) => child.props.name || `${index}`
+        ),
+      })
+    }
   }
 
   initialState = {
     activeIndex: this.props.initialIndex || 0,
-    navigation: this.navigation,
-    previous: [],
-  }
-
-  state = {
-    ...this.initialState,
-    screens: this.props.screens || [],
-    modals: this.props.modals || [],
-    registerScreens: this.registerScreens,
-    registerModals: this.registerModals,
-    animated: this.props.animated,
+    navigation: {
+      push: this.push,
+      pop: this.pop,
+      reset: this.reset,
+      back: this.back,
+      select: this.select,
+      navigate: this.navigate,
+      goTo: this.goTo,
+      replaceWith: this.replaceWith,
+      state: this.props.initialState || {},
+      modal: this.modal,
+    },
+    basepath: this.props.basepath,
     name: this.props.name,
+    animated: this.props.animated,
+    modals: this.props.modals || [],
+    registerModals: this.registerModals,
+    updateCount: 0,
   }
 
-  handleBackPress = () => {
-    if (this.state.activeIndex !== 0) {
-      this.state.navigation.back()
-      return true
-    } else if (this.props.navigation) {
-      this.props.navigation.back()
-      return true
+  state = this.initialState
+
+  getActiveIndex = () => {
+    const { match } = this.props
+    let activeIndex = 0
+
+    if (match) {
+      activeIndex = this.props.screens.indexOf(match.params.activeScreen)
     }
 
-    return false
+    return activeIndex
+  }
+
+  setActiveIndex = data => {
+    const { match } = this.props
+    let activeIndex = 0
+    if (match) {
+      activeIndex = this.props.screens.indexOf(match.params.activeScreen)
+    }
+
+    this.setState(state => {
+      return {
+        activeIndex: activeIndex,
+        navigation: {
+          ...state.navigation,
+          state: {
+            ...state.navigation.state,
+            ...data,
+          },
+        },
+      }
+    }, this.onNavigationChange)
   }
 
   componentDidMount() {
-    this.onNavigationChange()
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
+    // push the first route when pointed to a navigator
+    if (this.props.root) {
+      this.props.history.push(
+        `${this.props.basepath}/${this.props.screens[0]}`,
+        this.props.initialState
+      )
+    } else {
+      this.setActiveIndex()
+    }
+
+    // update count used to get the correct index for reset()
+    this.unlisten = this.props.history.listen(() => {
+      this.setState(state => {
+        return {
+          updateCount: state.updateCount + 1,
+        }
+      })
+    })
   }
 
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
+    this.unlisten()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.location.key !== this.props.location.key) {
+      this.setActiveIndex(this.props.location.state)
+    }
   }
 
   render() {
-    if (typeof this.props.children === 'function') {
-      return (
-        <Provider value={this.state}>
-          {this.props.children({
-            navigation: this.state.navigation,
-            activeIndex: this.state.activeIndex,
-            activeScreen: this.state.screens[this.state.activeIndex],
-          })}
-        </Provider>
-      )
-    }
-
-    return <Provider value={this.state}>{this.props.children}</Provider>
+    const children = this.props.children
+    return (
+      <Provider value={this.state}>
+        {typeof children === 'function'
+          ? children(this.state)
+          : React.cloneElement(children, this.state)}
+      </Provider>
+    )
   }
+}
+
+function withRouting(Component) {
+  function NavigationRoute(props) {
+    return (
+      <Consumer>
+        {context => {
+          // we can inherit the base path from parent context if we're a nested navigator
+          // this helps because we no longer need to pass down all props to a custom navigator component
+          let path = ''
+
+          if (context) {
+            path = `${context.basepath || ''}/${props.name}`
+          }
+
+          if (props.basepath) {
+            path = `${props.basepath || ''}/${props.name}`
+          }
+
+          return (
+            <Route
+              path={path}
+              render={({ match }) => {
+                // this is a convienience api
+                // root component will push first screen when it mounts if its at a navigator
+                // e.g linkTo: '/my-navigator' -> CDM -> history.push('/my-navigator/first-screen')
+                const root = match.isExact
+                return (
+                  <Route
+                    path={`${path}/:activeScreen`}
+                    children={({ match, location, history }) => {
+                      return (
+                        <Component
+                          {...props}
+                          match={match}
+                          history={history}
+                          location={location}
+                          initialState={location.state || props.initialState}
+                          root={root}
+                          basepath={path}
+                        />
+                      )
+                    }}
+                  />
+                )
+              }}
+            />
+          )
+        }}
+      </Consumer>
+    )
+  }
+
+  NavigationRoute.displayName = `withRouting(${Component.displayName ||
+    Component.name ||
+    'Component'})`
+
+  return NavigationRoute
 }
 
 function withNavigation(Component) {
@@ -284,11 +279,31 @@ function withNavigation(Component) {
       return (
         <Consumer>
           {context => {
+            return <Component {...this.props} {...context} />
+          }}
+        </Consumer>
+      )
+    }
+  }
+
+  NavigationContainer.displayName = `withNavigation(${Component.displayName ||
+    Component.name ||
+    'Component'})`
+
+  return NavigationContainer
+}
+
+function withModalNavigation(Component) {
+  class ModalContainer extends React.Component {
+    render() {
+      return (
+        <Consumer>
+          {context => {
             return (
               <Component
                 {...this.props}
                 navigation={context.navigation}
-                activeIndex={context.activeIndex}
+                activeIndex={context.navigation.modal.activeIndex}
                 animated={context.animated}
               />
             )
@@ -298,104 +313,12 @@ function withNavigation(Component) {
     }
   }
 
-  NavigationContainer.displayName = `withNavigation(${Component.displayName ||
+  ModalContainer.displayName = `withNavigation(${Component.displayName ||
     Component.name ||
-    'Component'})`
+    'Modal'})`
 
-  return NavigationContainer
+  return ModalContainer
 }
 
-function withScreenNavigation(Component) {
-  class RegisterScreens extends React.Component {
-    constructor(props) {
-      super(props)
-
-      if (props.registerScreens) {
-        props.registerScreens(React.Children.toArray(props.screens))
-      }
-    }
-
-    render() {
-      return this.props.children
-    }
-  }
-  class NavigationContainer extends React.Component {
-    render() {
-      return (
-        <Consumer>
-          {context => {
-            return (
-              <RegisterScreens
-                registerScreens={context.registerScreens}
-                screens={this.props.children}
-              >
-                <Component
-                  {...this.props}
-                  name={context.name}
-                  navigation={context.navigation}
-                  activeIndex={context.activeIndex}
-                  animated={context.animated}
-                />
-              </RegisterScreens>
-            )
-          }}
-        </Consumer>
-      )
-    }
-  }
-
-  NavigationContainer.displayName = `withNavigation(${Component.displayName ||
-    Component.name ||
-    'Component'})`
-
-  return NavigationContainer
-}
-
-function withModalNavigation(ModalNavigator) {
-  class RegisterModals extends React.Component {
-    constructor(props) {
-      super(props)
-
-      if (props.registerModals) {
-        props.registerModals(React.Children.toArray(props.modals))
-      }
-    }
-
-    render() {
-      return this.props.children
-    }
-  }
-
-  class ModalNavigationContainer extends React.Component {
-    render() {
-      return (
-        <Consumer>
-          {context => {
-            return (
-              <RegisterModals
-                registerModals={context.registerModals}
-                modals={this.props.children}
-              >
-                <ModalNavigator
-                  {...this.props}
-                  navigation={context.navigation}
-                  activeIndex={context.navigation.modal.activeIndex}
-                  animated={context.animated}
-                />
-              </RegisterModals>
-            )
-          }}
-        </Consumer>
-      )
-    }
-  }
-
-  ModalNavigationContainer.displayName = `withNavigation(${ModalNavigator.displayName ||
-    ModalNavigator.name ||
-    'ModalNavigator'})`
-
-  return ModalNavigationContainer
-}
-
-export { Navigator, withNavigation, withScreenNavigation, withModalNavigation }
-export default Navigator
+export { Navigator, withNavigation, withModalNavigation }
+export default withRouting(Navigator)

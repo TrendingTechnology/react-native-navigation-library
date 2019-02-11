@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { View, ViewPropTypes } from 'react-native'
 import Screen from './screen'
-import { withScreenNavigation } from './navigator'
+import { withNavigation } from './navigator'
 import { slideInOut } from './animations'
 import { mapScreenProps } from './lib'
 
@@ -125,6 +125,7 @@ class Tabs extends React.Component {
               {React.cloneElement(child, {
                 navigation: this.props.navigation,
                 focused: childIndex === this.props.activeIndex,
+                basepath: this.props.basepath,
               })}
             </Screen>
           )
@@ -135,4 +136,4 @@ class Tabs extends React.Component {
 }
 
 export { Tabs }
-export default withScreenNavigation(Tabs)
+export default withNavigation(Tabs)

@@ -15,9 +15,46 @@ Sound good? Let's look at some examples:
   <em>These aren't going to win any design awards, but hopefully you get the idea.</em>
 </p>
 
+# Updates - v0.2.0
+
+v0.2.0 introduces updates to the `<Navigator />` required props:
+
+- an array of screen names is required
+- if using modals, an array of modal names is required
+
+```
+<Navigator
+  name="my-navigator"
+  screens={['login', 'signup', 'onboarding']}
+  modals={['success', 'error']}>
+  {...}
+</Navigator>
+```
+
 # Install
 
 `npm install --save react-native-navigation-library`
+
+# Setup
+
+This library exposes a top level navigation provider that you'll need to wrap around your app:
+
+```
+// e.g App.js
+
+import { AppNavigation } from 'react-native-navigation-library'
+
+function App(props) {
+  return (
+    <AppNavigation location='/my-navigator'>
+      {props.children}
+    </AppNavigation>
+  )
+}
+
+```
+
+Deep linking and routing is now setup throughout your app. More on this in the [routing section](#routing)
 
 # Navigation Components
 
@@ -31,14 +68,14 @@ import { Navigator, Tabs, TabBar, Tab } from 'react-native-navigation-library'
 // note: the render prop is optional -- all child screens / header / tabbar components
 // will receive the navigation prop implicitly
 
-<Navigator name='my-tabs-navigator'>
+<Navigator name='my-tabs-navigator' screens={['tab-1', 'tab-2', 'tab-3']}>
   {({ navigation }) => {
     return (
       <View style={{ flex: 1 }}>
         <Tabs>
-          <MyScreen title="Screen 1" />
-          <MyScreen title="Screen 2" />
-          <MyScreen title="Screen 3" />
+          <MyScreen title="Tab 1" />
+          <MyScreen title="Tab 2" />
+          <MyScreen title="Tab 3" />
         </Tabs>
 
         <TabBar>
@@ -62,8 +99,6 @@ import { Navigator, Tabs, TabBar, Tab } from 'react-native-navigation-library'
   <img src="examples/tabs-example.gif">
 </p>
 
-Tabs will render in order and stacked horizontally
-
 ### Stack
 
 ...and here's a stack navigator:
@@ -71,7 +106,7 @@ Tabs will render in order and stacked horizontally
 ```
 import { Navigator, Header, Stack } from 'react-native-navigation-library'
 
-<Navigator name='my-stack-navigator'>
+<Navigator name='my-stack-navigator' screens={['stack-1', 'stack-2', 'stack-3']}>
   {({ navigation }) => {
     return (
       <View style={{ flex: 1 }}>
@@ -96,14 +131,12 @@ import { Navigator, Header, Stack } from 'react-native-navigation-library'
   <img src="examples/stack-example.gif" >
 </p>
 
-Stack children will render one ontop of the other
-
 ### Switch
 
 ```
 import { Navigator, Switch } from 'react-native-navigation-library'
 
-<Navigator name='my-switch-navigator'>
+<Navigator name='my-switch-navigator' screens={['first', 'second', 'third', 'fourth']}>
   <Switch>
     <MyScreen title="Switch 1" />
     <MyScreen title="Switch 2" />
@@ -117,7 +150,9 @@ import { Navigator, Switch } from 'react-native-navigation-library'
   <img src="examples/switch-example.gif" >
 </p>
 
-Switch will only mount one screen component at a time
+<p align="center">
+  A switch will only mount one screen component at a time
+</p>
 
 ### Navigator
 
@@ -168,7 +203,7 @@ You can also turn animations off -- this can be useful if you want a slightly fa
 ```
 import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library'
 
-<Navigator name='my-modal-navigator'>
+<Navigator name='my-modal-navigator' screens={['1','2','3']}>
   {({ navigation }) => {
     return (
       <View style={{ flex: 1 }}>
@@ -208,11 +243,13 @@ Navigating around is (hopefully) fairly similar to what you're used to:
 
 ```
 navigation: Navigation {
-  back: (data: any) => void  // - return to the previously rendered screen
+  back: () => void  // - return to the previously rendered screen
   pop: (data: any) => void // - navigate to the previous child screen
   push: (data: any) => void // - navigate to the next child screen
   select: (index: number, data: any) => void // navigate to child at index
-  navigate: (routeName: string, data: any) => void // navigate to child via 'name' prop
+  navigate: (routeName: string, data: any) => void // navigate to child via screen 'name'
+  goTo: (absolutePath: string, data: any) => void // navigate to any child via absolute path
+  replaceWith: (absolutePath: string, data: any) => void // navigate to any child and replace current history
   reset: () => void, // reset navigation to its initial state
   state: {}: any, // any object you want to share with your navigator children
   modal: {
@@ -220,17 +257,15 @@ navigation: Navigation {
     show: (name: string, data: any) => void, // toggle modal (on) by name prop
     dismiss: (name: string, data: any) => void, // toggle modal (off) by name prop
   }
-  parent?: (navigation: Navigation) // defined in nested navigators
 }
 ```
 
 ### Using `navigation.navigate()`
 
-Navigating using route names requires name props for your screens, _or_ an array of screen names passed to the Navigator:
-
 ```
-import { Navigator, Header, Switch } from 'react-native-navigation-library'
-<Navigator>
+import { Navigator, Header, Switch, Link } from 'react-native-navigation-library'
+
+<Navigator name='navigate' screens=['first', 'second', 'third', 'fourth']>
   {({ navigation }) => {
     return (
       <View style={{ flex: 1 }}>
@@ -242,15 +277,124 @@ import { Navigator, Header, Switch } from 'react-native-navigation-library'
         </Header>
 
         <Switch>
-          <MyScreen name='first' navigate={() => navigation.navigate('third', { someData: 'hello there' })} />
-          <MyScreen name='second' navigate={() => navigation.navigate('fourth')} />
-          <MyScreen name='third' navigate={() => navigation.navigate('second')} />
-          <MyResetScreen name='fourth' navigate={() => navigation.navigate('first')} reset={() => navigation.reset() />
+          <MyScreen navigate={() => navigation.navigate('third', { someData: 'hello there' })} />
+          <MyScreen navigate={() => navigation.navigate('fourth')} />
+          <MyScreen navigate={() => navigation.navigate('second')} />
+          <MyResetScreen navigate={() => navigation.navigate('first')} reset={() => navigation.reset() />
         </Switch>
+
+        <Link to='/navigate/second' replace><Text>Go to second</Text></Link>
       </View>
     )
   }}
 </Navigator>
+```
+
+# Routing
+
+Each navigator defines its routing with an array of screen routes. This way, you can navigate around your app using absolute paths using the `navigation.goTo(absolutePath, data)`, `navigation.replaceWith(absolutePath, data)` or `<Link to={absolutePath} />` component. At the top level, you can initialize your app with a location which makes debugging / setting up your initial view fairly straightforward.
+
+Under the hood, deep linking is also enabled, so opening your app with a deep link should work.
+
+Here's a super basic example:
+
+```
+import {
+  AppNavigation,
+  Link,
+  Navigator,
+  Switch,
+  Tabs,
+  TabBar,
+  Tab,
+  Modal,
+} from 'react-native-navigation-library'
+
+function App() {
+  return (
+    <!-- You can update this location prop in your devtools to easily debug / navigate to the screens you're working on -->
+    <AppNavigation location="/entry">
+
+      <!-- Define the names of your screens to setup routing in your <Navigator />'s -->
+      <Navigator name="entry" screens={['signup', 'onboarding']}>
+        <View>
+          <Switch>
+            <Navigator name="signup" screens={['signup-form', 'name-form']}>
+              <Signup />
+            </Navigator>
+
+            <Navigator
+              name="onboarding"
+              screens={['welcome-tab', 'location-permissions']}>
+              <Onboarding />
+            </Navigator>
+          </Switch>
+
+          <!-- You can navigate to nested views / nested navigators  -->
+          <Link to="/entry/signup/signup-form">
+            <Text>Link to second signup page</Text>
+          </Link>
+
+          <Link to="/entry/onboarding/location-permissions-navigator">
+            <Text>Onboarding Location Screen</Text>
+          </Link>
+        </View>
+      </Navigator>
+
+    </AppNavigation>
+  )
+}
+
+function Signup(props) {
+  const { navigation } = props
+
+  return (
+    <View>
+      <Header style={{ paddingHorizontal: 20 }}>
+        <MyHeader title="Welcome" />
+        <MyHeader title={`Hello ${navigation.state.name}!`} />
+      </Header>
+
+      <Tabs>
+        <MyScreen title='Name Form' />
+        <MyScreen title='Signup Form' onSubmit={(formValues) => navigation.modal.show('success', formValues)} />
+      </Tabs>
+
+      <Modal>
+        <View name='success'>
+          <Text>Success!</Text>
+          <Link to='/entry/onboarding'><Text>Go to onboarding</Text></Link>
+        </View>
+      </Modal>
+    </View>
+  )
+}
+
+function Onboarding(props) {
+  const { navigation } = props
+
+  return (
+    <View>
+      <Tabs>
+        <MyScreen title='First Screen' />
+        <MyScreen title='Second Screen' />
+        <MyScreen title='Third Screen' onComplete={() => navigation.goTo('/app/main', navigation.state) } />
+      </Tabs>
+
+      <TabBar>
+        <Tab>
+          <MyTab title='1' />
+        </Tab>
+        <Tab>
+          <MyTab title='2' />
+        </Tab>
+        <Tab>
+          <MyTab title='3' />
+        </Tab>
+      </TabBar>
+    <View>
+  )
+}
 ```
 
 # Other Stuff
@@ -262,15 +406,25 @@ Each of your defined screens are provided default animation and styles out of th
 ```
 import { Navigator, Stack } from 'react-native-navigation-library'
 
-<Navigator>
-  <Stack
-    style={{ position: 'absolute', top: 20, left: 0 }}
-    transition={{ ... }}
-    screenStyle={{ backgroundColor: 'white' }}>
-
+<Navigator name="screens" screens=['screen-1', 'screen-2']>
+  <Stack>
     <MyScreen
       title="Screen 1"
+      style={{ borderWidth: 1 }}
       transition={{
+        method: Animated.timing,
+        animation: animatedValue => {
+          return {
+            transform: [
+              {
+                translateY: animatedValue.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1000, 75],
+                }),
+              },
+            ],
+          }
+        },
         config: {
           timing: Animated.spring,
           stiffness: 100,
@@ -286,21 +440,10 @@ import { Navigator, Stack } from 'react-native-navigation-library'
         configOut: {
           mass: 200
         }
-        animation: animatedValue => {
-          return [
-            {
-              translateY: animatedValue.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1000, 75],
-              }),
-            },
-          ]
-        }
       }}
     />
 
     <MiniScreen
-      title="A mini screen"
       style={{
         position: 'absolute',
         left: 30,
@@ -309,6 +452,7 @@ import { Navigator, Stack } from 'react-native-navigation-library'
         bottom: 100,
         borderWidth: 1,
       }}
+      title="A mini screen"
     />
   </Stack>
 </Navigator>
@@ -323,7 +467,7 @@ import { Navigator, Stack } from 'react-native-navigation-library'
 ```
 import { Header, Navigator, Stack, TabBar, Tab } from 'react-native-navigation-library'
 
-<Navigator>
+<Navigator screens=['1', '2', '3', '4']>
   {({ navigation }) => {
     return (
       <View style={{ flex: 1 }}>
@@ -410,12 +554,14 @@ jest.mock('NativeAnimatedHelper')
 
 If you're trying to narrow down the active screen, each navigator will expose a testID that you can query for like so: `queryByTestId('{my-navigator-name}-active-screen')` -- this might be useful to snapshot or peek into whats going on as you write your tests.
 
-# WIP
+# Roadmap
 
 Some features aren't implemented (yet):
 
-- deep linking
+- ~~deep linking~~
 - gesture support
+- better examples
+- better custom animation support
 
 # Acknowledgements
 

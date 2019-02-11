@@ -25,13 +25,14 @@ class Transition extends React.Component {
     configOut: config.configOut,
     animation: anim => {
       return {
-        transform: {
-          translateX: anim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 0],
-            extrapolate: 'clamp',
-          }),
-        },
+        transform: [
+          {
+            translateX: anim.interpolate({
+              inputRange: [-1, 0, 1],
+              outputRange: [-150, 375, 0],
+            }),
+          },
+        ],
       }
     },
     method: Animated.spring,
