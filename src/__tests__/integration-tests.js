@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, Button } from 'react-native'
-import { NativeRouter as Router } from 'react-router-native'
 import { render, fireEvent } from 'react-native-testing-library'
 import {
   Navigator,
@@ -10,13 +9,18 @@ import {
   Tabs,
   TabBar,
   Tab,
+  AppNavigation,
 } from '../../react-native-navigation-library'
 
 test('stack navigation', () => {
   function StackApp() {
     return (
-      <Router initialEntries={['/stack/screen-1']}>
-        <Navigator name="stack" initialState={{ hello: '123' }}>
+      <AppNavigation location="/stack">
+        <Navigator
+          name="stack"
+          initialState={{ hello: '123' }}
+          screens={['screen-1', 'screen-2', 'screen-3']}
+        >
           {({ navigation, activeIndex }) => {
             return (
               <View style={{ flex: 1 }}>
@@ -27,7 +31,7 @@ test('stack navigation', () => {
                 </Header>
 
                 <Stack>
-                  <View name="screen-1">
+                  <View>
                     <Button
                       title="Screen 1"
                       onPress={() => navigation.push({ hello: 'joe' })}
@@ -37,7 +41,7 @@ test('stack navigation', () => {
                     )}
                   </View>
 
-                  <View name="screen-2">
+                  <View>
                     <Button
                       title="Screen 2"
                       onPress={() => navigation.push({ hello: 'hi' })}
@@ -47,7 +51,7 @@ test('stack navigation', () => {
                     )}
                   </View>
 
-                  <View name="screen-3">
+                  <View>
                     <Button
                       title="Screen 3"
                       onPress={() => navigation.pop({ hello: 'hey' })}
@@ -62,7 +66,7 @@ test('stack navigation', () => {
             )
           }}
         </Navigator>
-      </Router>
+      </AppNavigation>
     )
   }
 
@@ -83,25 +87,25 @@ test('stack navigation', () => {
 test('tabs navigation', () => {
   function TabsApp() {
     return (
-      <Router initialEntries={['/tabs/screen-1']}>
-        <Navigator name="tabs">
+      <AppNavigation location="/tabs">
+        <Navigator name="tabs" screens={['screen-1', 'screen-2', 'screen-3']}>
           {({ navigation }) => {
             return (
               <View style={{ flex: 1 }}>
                 <Tabs>
-                  <View name="screen-1">
+                  <View>
                     <Button
                       title="Screen 1"
                       onPress={() => navigation.push()}
                     />
                   </View>
-                  <View name="screen-2">
+                  <View>
                     <Button
                       title="Screen 2"
                       onPress={() => navigation.push()}
                     />
                   </View>
-                  <View name="screen-3">
+                  <View>
                     <Button title="Screen 3" onPress={() => navigation.pop()} />
                   </View>
                 </Tabs>
@@ -121,7 +125,7 @@ test('tabs navigation', () => {
             )
           }}
         </Navigator>
-      </Router>
+      </AppNavigation>
     )
   }
 
@@ -145,11 +149,11 @@ test('tabs navigation', () => {
   fireEvent.press(getByText('Screen 3'))
 })
 
-test('switch navigator', async () => {
+test('switch navigator', () => {
   function SwitchApp() {
     return (
-      <Router initialEntries={['/switch/screen-1']}>
-        <Navigator name="switch">
+      <AppNavigation location="/switch">
+        <Navigator name="switch" screens={['screen-1', 'screen-2', 'screen-3']}>
           {({ navigation }) => {
             return (
               <View style={{ flex: 1 }}>
@@ -158,19 +162,19 @@ test('switch navigator', async () => {
                   <Button title="Header 2" onPress={() => navigation.pop()} />
                 </Header>
                 <Switch>
-                  <View name="screen-1">
+                  <View>
                     <Button
                       title="Screen 1"
                       onPress={() => navigation.push()}
                     />
                   </View>
-                  <View name="screen-2">
+                  <View>
                     <Button
                       title="Screen 2"
                       onPress={() => navigation.push()}
                     />
                   </View>
-                  <View name="screen-3">
+                  <View>
                     <Button title="Screen 3" onPress={() => navigation.pop()} />
                   </View>
                 </Switch>
@@ -178,7 +182,7 @@ test('switch navigator', async () => {
             )
           }}
         </Navigator>
-      </Router>
+      </AppNavigation>
     )
   }
 

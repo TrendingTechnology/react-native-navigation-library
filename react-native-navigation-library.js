@@ -6,6 +6,7 @@ import Tabs from './src/tabs-navigator'
 import Switch from './src/switch-navigator'
 import Modal from './src/modal-navigator'
 import AppNavigation from './src/app-navigation'
+import Link from './src/link'
 
 export {
   Stack,
@@ -17,4 +18,5 @@ export {
   Navigator,
   Modal,
   AppNavigation,
+  Link,
 }

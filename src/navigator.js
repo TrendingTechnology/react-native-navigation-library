@@ -4,30 +4,6 @@ import { BackButton } from 'react-router-native'
 
 const { Provider, Consumer } = React.createContext({})
 
-const ScreenContext = React.createContext({})
-
-class Screens extends React.Component {
-  setScreensFromChildren = children => {
-    const screens = React.Children.toArray(children).map(
-      (child, index) => `${child.props.name || index}`
-    )
-    this.setState({ screens })
-  }
-
-  state = {
-    screens: [],
-    setScreensFromChildren: this.setScreensFromChildren,
-  }
-
-  render() {
-    return (
-      <ScreenContext.Provider value={this.state}>
-        {this.props.children}
-      </ScreenContext.Provider>
-    )
-  }
-}
-
 import { Route } from 'react-router-native'
 
 function NavigatorRoute(props) {
@@ -47,39 +23,30 @@ function NavigatorRoute(props) {
         }
 
         return (
-          <Screens>
-            <ScreenContext.Consumer>
-              {({ screens }) => {
-                return (
-                  <Route
-                    path={path}
-                    render={({ match }) => {
-                      const root = match.isExact
-                      return (
-                        <Route
-                          path={`${path}/:activeScreen`}
-                          children={({ match, location, history }) => {
-                            return (
-                              <Navigator
-                                match={match}
-                                history={history}
-                                location={location}
-                                initialState={location.state || {}}
-                                screens={screens}
-                                root={root}
-                                {...props}
-                                basepath={path}
-                              />
-                            )
-                          }}
-                        />
-                      )
-                    }}
-                  />
-                )
-              }}
-            </ScreenContext.Consumer>
-          </Screens>
+          <Route
+            path={path}
+            render={({ match }) => {
+              const root = match.isExact
+              return (
+                <Route
+                  path={`${path}/:activeScreen`}
+                  children={({ match, location, history }) => {
+                    return (
+                      <Navigator
+                        {...props}
+                        match={match}
+                        history={history}
+                        location={location}
+                        initialState={location.state || props.initialState}
+                        root={root}
+                        basepath={path}
+                      />
+                    )
+                  }}
+                />
+              )
+            }}
+          />
         )
       }}
     </Consumer>
@@ -94,6 +61,7 @@ class Navigator extends React.Component {
 
   static propTypes = {
     name: PropTypes.string.isRequired,
+    screens: PropTypes.array.isRequired,
   }
 
   onNavigationChange = () => {
@@ -215,6 +183,17 @@ class Navigator extends React.Component {
 
   state = this.initialState
 
+  getActiveIndex = () => {
+    const { match } = this.props
+    let activeIndex = 0
+
+    if (match) {
+      activeIndex = this.props.screens.indexOf(match.params.activeScreen)
+    }
+
+    return activeIndex
+  }
+
   setActiveIndex = data => {
     const { match } = this.props
     let activeIndex = 0
@@ -237,7 +216,13 @@ class Navigator extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.screens.length > 0) {
+    // push the first route when pointed to a navigator
+    if (this.props.root) {
+      this.props.history.push(
+        `${this.props.basepath}/${this.props.screens[0]}`,
+        this.props.initialState
+      )
+    } else {
       this.setActiveIndex()
     }
 
@@ -258,19 +243,6 @@ class Navigator extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.location.key !== this.props.location.key) {
       this.setActiveIndex(this.props.location.state)
-    }
-
-    if (this.props.root) {
-      if (this.props.screens.length > 0) {
-        this.props.history.push(
-          `${this.props.basepath}/${this.props.screens[0]}`,
-          this.props.initialState
-        )
-      }
-    } else {
-      if (prevProps.screens.length === 0 && this.props.screens.length > 0) {
-        this.setActiveIndex()
-      }
     }
   }
 
@@ -294,49 +266,6 @@ function withNavigation(Component) {
         <Consumer>
           {context => {
             return <Component {...this.props} {...context} />
-          }}
-        </Consumer>
-      )
-    }
-  }
-
-  NavigationContainer.displayName = `withNavigation(${Component.displayName ||
-    Component.name ||
-    'Component'})`
-
-  return NavigationContainer
-}
-
-class ScreenContainer extends React.Component {
-  componentDidMount() {
-    this.props.setScreensFromChildren(this.props.screens)
-  }
-
-  render() {
-    return this.props.children
-  }
-}
-
-function withScreenNavigation(Component) {
-  class NavigationContainer extends React.Component {
-    render() {
-      return (
-        <Consumer>
-          {context => {
-            return (
-              <ScreenContext.Consumer>
-                {({ setScreensFromChildren }) => {
-                  return (
-                    <ScreenContainer
-                      screens={this.props.children}
-                      setScreensFromChildren={setScreensFromChildren}
-                    >
-                      <Component {...this.props} {...context} />
-                    </ScreenContainer>
-                  )
-                }}
-              </ScreenContext.Consumer>
-            )
           }}
         </Consumer>
       )
@@ -396,7 +325,7 @@ function withModalNavigation(ModalNavigator) {
   return ModalNavigationContainer
 }
 
-export { Navigator, withNavigation, withScreenNavigation, withModalNavigation }
+export { Navigator, withNavigation, withModalNavigation }
 export default NavigatorRoute
 
 // type Props = {

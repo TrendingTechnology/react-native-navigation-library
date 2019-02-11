@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Platform, Animated } from 'react-native'
-import { withScreenNavigation } from './navigator'
+import { withNavigation } from './navigator'
 import Screen from './screen'
 import { slideInOut, fadeInOut } from './animations'
 import { mapScreenProps } from './lib'
@@ -139,4 +139,4 @@ class Switch extends React.Component {
 }
 
 export { Switch }
-export default withScreenNavigation(Switch)
+export default withNavigation(Switch)

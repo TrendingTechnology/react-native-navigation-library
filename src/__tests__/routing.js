@@ -1,15 +1,23 @@
 import React from 'react'
-import { Button, Text } from 'react-native'
-import Navigator from '../navigator'
-import Switch from '../switch-navigator'
-import Tabs from '../tabs-navigator'
-import { render, fireEvent } from 'react-native-testing-library'
-import { NativeRouter as Router, Link } from 'react-router-native'
+import { Button, Text, View } from 'react-native'
 
-function App(props) {
+import {
+  Navigator,
+  Switch,
+  Tabs,
+  AppNavigation,
+  Link,
+} from '../../react-native-navigation-library'
+
+import { render, fireEvent } from 'react-native-testing-library'
+
+function App() {
   return (
-    <Router initialEntries={['/test/test-1']}>
-      <Navigator name="test" {...props}>
+    <AppNavigation location="/test">
+      <Navigator
+        name="test"
+        screens={['test-1', 'test-2', 'test-3', 'inner-navigator']}
+      >
         <Switch>
           <MyButton
             name="test-1"
@@ -20,10 +28,17 @@ function App(props) {
             onPress={navigation =>
               navigation.navigate('test-3', { test2: 'value-2' })
             }
-          />
+          >
+            <Link to="/test/inner-navigator/inner-3">
+              <Text>go to inner</Text>
+            </Link>
+          </MyButton>
           <MyButton name="test-3" onPress={navigation => navigation.reset()} />
 
-          <Navigator name="inner-navigator">
+          <Navigator
+            name="inner-navigator"
+            screens={['inner-1', 'inner-2', 'inner-3']}
+          >
             <Tabs>
               <MyButton
                 name="inner-1"
@@ -40,11 +55,8 @@ function App(props) {
             </Tabs>
           </Navigator>
         </Switch>
-        <Link to="/test/inner-navigator/inner-3">
-          <Text>go to inner</Text>
-        </Link>
       </Navigator>
-    </Router>
+    </AppNavigation>
   )
 }
 
@@ -59,9 +71,12 @@ test('render', () => {
 
 function MyButton(props) {
   return (
-    <Button
-      title={props.name}
-      onPress={() => props.onPress(props.navigation)}
-    />
+    <View>
+      <Button
+        title={props.name}
+        onPress={() => props.onPress(props.navigation)}
+      />
+      {props.children}
+    </View>
   )
 }
