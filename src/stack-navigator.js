@@ -116,6 +116,7 @@ class Stack extends React.Component {
               {React.cloneElement(child, {
                 navigation: this.props.navigation,
                 focused: index === this.props.activeIndex,
+                basepath: this.props.basepath,
               })}
             </Screen>
           )

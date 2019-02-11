@@ -4,7 +4,9 @@ module.exports = {
   preset: 'react-native',
   rootDir: path.resolve(__dirname, '..'),
   moduleDirectories: ['node_modules', __dirname],
-  transformIgnorePatterns: ['node_modules/(?!(react-native)/)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(react-native|react-router-native)/)',
+  ],
   transform: {
     '\\.js$': '<rootDir>/node_modules/react-native/jest/preprocessor.js',
   },

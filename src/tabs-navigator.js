@@ -125,6 +125,7 @@ class Tabs extends React.Component {
               {React.cloneElement(child, {
                 navigation: this.props.navigation,
                 focused: childIndex === this.props.activeIndex,
+                basepath: this.props.basepath,
               })}
             </Screen>
           )

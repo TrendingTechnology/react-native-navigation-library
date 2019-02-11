@@ -54,5 +54,8 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "dependencies": {
+    "react-router-native": "^4.3.0"
   }
 }

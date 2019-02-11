@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, Button } from 'react-native'
+import { NativeRouter as Router } from 'react-router-native'
 import { render, fireEvent } from 'react-native-testing-library'
 import {
   Navigator,
@@ -14,52 +15,54 @@ import {
 test('stack navigation', () => {
   function StackApp() {
     return (
-      <Navigator name="stack" initialState={{ hello: '123' }}>
-        {({ navigation, activeIndex }) => {
-          return (
-            <View style={{ flex: 1 }}>
-              <Header>
-                <Button title="Header 1" onPress={() => navigation.reset()} />
-                <Button title="Header 2" onPress={() => navigation.pop()} />
-                <Button title="Header 3" onPress={() => navigation.pop()} />
-              </Header>
+      <Router initialEntries={['/stack/screen-1']}>
+        <Navigator name="stack" initialState={{ hello: '123' }}>
+          {({ navigation, activeIndex }) => {
+            return (
+              <View style={{ flex: 1 }}>
+                <Header>
+                  <Button title="Header 1" onPress={() => navigation.reset()} />
+                  <Button title="Header 2" onPress={() => navigation.pop()} />
+                  <Button title="Header 3" onPress={() => navigation.pop()} />
+                </Header>
 
-              <Stack>
-                <View name="screen-1">
-                  <Button
-                    title="Screen 1"
-                    onPress={() => navigation.push({ hello: 'joe' })}
-                  />
-                  {activeIndex === 0 && (
-                    <Text>{`hello ${navigation.state.hello}`}</Text>
-                  )}
-                </View>
+                <Stack>
+                  <View name="screen-1">
+                    <Button
+                      title="Screen 1"
+                      onPress={() => navigation.push({ hello: 'joe' })}
+                    />
+                    {activeIndex === 0 && (
+                      <Text>{`hello ${navigation.state.hello}`}</Text>
+                    )}
+                  </View>
 
-                <View name="screen-2">
-                  <Button
-                    title="Screen 2"
-                    onPress={() => navigation.push({ hello: 'hi' })}
-                  />
-                  {activeIndex === 1 && (
-                    <Text>{`hello ${navigation.state.hello}`}</Text>
-                  )}
-                </View>
+                  <View name="screen-2">
+                    <Button
+                      title="Screen 2"
+                      onPress={() => navigation.push({ hello: 'hi' })}
+                    />
+                    {activeIndex === 1 && (
+                      <Text>{`hello ${navigation.state.hello}`}</Text>
+                    )}
+                  </View>
 
-                <View name="screen-3">
-                  <Button
-                    title="Screen 3"
-                    onPress={() => navigation.pop({ hello: 'hey' })}
-                  />
+                  <View name="screen-3">
+                    <Button
+                      title="Screen 3"
+                      onPress={() => navigation.pop({ hello: 'hey' })}
+                    />
 
-                  {activeIndex === 2 && (
-                    <Text>{`hello ${navigation.state.hello}`}</Text>
-                  )}
-                </View>
-              </Stack>
-            </View>
-          )
-        }}
-      </Navigator>
+                    {activeIndex === 2 && (
+                      <Text>{`hello ${navigation.state.hello}`}</Text>
+                    )}
+                  </View>
+                </Stack>
+              </View>
+            )
+          }}
+        </Navigator>
+      </Router>
     )
   }
 
@@ -80,37 +83,45 @@ test('stack navigation', () => {
 test('tabs navigation', () => {
   function TabsApp() {
     return (
-      <Navigator name="tabs">
-        {({ navigation }) => {
-          return (
-            <View style={{ flex: 1 }}>
-              <Tabs>
-                <View name="screen-1">
-                  <Button title="Screen 1" onPress={() => navigation.push()} />
-                </View>
-                <View name="screen-2">
-                  <Button title="Screen 2" onPress={() => navigation.push()} />
-                </View>
-                <View name="screen-3">
-                  <Button title="Screen 3" onPress={() => navigation.pop()} />
-                </View>
-              </Tabs>
+      <Router initialEntries={['/tabs/screen-1']}>
+        <Navigator name="tabs">
+          {({ navigation }) => {
+            return (
+              <View style={{ flex: 1 }}>
+                <Tabs>
+                  <View name="screen-1">
+                    <Button
+                      title="Screen 1"
+                      onPress={() => navigation.push()}
+                    />
+                  </View>
+                  <View name="screen-2">
+                    <Button
+                      title="Screen 2"
+                      onPress={() => navigation.push()}
+                    />
+                  </View>
+                  <View name="screen-3">
+                    <Button title="Screen 3" onPress={() => navigation.pop()} />
+                  </View>
+                </Tabs>
 
-              <TabBar>
-                <Tab>
-                  <Text>Tab 1</Text>
-                </Tab>
-                <Tab>
-                  <Text>Tab 2</Text>
-                </Tab>
-                <Tab>
-                  <Text>Tab 3</Text>
-                </Tab>
-              </TabBar>
-            </View>
-          )
-        }}
-      </Navigator>
+                <TabBar>
+                  <Tab>
+                    <Text>Tab 1</Text>
+                  </Tab>
+                  <Tab>
+                    <Text>Tab 2</Text>
+                  </Tab>
+                  <Tab>
+                    <Text>Tab 3</Text>
+                  </Tab>
+                </TabBar>
+              </View>
+            )
+          }}
+        </Navigator>
+      </Router>
     )
   }
 
@@ -137,29 +148,37 @@ test('tabs navigation', () => {
 test('switch navigator', async () => {
   function SwitchApp() {
     return (
-      <Navigator name="switch">
-        {({ navigation }) => {
-          return (
-            <View style={{ flex: 1 }}>
-              <Header>
-                <View hidden />
-                <Button title="Header 2" onPress={() => navigation.pop()} />
-              </Header>
-              <Switch>
-                <View name="screen-1">
-                  <Button title="Screen 1" onPress={() => navigation.push()} />
-                </View>
-                <View name="screen-2">
-                  <Button title="Screen 2" onPress={() => navigation.push()} />
-                </View>
-                <View name="screen-3">
-                  <Button title="Screen 3" onPress={() => navigation.pop()} />
-                </View>
-              </Switch>
-            </View>
-          )
-        }}
-      </Navigator>
+      <Router initialEntries={['/switch/screen-1']}>
+        <Navigator name="switch">
+          {({ navigation }) => {
+            return (
+              <View style={{ flex: 1 }}>
+                <Header>
+                  <View hidden />
+                  <Button title="Header 2" onPress={() => navigation.pop()} />
+                </Header>
+                <Switch>
+                  <View name="screen-1">
+                    <Button
+                      title="Screen 1"
+                      onPress={() => navigation.push()}
+                    />
+                  </View>
+                  <View name="screen-2">
+                    <Button
+                      title="Screen 2"
+                      onPress={() => navigation.push()}
+                    />
+                  </View>
+                  <View name="screen-3">
+                    <Button title="Screen 3" onPress={() => navigation.pop()} />
+                  </View>
+                </Switch>
+              </View>
+            )
+          }}
+        </Navigator>
+      </Router>
     )
   }
 
