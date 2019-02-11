@@ -17,7 +17,7 @@ class Link extends React.Component {
 
   render() {
     return (
-      <TouchableHighlight onPress={this.handlePress}>
+      <TouchableHighlight onPress={this.handlePress} {...this.props}>
         {this.props.children}
       </TouchableHighlight>
     )
