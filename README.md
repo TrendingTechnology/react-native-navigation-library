@@ -338,7 +338,7 @@ function App() {
 
             <Navigator
               name="onboarding"
-              screens={['welcome-tab', 'location-permissions']}>
+              screens={['welcome-tab', 'location-permissions-navigator']}>
               <Onboarding />
             </Navigator>
           </Switch>
@@ -390,8 +390,7 @@ function Onboarding(props) {
     <View>
       <Tabs>
         <MyScreen title='First Screen' />
-        <MyScreen title='Second Screen' />
-        <MyScreen title='Third Screen' onComplete={() => navigation.goTo('/app/main', navigation.state) } />
+        <LocationPermissions title='Setup your permissions' />
       </Tabs>
 
       <TabBar>
@@ -400,9 +399,6 @@ function Onboarding(props) {
         </Tab>
         <Tab>
           <MyTab title='2' />
-        </Tab>
-        <Tab>
-          <MyTab title='3' />
         </Tab>
       </TabBar>
     <View>
