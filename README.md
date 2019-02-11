@@ -203,7 +203,10 @@ You can also turn animations off -- this can be useful if you want a slightly fa
 ```
 import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library'
 
-<Navigator name='my-modal-navigator' screens={['1','2','3']}>
+<Navigator
+  name="modal"
+  screens={['1', '2', '3']}
+  modals={['first-modal', 'second-modal', 'third-modal']}>
   {({ navigation }) => {
     return (
       <View style={{ flex: 1 }}>
@@ -214,17 +217,27 @@ import { Navigator, Stack, Modal, Header } from 'react-native-navigation-library
         </Header>
 
         <Stack>
-          <MyScreen title="Modal Panel 1" onPress={() => navigation.modal.show('first-modal', { title: 'hello' })} />
-          <MyScreen title="Modal Panel 2" onPress={() => navigation.modal.show('third-modal')} />
-          <MyScreen title="Modal Panel 3" onPress={() => navigation.modal.show('second-modal')} />
+          <MyScreen
+            title="Modal Panel 1"
+            onPress={() =>
+              navigation.modal.show('first-modal', { title: 'hello' })
+            }
+          />
+          <MyScreen
+            title="Modal Panel 2"
+            onPress={() => navigation.modal.show('third-modal')}
+          />
+          <MyScreen
+            title="Modal Panel 3"
+            onPress={() => navigation.modal.show('second-modal')}
+          />
         </Stack>
 
         <Modal>
-          <MyModal name='first-modal' title={navigation.state.title} />
-          <MyModal name-'success-modal' title="Modal for Panel 2" />
-          <MyModal name='third-modal' title="Modal for Panel 3" />
+          <MyModal name="first-modal" title={navigation.state.title} />
+          <MyModal name="second-modal" title="Modal for Panel 2" />
+          <MyModal name="third-modal" title="Modal for Panel 3" />
         </Modal>
-
       </View>
     )
   }}

@@ -106,16 +106,6 @@ class Navigator extends React.Component {
     },
   }
 
-  registerModals = modals => {
-    if (this.state.modals.length === 0) {
-      this.setState({
-        modals: React.Children.toArray(modals).map(
-          (child, index) => child.props.name || `${index}`
-        ),
-      })
-    }
-  }
-
   initialState = {
     activeIndex: this.props.initialIndex || 0,
     navigation: {
@@ -134,22 +124,10 @@ class Navigator extends React.Component {
     name: this.props.name,
     animated: this.props.animated,
     modals: this.props.modals || [],
-    registerModals: this.registerModals,
     updateCount: 0,
   }
 
   state = this.initialState
-
-  getActiveIndex = () => {
-    const { match } = this.props
-    let activeIndex = 0
-
-    if (match) {
-      activeIndex = this.props.screens.indexOf(match.params.activeScreen)
-    }
-
-    return activeIndex
-  }
 
   setActiveIndex = data => {
     const { match } = this.props
