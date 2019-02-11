@@ -10,6 +10,7 @@ import {
   TabBar,
   Tab,
   AppNavigation,
+  Modal,
 } from '../../react-native-navigation-library'
 
 test('stack navigation', () => {
@@ -201,4 +202,67 @@ test('switch navigator', () => {
 
   fireEvent.press(getByText('Header 2'))
   expect(() => getByText('Screen 2')).toThrow()
+})
+
+test('modals', () => {
+  function App() {
+    return (
+      <AppNavigation location="/modal">
+        <Navigator name="modal" screens={['1', '2']} modals={['one', 'two']}>
+          {({ navigation }) => {
+            return (
+              <View>
+                <Switch>
+                  <Button
+                    title="1"
+                    onPress={() =>
+                      navigation.modal.show('one', { testValue: '123' })
+                    }
+                  />
+                  <Button
+                    title="2"
+                    onPress={() =>
+                      navigation.modal.show('two', { testValue: '456' })
+                    }
+                  />
+                </Switch>
+
+                <Modal>
+                  <Button
+                    title={`Modal: ${navigation.state.testValue}`}
+                    onPress={() => {
+                      navigation.navigate('2')
+                      navigation.modal.dismiss('one')
+                    }}
+                  />
+
+                  <Button
+                    title={`Modal: ${navigation.state.testValue}`}
+                    onPress={() => {
+                      navigation.navigate('1')
+                      navigation.modal.dismiss('two')
+                    }}
+                  />
+                </Modal>
+              </View>
+            )
+          }}
+        </Navigator>
+      </AppNavigation>
+    )
+  }
+
+  const { getByText } = render(<App />)
+  fireEvent.press(getByText('1'))
+  expect(getByText('Modal: 123'))
+
+  fireEvent.press(getByText('Modal: 123'))
+  expect(() => getByText('Modal: 123')).toThrow()
+
+  fireEvent.press(getByText('2'))
+  expect(getByText('Modal: 456'))
+  fireEvent.press(getByText('Modal: 456'))
+  expect(() => getByText('Modal: 456')).toThrow()
+
+  expect(getByText('1'))
 })

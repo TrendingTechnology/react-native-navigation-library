@@ -1,11 +1,17 @@
 import React from 'react'
-import { NativeRouter as Router, DeepLinking, Route } from 'react-router-native'
+import {
+  NativeRouter as Router,
+  DeepLinking,
+  Route,
+  BackButton,
+} from 'react-router-native'
 
 class AppNavigation extends React.Component {
   render() {
     return (
       <Router initialEntries={[this.props.location]}>
         <DeepLinking>
+          <BackButton />
           <Route
             children={({ history }) => {
               return (
@@ -24,7 +30,7 @@ class AppNavigation extends React.Component {
   }
 }
 
-// makes it easier to update the location while developing
+// makes it easier to update the location in devtools
 class UpdateLocation extends React.Component {
   componentDidUpdate(prevProps) {
     if (prevProps.location !== this.props.location) {
