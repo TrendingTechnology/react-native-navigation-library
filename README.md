@@ -178,11 +178,10 @@ class App extends React.Component {
         name='my-stack-nav'
         screens={['hi', 'hey']}
         initialState={{ test: 'value' }}
-        initialIndex={1}
         onNavigationChange={this.handleNavigationChange}
         animated={false}
       >
-        {({ navigation, activeIndex, activeScreen }) => {
+        {({ navigation, activeIndex }) => {
           return (
             <Stack>
               <MyFormScreen title="Hi" onSubmit={(formValues) => navigation.push({ formValues })} />
@@ -321,6 +320,7 @@ import {
   TabBar,
   Tab,
   Modal,
+  Header,
 } from 'react-native-navigation-library'
 
 function App() {
@@ -332,7 +332,7 @@ function App() {
       <Navigator name="entry" screens={['signup', 'onboarding']}>
         <View>
           <Switch>
-            <Navigator name="signup" screens={['signup-form', 'name-form']}>
+            <Navigator name="signup" screens={['signup-form', 'name-form']} modals={['success']}>
               <Signup />
             </Navigator>
 
@@ -401,7 +401,7 @@ function Onboarding(props) {
           <MyTab title='2' />
         </Tab>
       </TabBar>
-    <View>
+    </View>
   )
 }
 ```

@@ -106,8 +106,19 @@ class Navigator extends React.Component {
     },
   }
 
+  getActiveIndex = () => {
+    const { match } = this.props
+    let activeIndex = 0
+    if (match) {
+      activeIndex = this.props.screens.indexOf(match.params.activeScreen)
+    }
+
+    return activeIndex
+  }
+
   initialState = {
-    activeIndex: this.props.initialIndex || 0,
+    activeIndex: this.getActiveIndex(),
+    screens: this.props.screens,
     navigation: {
       push: this.push,
       pop: this.pop,
@@ -130,11 +141,7 @@ class Navigator extends React.Component {
   state = this.initialState
 
   setActiveIndex = data => {
-    const { match } = this.props
-    let activeIndex = 0
-    if (match) {
-      activeIndex = this.props.screens.indexOf(match.params.activeScreen)
-    }
+    const activeIndex = this.getActiveIndex()
 
     this.setState(state => {
       return {
@@ -198,16 +205,12 @@ function withRouting(Component) {
     return (
       <Consumer>
         {context => {
+          let path = `${props.basepath || ''}/${props.name}`
+
           // we can inherit the base path from parent context if we're a nested navigator
-          // this helps because we no longer need to pass down all props to a custom navigator component
-          let path = ''
-
-          if (context) {
-            path = `${context.basepath || ''}/${props.name}`
-          }
-
-          if (props.basepath) {
-            path = `${props.basepath || ''}/${props.name}`
+          // this helps because we no longer need to pass down all props to a wrapped navigator component
+          if (context && context.basepath) {
+            path = `${context.basepath}/${props.name}`
           }
 
           return (
