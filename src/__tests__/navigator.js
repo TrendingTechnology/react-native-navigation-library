@@ -105,6 +105,7 @@ Object {
     "select": [Function],
     "state": Object {},
   },
+  "screens": Array [],
   "updateCount": 0,
 }
 `)
