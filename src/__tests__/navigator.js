@@ -1,6 +1,7 @@
 import React from 'react'
 import { render } from 'react-native-testing-library'
 import { Navigator } from '../navigator'
+import { Text } from 'react-native'
 
 const fakeHistory = {
   listen: jest.fn(() => fakeHistory.unlisten),
@@ -109,6 +110,22 @@ Object {
   "updateCount": 0,
 }
 `)
+  })
+
+  test('multiple children in navigator', () => {
+    expect(() =>
+      render(
+        <Navigator
+          history={fakeHistory}
+          location={fakeLocation}
+          basepath=""
+          name="123"
+        >
+          <Text>1</Text>
+          <Text>2</Text>
+        </Navigator>
+      )
+    ).not.toThrow()
   })
 })
 

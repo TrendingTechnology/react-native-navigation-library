@@ -189,12 +189,21 @@ class Navigator extends React.Component {
   }
 
   render() {
-    const children = this.props.children
+    let children = this.props.children
+
+    if (typeof children !== 'function') {
+      if (React.Children.count(children) > 1) {
+        children = React.Children.map(children, element => {
+          return React.cloneElement(element, this.state)
+        })
+      } else {
+        children = React.cloneElement(children, this.state)
+      }
+    }
+
     return (
       <Provider value={this.state}>
-        {typeof children === 'function'
-          ? children(this.state)
-          : React.cloneElement(children, this.state)}
+        {typeof children === 'function' ? children(this.state) : children}
       </Provider>
     )
   }
